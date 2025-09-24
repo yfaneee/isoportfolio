@@ -1,25 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Canvas } from '@react-three/fiber';
+import IsometricScene from './components/IsometricScene';
+import UI from '../src/components/UI';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Router>
+      <div className="App">
+        {/* Three.js Canvas for the isometric world */}
+        <Canvas
+          camera={{
+            position: [10, 10, 10],
+            fov: 50
+          }}
+          style={{ 
+            width: '100vw', 
+            height: '100vh',
+            background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)'
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <IsometricScene />
+        </Canvas>
+        
+        {/* UI Overlay */}
+        <UI />
+      </div>
+    </Router>
   );
 }
 
