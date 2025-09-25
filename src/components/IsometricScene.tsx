@@ -15,10 +15,10 @@ const IsometricScene: React.FC = () => {
   return (
     <>
       {/* Lighting setup */}
-      <ambientLight intensity={0.9} />
+      <ambientLight intensity={1.5} />
       <directionalLight 
         position={[10, 10, 5]} 
-        intensity={1.2}
+        intensity={2}
         castShadow={false}
       />
       <directionalLight 
