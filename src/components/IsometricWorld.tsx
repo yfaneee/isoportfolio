@@ -218,98 +218,7 @@ const IsometricWorld: React.FC = () => {
       </Box>
     );
 
-    // Add visible number labels for each floor
-    floors.push(
-      <Text
-        key="label-1"
-        position={[stairEndX - spacing * 0.8, platformLevel + floorHeight/2 + 0.1, 0]}
-        fontSize={0.3}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        1
-      </Text>
-    );
 
-    floors.push(
-      <Text
-        key="label-2"
-        position={[stairEndX - spacing * 0.8 - spacing, platformLevel + floorHeight/2 + 0.1, 0]}
-        fontSize={0.3}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        2
-      </Text>
-    );
-
-    floors.push(
-      <Text
-        key="label-3"
-        position={[stairEndX - spacing * 0.8 - spacing, platformLevel + floorHeight/2 + 0.1, -spacing]}
-        fontSize={0.3}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        3
-      </Text>
-    );
-
-    floors.push(
-      <Text
-        key="label-4"
-        position={[stairEndX - spacing * 0.8 - spacing, platformLevel + floorHeight/2 + 0.1, spacing]}
-        fontSize={0.3}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        4
-      </Text>
-    );
-
-    // Add visible number labels for triangles
-    floors.push(
-      <Text
-        key="label-triangle-4-1"
-        position={[stairEndX - spacing * 0.8 - spacing * 0.5, platformLevel + floorHeight/2 + 0.1, spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T1
-      </Text>
-    );
-
-    floors.push(
-      <Text
-        key="label-triangle-3-1"
-        position={[stairEndX - spacing * 0.8 - spacing * 0.5, platformLevel + floorHeight/2 + 0.1, -spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T2
-      </Text>
-    );
-
-    floors.push(
-      <Text
-        key="label-triangle-left-4"
-        position={[stairEndX - spacing * 0.8 - spacing * 1.5, platformLevel + floorHeight/2 + 0.1, spacing + spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T3
-      </Text>
-    );
 
     // Right triangle between Floor 4 and Floor 1
     const rightTriangleGeometry = new THREE.BufferGeometry();
@@ -410,19 +319,6 @@ const IsometricWorld: React.FC = () => {
       </mesh>
     );
 
-    // Add label for T4
-    floors.push(
-      <Text
-        key="label-triangle-opposed-T3"
-        position={[stairEndX - spacing * 0.8 - spacing * 2.5, platformLevel + floorHeight/2 + 0.1, spacing + spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T4
-      </Text>
-    );
 
     // Fifth triangle (T5) next to T2, similar to how T3 is next to T1
     floors.push(
@@ -442,19 +338,6 @@ const IsometricWorld: React.FC = () => {
       </mesh>
     );
 
-    // Add label for T5
-    floors.push(
-      <Text
-        key="label-triangle-T5"
-        position={[stairEndX - spacing * 0.8 - spacing * 1.5, platformLevel + floorHeight/2 + 0.1, -spacing - spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T5
-      </Text>
-    );
 
     // Sixth triangle (T6) opposed to T5
     floors.push(
@@ -474,19 +357,6 @@ const IsometricWorld: React.FC = () => {
       </mesh>
     );
 
-    // Add label for T6
-    floors.push(
-      <Text
-        key="label-triangle-T6"
-        position={[stairEndX - spacing * 0.8 - spacing * 2.5, platformLevel + floorHeight/2 + 0.1, -spacing - spacing * 0.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T6
-      </Text>
-    );
 
     // Seventh triangle (T7) next to T3 and T1
     floors.push(
@@ -506,19 +376,6 @@ const IsometricWorld: React.FC = () => {
       </mesh>
     );
 
-    // Add label for T7
-    floors.push(
-      <Text
-        key="label-triangle-T7"
-        position={[stairEndX - spacing * 0.8 - spacing * 2.5, platformLevel + floorHeight/2 + 0.1, spacing * 2.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T7
-      </Text>
-    );
 
     // Eighth triangle (T8) next to T2 and T5, mirroring the T1-T3-T7 pattern
     floors.push(
@@ -538,19 +395,6 @@ const IsometricWorld: React.FC = () => {
       </mesh>
     );
 
-    // Add label for T8
-    floors.push(
-      <Text
-        key="label-triangle-T8"
-        position={[stairEndX - spacing * 0.8 - spacing * 2.5, platformLevel + floorHeight/2 + 0.1, -spacing * 2.5]}
-        fontSize={0.25}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-      >
-        T8
-      </Text>
-    );
 
     // Floor for the gap on the T4-T3-T7 side
     floors.push(
@@ -646,6 +490,234 @@ const IsometricWorld: React.FC = () => {
       </Box>
     );
 
+    // First continuation triangle - similar to T7 but continuing the extension pattern
+    floors.push(
+      <mesh
+        key="triangle-T9"
+        position={[stairEndX - spacing * 0.8 - spacing * 3.5, platformLevel - floorHeight/2, spacing * 2.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, -Math.PI / 2, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T9')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T9' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+
+    // Floor next to T9 and the floor next to T4
+    floors.push(
+      <Box
+        key="extension-floor-5"
+        position={[stairEndX - spacing * 0.8 - spacing * 4, platformLevel, spacing * 2]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-5')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-5' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T10"
+        position={[stairEndX - spacing * 0.8 - spacing * 4.5, platformLevel - floorHeight/2, spacing * 1.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, -Math.PI / 2, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T10')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T10' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <Box
+        key="extension-floor-6"
+        position={[stairEndX - spacing * 0.8 - spacing * 5, platformLevel, spacing * 1]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-6')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-6' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T11"
+        position={[stairEndX - spacing * 0.8 - spacing * 5.5, platformLevel - floorHeight/2, spacing * 0.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, -Math.PI / 2, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T11')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T11' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T12"
+        position={[stairEndX - spacing * 0.8 - spacing * 4.5, platformLevel - floorHeight/2, spacing + spacing * 0.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, Math.PI / 2, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T12')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T12' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <Box
+        key="extension-floor-7"
+        position={[stairEndX - spacing * 0.8 - spacing * 5, platformLevel, spacing * 0]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-7')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-7' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    floors.push(
+      <Box
+        key="extension-floor-8"
+        position={[stairEndX - spacing * 0.8 - spacing * 6, platformLevel, spacing * 0]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-8')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-8' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    floors.push(
+      <Box
+        key="extension-floor-9"
+        position={[stairEndX - spacing * 0.8 - spacing * 5, platformLevel, spacing * -1]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-9')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-9' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+    
+    floors.push(
+      <mesh
+        key="triangle-T13"
+        position={[stairEndX - spacing * 0.8 - spacing * 5.5, platformLevel - floorHeight/2, spacing + spacing * -1.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, Math.PI, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T13')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T13' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T14"
+        position={[stairEndX - spacing * 0.8 - spacing * 4.5, platformLevel - floorHeight/2, spacing + spacing * -2.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, Math.PI, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T14')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T14' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T15"
+        position={[stairEndX - spacing * 0.8 - spacing * 3.5, platformLevel - floorHeight/2, spacing + spacing * -3.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, Math.PI, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T15')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T15' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
+
+    floors.push(
+      <Box
+        key="extension-floor-10"
+        position={[stairEndX - spacing * 0.8 - spacing * 4, platformLevel, spacing * -2]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('extension-floor-10')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'extension-floor-10' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    floors.push(
+      <mesh
+        key="triangle-T16"
+        position={[stairEndX - spacing * 0.8 - spacing * 4.5, platformLevel - floorHeight/2, spacing * -1.5]}
+        geometry={rightTriangleGeometry}
+        rotation={[0, -Math.PI / 4 + 0.785, 0]}
+        onPointerOver={() => setHoveredObject('triangle-T16')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'triangle-T16' ? hoverColor : floorColor}
+          flatShading={true}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </mesh>
+    );
 
     floors.push(
       <Box
