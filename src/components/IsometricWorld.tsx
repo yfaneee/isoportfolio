@@ -15,7 +15,26 @@ const IsometricWorld: React.FC = () => {
     const floorHeight = 0.3; 
      const spacing = 1.5;
     
-    // 3x3 grid 
+    // Massive foundation block underneath the 3x3 grid
+    const gridWidth = 3 * spacing; // Total width of 3x3 grid
+    const foundationHeight = 500; // Massive height extending downward
+    
+    floors.push(
+      <Box
+        key="foundation-block"
+        position={[0, -foundationHeight/2 - 0.15, 0]} // Moved 2 units lower
+        args={[gridWidth, foundationHeight, gridWidth]}
+        onPointerOver={() => setHoveredObject('foundation-block')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'foundation-block' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // 3x3 grid (keeping exact same positions)
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
         const x = (col - 1) * spacing; 
@@ -65,6 +84,26 @@ const IsometricWorld: React.FC = () => {
       >
         <meshStandardMaterial 
           color={hoveredObject === 'extension-2' ? hoverColor : floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // Massive foundation block underneath the 5x5 grid
+    const grid5x5Width = 5 * spacing; // Total width of 5x5 grid
+    const grid5x5CenterX = 0; // X center of 5x5 grid
+    const grid5x5CenterZ = -1 * spacing - spacing * 3 - (2 * spacing); // Z center of 5x5 grid
+    
+    floors.push(
+      <Box
+        key="foundation-block-5x5"
+        position={[grid5x5CenterX, -foundationHeight/2 - 0.15, grid5x5CenterZ]} 
+        args={[grid5x5Width, foundationHeight, grid5x5Width]}
+        onPointerOver={() => setHoveredObject('foundation-block-5x5')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'foundation-block-5x5' ? hoverColor : floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
