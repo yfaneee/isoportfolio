@@ -69,6 +69,22 @@ const IsometricWorld: React.FC = () => {
       }
     }
 
+    // Bone white slab on top of the middle floor 
+    floors.push(
+      <Box
+        key="bone-white-slab"
+        position={[0, floorHeight - 0.092, 0]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('bone-white-slab')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'bone-white-slab' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
     floors.push(
       <Box
         key="extension-1"
@@ -220,7 +236,7 @@ const IsometricWorld: React.FC = () => {
 
     // Second row of shorter wall blocks (half height of the tall wall)
     const secondWallHeight = wallHeight / 2;
-    const secondWallDepth = floorSize * 1.5; 
+    const secondWallDepth = floorSize * 1.2; 
     const secondWallZ = grid5x5BaseZ - 3 * spacing;
     
     for (let col = 0; col < 5; col++) {
@@ -228,7 +244,7 @@ const IsometricWorld: React.FC = () => {
       floors.push(
         <Box
           key={`wall-second-${col}`}
-          position={[x, secondWallHeight / 1.7, secondWallZ + 0.38]}
+          position={[x, secondWallHeight / 1.7, secondWallZ + 0.15]}
           args={[floorSize, secondWallHeight, secondWallDepth]}
           onPointerOver={handlePointerOver(`wall-second-${col}`)}
           onPointerOut={handlePointerOut}
@@ -407,6 +423,87 @@ const IsometricWorld: React.FC = () => {
         </Box>
     );
     });
+
+    // LEARNING OUTCOMES SLABS
+    // LO SLAB 1
+    floors.push(
+      <Box
+        key="lo-slab-1"
+        position={[platformCenterX - spacing - 0.8, platformLevel + 0.21, platformCenterZ + 2.2]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('lo-slab-1')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'lo-slab-1' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // LO SLAB 2
+    floors.push(
+      <Box
+        key="lo-slab-2"
+        position={[platformCenterX - spacing - 4.5, platformLevel + 0.21, platformCenterZ + 3]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('lo-slab-2')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'lo-slab-2' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // LO SLAB 3
+    floors.push(
+      <Box
+        key="lo-slab-3"
+        position={[platformCenterX - spacing - 6.75, platformLevel + 0.21, platformCenterZ]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('lo-slab-3')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'lo-slab-3' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // LO SLAB 4
+    floors.push(
+      <Box
+        key="lo-slab-4"
+        position={[platformCenterX - spacing - 4.5, platformLevel + 0.21, platformCenterZ - 3]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('lo-slab-4')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'lo-slab-4' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // LO SLAB 5
+    floors.push(
+      <Box
+        key="lo-slab-5"
+        position={[platformCenterX - spacing - 0.8, platformLevel + 0.21, platformCenterZ - 2.2]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('lo-slab-5')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'lo-slab-5' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
 
     // Generate triangles
     learningOutcomesPlatform.triangles.forEach(tri => {
