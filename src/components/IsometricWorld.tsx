@@ -505,6 +505,39 @@ const IsometricWorld: React.FC = () => {
       </Box>
     );
 
+    // SLAB ON HIGH BLOCKS 
+    floors.push(
+      <Box
+        key="high-block-slab"
+        position={[3, wallHeight / 1.83 + wallHeight/2 + 0.07, grid5x5BaseZ - 4 * spacing]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('high-block-slab')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'high-block-slab' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+    // SLAB ON SMALLER BLOCKS ROW 
+    floors.push(
+      <Box
+        key="smaller-block-slab"
+        position={[-1.5, secondWallHeight / 1.7 + secondWallHeight/2 + 0.07, secondWallZ + 0.15]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('smaller-block-slab')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'smaller-block-slab' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+
+
     // Generate triangles
     learningOutcomesPlatform.triangles.forEach(tri => {
     floors.push(
@@ -839,6 +872,22 @@ const IsometricWorld: React.FC = () => {
     // Octagon platform extension
     const octBaseX = structureX + spacing * 2; // Start from lower-extension-2
     const octBaseZ = structureZ;
+    
+    // SLAB ON ARTWORK PLATFORM (octagonal platform middle)
+    floors.push(
+      <Box
+        key="artwork-platform-slab"
+        position={[octBaseX + spacing * 2, lowerFloorY + floorHeight/2 + 0.07, octBaseZ]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+        onPointerOver={() => setHoveredObject('artwork-platform-slab')}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+          color={hoveredObject === 'artwork-platform-slab' ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
     
     // 3 floors extending in X direction
     floors.push(

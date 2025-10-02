@@ -1,0 +1,82 @@
+.intro-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.intro-text {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.controls-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.controls-overlay.visible {
+  opacity: 1;
+}
+
+.controls-panel {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 20px;
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.controls-panel h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #4A90E2;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.control-row:last-child {
+  margin-bottom: 0;
+}
+
+.key {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  border: 1px solid #444;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+

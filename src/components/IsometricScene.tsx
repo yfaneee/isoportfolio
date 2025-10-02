@@ -1,16 +1,25 @@
-import React from 'react';
-import { useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import React, { useState, useCallback } from 'react';
 import IsometricWorld from '../components/IsometricWorld';
+import CharacterController from '../components/CharacterController';
+import CameraController from '../components/CameraController';
+import PlatformDebugger from '../components/PlatformDebugger';
 
-const IsometricScene: React.FC = () => {
-  const { camera } = useThree();
+interface IsometricSceneProps {
+  onIntroComplete: () => void;
+}
 
-  // Set up isometric-style camera
-  React.useEffect(() => {
-    camera.position.set(10, 10, 10);
-    camera.lookAt(0, 0, 0);
-  }, [camera]);
+const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
+  const [characterPosition, setCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [introComplete, setIntroComplete] = useState(false);
+
+  const handlePositionChange = useCallback((position: [number, number, number]) => {
+    setCharacterPosition(position);
+  }, []);
+
+  const handleIntroComplete = useCallback(() => {
+    setIntroComplete(true);
+    onIntroComplete();
+  }, [onIntroComplete]);
 
   return (
     <>
@@ -27,17 +36,24 @@ const IsometricScene: React.FC = () => {
         castShadow={false}
       />
       
-      {/* Camera controls */}
-      <OrbitControls 
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={false}
-        minDistance={5}
-        maxDistance={50}
+      {/* Custom camera controller with intro animation */}
+      <CameraController 
+        targetPosition={characterPosition}
+        introComplete={introComplete}
+        onIntroComplete={handleIntroComplete}
       />
       
       {/* The isometric world */}
       <IsometricWorld />
+      
+      {/* Debug platform boundaries (red lines) */}
+      <PlatformDebugger enabled={true} />
+      
+      {/* The playable character */}
+      <CharacterController 
+        onPositionChange={handlePositionChange}
+        introComplete={introComplete}
+      />
     </>
   );
 };
