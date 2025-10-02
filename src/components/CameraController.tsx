@@ -27,10 +27,11 @@ const CameraController: React.FC<CameraControllerProps> = ({
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
       // Animate camera from far to close
+      // Start: (0, 40, 40), End: (6, 5, 6) - matching follow camera
       camera.position.set(
-        0 + eased * 10,
-        25 - eased * 17,
-        25 - eased * 15
+        0 + eased * 6,
+        40 - eased * (40 - 5),
+        40 - eased * (40 - 6)
       );
       camera.lookAt(0, 0, 0);
       
@@ -38,11 +39,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
         onIntroComplete();
       }
     } else {
-      // Camera moves WITH character, maintaining isometric offset
+      // Camera moves WITH character, maintaining isometric offset - closer zoom
+      const offset = 6;
       camera.position.set(
-        targetPosition[0] + 10,
-        targetPosition[1] + 8,
-        targetPosition[2] + 10
+        targetPosition[0] + 6,
+        targetPosition[1] + 5,
+        targetPosition[2] + 6
       );
       
       // Look at the character
