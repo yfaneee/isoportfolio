@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { constrainToPlatform, smoothHeightTransition } from '../utils/collisionSystem';
+import { isOnElevator, triggerElevator, getElevatorHeight } from '../utils/elevatorSystem';
 
 interface CharacterState {
   position: [number, number, number];
@@ -18,6 +19,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     backward: false,
     left: false,
     right: false,
+    shift: false,
   });
 
   // Handle keyboard input
@@ -32,6 +34,15 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = true;
       } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = true;
+      } else if (key === 'shift') {
+        if (!keysRef.current.shift) {
+          keysRef.current.shift = true;
+          // Check if on elevator and trigger it
+          const [x, , z] = positionRef.current;
+          if (isOnElevator(x, z)) {
+            triggerElevator();
+          }
+        }
       }
     };
 
@@ -45,6 +56,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = false;
       } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = false;
+      } else if (key === 'shift') {
+        keysRef.current.shift = false;
       }
     };
 
@@ -59,6 +72,17 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
 
   // Update character position based on keys (called every frame)
   const updateCharacter = (delta: number) => {
+    // First check if character is on elevator and update their Y position
+    const [currentX, currentY, currentZ] = positionRef.current;
+    if (isOnElevator(currentX, currentZ)) {
+      const elevatorY = getElevatorHeight();
+      if (Math.abs(currentY - elevatorY) > 0.1) {
+        // Character needs to move with elevator
+        positionRef.current = [currentX, elevatorY, currentZ];
+        return; // Skip movement this frame
+      }
+    }
+    
     const speed = 3; // Balanced speed - not too fast, not too slow
     let dx = 0;
     let dz = 0;

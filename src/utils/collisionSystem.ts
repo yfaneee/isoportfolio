@@ -1,4 +1,5 @@
 // Collision and boundary system for the isometric world
+import { isOnElevator, getElevatorHeight, triggerElevator } from './elevatorSystem';
 
 export interface Platform {
   minX: number;
@@ -62,28 +63,27 @@ export const platforms: Platform[] = [
   
   // EXTENSION FLOORS TO ARTWORK PLATFORM (east) - Two floors extending right
   { minX: 3.0 - 0.75, maxX: 3.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: 0.1, type: 'floor' }, 
-  { minX: 4.5 - 0.75, maxX: 4.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: 0.1, type: 'floor' }, 
+  // floor-from-6-2 at x=4.5 is the ELEVATOR - handled by elevatorSystem.ts!
   
-  // LOWER ARTWORK PLATFORM (octagonal platform at y=-2.1)
-  { minX: 4.5 - 0.75, maxX: 4.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' },
-  { minX: 6.0 - 0.75, maxX: 6.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' },
-  { minX: 7.5 - 0.75, maxX: 7.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' }, 
+  // LOWER ARTWORK PLATFORM (octagonal platform at y=-2.1)b
+  { minX: 6.0 - 0.75, maxX: 6.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' },
+  { minX: 7.5 - 0.75, maxX: 7.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' }, 
   
   // Octagonal platform floors extending from octBaseX = 7.5
-  { minX: 9.0 - 0.75, maxX: 9.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' }, 
-  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' }, 
-  { minX: 12.0 - 0.75, maxX: 12.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2.1, type: 'floor' }, 
-  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: -2.1, type: 'floor' }, 
-  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: -2.1, type: 'floor' }, 
+  { minX: 9.0 - 0.75, maxX: 9.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' }, 
+  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' }, 
+  { minX: 12.0 - 0.75, maxX: 12.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' }, 
+  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: -2, type: 'floor' }, 
+  { minX: 10.5 - 0.75, maxX: 10.5 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: -2, type: 'floor' }, 
   
   // Octagonal platform triangles (4 triangles filling gaps)
-  { minX: 9.0, maxX: 10.5, minZ: 0, maxZ: 1.5, y: -2.1, type: 'triangle',
+  { minX: 9.0, maxX: 10.5, minZ: 0, maxZ: 1.5, y: -2, type: 'triangle',
     triangleVertices: [{x: 10.5, z: 0}, {x: 9.0, z: 0}, {x: 10.5, z: 1.5}] }, 
-  { minX: 9.0, maxX: 10.5, minZ: -1.5, maxZ: 0, y: -2.1, type: 'triangle',
+  { minX: 9.0, maxX: 10.5, minZ: -1.5, maxZ: 0, y: -2, type: 'triangle',
     triangleVertices: [{x: 10.5, z: 0}, {x: 9.0, z: 0}, {x: 10.5, z: -1.5}] },
-  { minX: 10.5, maxX: 12.0, minZ: 0, maxZ: 1.5, y: -2.1, type: 'triangle',
+  { minX: 10.5, maxX: 12.0, minZ: 0, maxZ: 1.5, y: -2, type: 'triangle',
     triangleVertices: [{x: 10.5, z: 0}, {x: 12.0, z: 1.5}, {x: 12.0, z: 0}] }, 
-  { minX: 10.5, maxX: 12.0, minZ: -1.5, maxZ: 0, y: -2.1, type: 'triangle',
+  { minX: 10.5, maxX: 12.0, minZ: -1.5, maxZ: 0, y: -2, type: 'triangle',
     triangleVertices: [{x: 10.5, z: 0}, {x: 12.0, z: -1.5}, {x: 12.0, z: 0}] }, 
   
   // 5x5 GRID FLOOR - Extended to include stair access areas
@@ -162,6 +162,11 @@ function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v
 
 // Check if a position is on any platform and return the platform height
 export function getHeightAtPosition(x: number, z: number): number | null {
+  // First check if on elevator - elevator takes priority
+  if (isOnElevator(x, z)) {
+    return getElevatorHeight();
+  }
+  
   for (const platform of platforms) {
     // First check bounding box
     if (x >= platform.minX && x <= platform.maxX &&
@@ -189,6 +194,16 @@ export function constrainToPlatform(
   currentX: number,
   currentZ: number
 ): { x: number; y: number; z: number; onPlatform: boolean } {
+  
+  // First check if trying to move onto the elevator
+  if (isOnElevator(newX, newZ)) {
+    const elevatorY = getElevatorHeight();
+    const heightDiff = Math.abs(elevatorY - currentY);
+    
+    if (heightDiff <= 1.5) {
+      return { x: newX, y: elevatorY, z: newZ, onPlatform: true };
+    }
+  }
   
   // Find the platform at the new position
   let targetPlatform: Platform | null = null;
