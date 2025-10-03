@@ -14,6 +14,11 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   const rotationRef = useRef(0);
   const isMovingRef = useRef(false);
   
+  // SIMPLIFIED: Just go back to direct position updates for now
+  // const smoothPosition = useRef<[number, number, number]>(initialPosition);
+  // const targetPosition = useRef<[number, number, number]>(initialPosition);
+  // const positionEasing = 0.15;
+  
   const keysRef = useRef({
     forward: false,
     backward: false,
@@ -22,7 +27,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     shift: false,
   });
 
-  // Handle keyboard input
+  // Handle keyboard input - SIMPLIFIED
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
@@ -72,18 +77,26 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
 
   // Update character position based on keys (called every frame)
   const updateCharacter = (delta: number) => {
-    // First check if character is on elevator and update their Y position
     const [currentX, currentY, currentZ] = positionRef.current;
+    
+    // Always check elevator first (even without movement input)
     if (isOnElevator(currentX, currentZ)) {
       const elevatorY = getElevatorHeight();
       if (Math.abs(currentY - elevatorY) > 0.1) {
-        // Character needs to move with elevator
         positionRef.current = [currentX, elevatorY, currentZ];
-        return; // Skip movement this frame
+        return; 
       }
     }
     
-    const speed = 3; // Balanced speed - not too fast, not too slow
+    // Check if any movement keys are pressed
+    const hasInput = keysRef.current.forward || keysRef.current.backward || 
+                     keysRef.current.left || keysRef.current.right;
+    
+    if (!hasInput) {
+      isMovingRef.current = false;
+      return; 
+    }
+    
     let dx = 0;
     let dz = 0;
 
@@ -100,32 +113,27 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       dz /= length;
     }
 
-    // Update position with collision detection
-    if (dx !== 0 || dz !== 0) {
-      // Calculate new position
-      const newX = positionRef.current[0] + dx * speed * delta;
-      const newZ = positionRef.current[2] + dz * speed * delta;
-      const currentY = positionRef.current[1];
-      const currentX = positionRef.current[0];
-      const currentZ = positionRef.current[2];
-      
-      // Apply collision detection and platform constraints
-      const constrained = constrainToPlatform(newX, newZ, currentY, currentX, currentZ);
-      
-      if (constrained.onPlatform) {
-        // Smooth height transition (for stairs)
-        const smoothY = smoothHeightTransition(currentY, constrained.y, delta);
-        
-        positionRef.current = [constrained.x, smoothY, constrained.z];
-        rotationRef.current = Math.atan2(dx, dz);
-        isMovingRef.current = true;
-      } else {
-        // Can't move there, stay in place
-        isMovingRef.current = false;
+    // Add back collision detection
+    const speed = 3;
+    const newX = currentX + dx * speed * delta;
+    const newZ = currentZ + dz * speed * delta;
+    
+    const constrained = constrainToPlatform(newX, newZ, currentY, currentX, currentZ);
+    
+    if (constrained.onPlatform) {
+      let finalY = constrained.y;
+      if (Math.abs(currentY - constrained.y) > 0.01) {
+        finalY = smoothHeightTransition(currentY, constrained.y, delta);
       }
+      
+      positionRef.current = [constrained.x, finalY, constrained.z];
     } else {
+      // Can't move there, stay in place
       isMovingRef.current = false;
+      return;
     }
+    rotationRef.current = Math.atan2(dx, dz);
+    isMovingRef.current = true;
   };
 
   const getCharacterState = (): CharacterState => ({

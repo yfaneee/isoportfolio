@@ -1,5 +1,4 @@
-import React, { useRef, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef } from 'react';
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -19,49 +18,50 @@ const Character: React.FC<CharacterProps> = ({ position, rotation, isMoving }) =
   // Animation time
   const timeRef = useRef(0);
 
-  // Animate character
-  useFrame((state, delta) => {
-    if (isMoving) {
-      timeRef.current += delta * 8; // Speed of animation
+  // DISABLED: Animate character - TESTING if this causes teleporting
+  // useFrame((state, delta) => {
+  //   if (isMoving) {
+  //     timeRef.current += delta * 8; // Speed of animation
       
-      // Leg swing animation
-      if (leftLegRef.current) {
-        leftLegRef.current.rotation.x = Math.sin(timeRef.current) * 0.5;
-      }
-      if (rightLegRef.current) {
-        rightLegRef.current.rotation.x = Math.sin(timeRef.current + Math.PI) * 0.5;
-      }
+  //     // Leg swing animation
+  //     if (leftLegRef.current) {
+  //       leftLegRef.current.rotation.x = Math.sin(timeRef.current) * 0.5;
+  //     }
+  //     if (rightLegRef.current) {
+  //       rightLegRef.current.rotation.x = Math.sin(timeRef.current + Math.PI) * 0.5;
+  //     }
       
-      // Arm swing animation (opposite to legs)
-      if (leftArmRef.current) {
-        leftArmRef.current.rotation.x = Math.sin(timeRef.current + Math.PI) * 0.3;
-      }
-      if (rightArmRef.current) {
-        rightArmRef.current.rotation.x = Math.sin(timeRef.current) * 0.3;
-      }
-    } else {
-      // Reset to idle pose smoothly
-      if (leftLegRef.current) {
-        leftLegRef.current.rotation.x *= 0.9;
-      }
-      if (rightLegRef.current) {
-        rightLegRef.current.rotation.x *= 0.9;
-      }
-      if (leftArmRef.current) {
-        leftArmRef.current.rotation.x *= 0.9;
-      }
-      if (rightArmRef.current) {
-        rightArmRef.current.rotation.x *= 0.9;
-      }
-    }
-  });
+  //     // Arm swing animation (opposite to legs)
+  //     if (leftArmRef.current) {
+  //       leftArmRef.current.rotation.x = Math.sin(timeRef.current + Math.PI) * 0.3;
+  //     }
+  //     if (rightArmRef.current) {
+  //       rightArmRef.current.rotation.x = Math.sin(timeRef.current) * 0.3;
+  //     }
+  //   } else {
+  //     // Reset to idle pose smoothly
+  //     if (leftLegRef.current) {
+  //       leftLegRef.current.rotation.x *= 0.9;
+  //     }
+  //     if (rightLegRef.current) {
+  //       rightLegRef.current.rotation.x *= 0.9;
+  //     }
+  //     if (leftArmRef.current) {
+  //       leftArmRef.current.rotation.x *= 0.9;
+  //     }
+  //     if (rightArmRef.current) {
+  //       rightArmRef.current.rotation.x *= 0.9;
+  //     }
+  //   }
+  // });
 
-  // Update group rotation
-  useEffect(() => {
+  // Update position when prop changes
+  React.useEffect(() => {
     if (groupRef.current) {
+      groupRef.current.position.set(position[0], position[1], position[2]);
       groupRef.current.rotation.y = rotation;
     }
-  }, [rotation]);
+  }, [position, rotation]);
 
   const characterColor = '#4A90E2';
   const skinColor = '#FFD1A4';

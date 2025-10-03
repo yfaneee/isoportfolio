@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import IsometricWorld from '../components/IsometricWorld';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
@@ -9,11 +9,13 @@ interface IsometricSceneProps {
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
-  const [characterPosition, setCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [introComplete, setIntroComplete] = useState(false);
+  const [isCharacterMoving, setIsCharacterMoving] = useState(false);
+  const characterControllerRef = useRef<any>(null);
 
-  const handlePositionChange = useCallback((position: [number, number, number]) => {
-    setCharacterPosition(position);
+  // Remove the delayed position callback - camera will access position directly
+  const handleMovementChange = useCallback((moving: boolean) => {
+    setIsCharacterMoving(moving);
   }, []);
 
   const handleIntroComplete = useCallback(() => {
@@ -38,20 +40,22 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
       
       {/* Custom camera controller with intro animation */}
       <CameraController 
-        targetPosition={characterPosition}
+        characterControllerRef={characterControllerRef}
         introComplete={introComplete}
         onIntroComplete={handleIntroComplete}
+        isCharacterMoving={isCharacterMoving}
       />
       
       {/* The isometric world */}
       <IsometricWorld />
       
       {/* Debug platform boundaries (red lines) */}
-      <PlatformDebugger enabled={true} />
+      <PlatformDebugger enabled={false} />
       
       {/* The playable character */}
       <CharacterController 
-        onPositionChange={handlePositionChange}
+        ref={characterControllerRef}
+        onMovementChange={handleMovementChange}
         introComplete={introComplete}
       />
     </>

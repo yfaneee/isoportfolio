@@ -1,20 +1,33 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { CameraControls } from '@react-three/drei';
+import * as THREE from 'three';
 
 interface CameraControllerProps {
-  targetPosition: [number, number, number];
+  characterControllerRef: React.RefObject<any>;
   introComplete: boolean;
   onIntroComplete: () => void;
+  isCharacterMoving: boolean;
 }
 
 const CameraController: React.FC<CameraControllerProps> = ({ 
-  targetPosition, 
+  characterControllerRef, 
   introComplete,
-  onIntroComplete 
+  onIntroComplete,
+  isCharacterMoving
 }) => {
   const { camera } = useThree();
+  const cameraControlsRef = useRef<CameraControls>(null);
   const introTimeRef = useRef(0);
   const introDuration = 3;
+  const isFollowingCharacter = useRef(true);
+
+  // When character moves, switch to following mode
+  useEffect(() => {
+    if (isCharacterMoving && !isFollowingCharacter.current) {
+      isFollowingCharacter.current = true;
+    }
+  }, [isCharacterMoving]);
 
   useFrame((state, delta) => {
     if (!introComplete) {
@@ -27,40 +40,56 @@ const CameraController: React.FC<CameraControllerProps> = ({
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
       // Animate camera from far to close
-      // Start: (0, 40, 40), End: (6, 5, 6) - matching follow camera
       camera.position.set(
-        0 + eased * 6,
-        40 - eased * (40 - 5),
-        40 - eased * (40 - 6)
+        0 + eased * 8,
+        40 - eased * (40 - 7),
+        40 - eased * (40 - 8)
       );
       camera.lookAt(0, 0, 0);
       
       if (t >= 1) {
         onIntroComplete();
       }
-    } else {
-      // Camera moves WITH character, maintaining isometric offset - closer zoom
-      const offset = 6;
-      camera.position.set(
-        targetPosition[0] + 6,
-        targetPosition[1] + 5,
-        targetPosition[2] + 6
-      );
+    } else if (isFollowingCharacter.current && cameraControlsRef.current) {
+      // Get REAL-TIME character position directly
+      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0, 0];
       
-      // Look at the character
-      camera.lookAt(targetPosition[0], targetPosition[1], targetPosition[2]);
+      // SMOOTH character following using CameraControls
+      const targetPos = new THREE.Vector3(
+        characterPosition[0] + 8,
+        characterPosition[1] + 7, 
+        characterPosition[2] + 8
+      );
+      const lookAtPos = new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2]);
+      
+      // Use CameraControls smooth movement
+      cameraControlsRef.current.setLookAt(
+        targetPos.x, targetPos.y, targetPos.z,
+        lookAtPos.x, lookAtPos.y, lookAtPos.z,
+        true // Enable smooth transition
+      );
     }
   });
 
-  return null;
+  const handleControlStart = () => {
+    isFollowingCharacter.current = false;
+  };
+
+  const handleControlEnd = () => {
+    // Stay in manual mode until character moves
+  };
+
+  return (
+    <CameraControls
+      ref={cameraControlsRef}
+      enabled={!isFollowingCharacter.current}
+      minDistance={3}
+      maxDistance={20}
+      smoothTime={0.25}
+      onStart={handleControlStart}
+      onEnd={handleControlEnd}
+    />
+  );
 };
 
-// Easing function for smooth intro animation
-function easeInOutCubic(t: number): number {
-  return t < 0.5 
-    ? 4 * t * t * t 
-    : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
-
 export default CameraController;
-

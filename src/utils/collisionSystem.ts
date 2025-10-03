@@ -1,6 +1,11 @@
 // Collision and boundary system for the isometric world
 import { isOnElevator, getElevatorHeight, triggerElevator } from './elevatorSystem';
 
+// Performance optimization: Spatial grid for fast platform lookups
+const GRID_SIZE = 3; // Grid cell size (3x3 units per cell)
+const spatialGrid: Map<string, Platform[]> = new Map();
+let gridInitialized = false;
+
 export interface Platform {
   minX: number;
   maxX: number;
@@ -40,6 +45,8 @@ export const platforms: Platform[] = [
   { minX: -0.75, maxX: 0.75, minZ: -9.6, maxZ: -9.45, y: 1.6, type: 'floor' },
   
   // STAIRS TO LEARNING OUTCOMES PLATFORM (9 steps going WEST)
+  { minX: -2.55, maxX: -1.65, minZ: -0.75, maxZ: 0.85, y: 0.45, type: 'stair', stairDirection: 'west' },
+  { minX: -2.85, maxX: -2.05, minZ: -0.75, maxZ: 0.85, y: 0.75, type: 'stair', stairDirection: 'west' },
   { minX: -3.15, maxX: -2.25, minZ: -0.75, maxZ: 0.85, y: 1.05, type: 'stair', stairDirection: 'west' },
   { minX: -3.6, maxX: -2.7, minZ: -0.75, maxZ: 0.85, y: 1.35, type: 'stair', stairDirection: 'west' },
   { minX: -4.05, maxX: -3.15, minZ: -0.75, maxZ: 0.85, y: 1.65, type: 'stair', stairDirection: 'west' },
@@ -47,8 +54,8 @@ export const platforms: Platform[] = [
   { minX: -4.95, maxX: -4.05, minZ: -0.75, maxZ: 0.85, y: 2.25, type: 'stair', stairDirection: 'west' },
   { minX: -5.4, maxX: -4.5, minZ: -0.75, maxZ: 0.85, y: 2.55, type: 'stair', stairDirection: 'west' },
   { minX: -5.85, maxX: -5.4, minZ: -0.75, maxZ: 0.85, y: 2.85, type: 'stair', stairDirection: 'west' },
-  { minX: -6.3, maxX: -5.85, minZ: -0.75, maxZ: 0.85, y: 3.15, type: 'stair', stairDirection: 'west' },
-  { minX: -6.75, maxX: -6.3, minZ: -0.75, maxZ: 0.85, y: 3.25, type: 'stair', stairDirection: 'west' },
+  { minX: -6.3, maxX: -5.85, minZ: -0.75, maxZ: 0.85, y: 3, type: 'stair', stairDirection: 'west' },
+
   
   // NOW THE FLOORS 
   
@@ -63,7 +70,6 @@ export const platforms: Platform[] = [
   
   // EXTENSION FLOORS TO ARTWORK PLATFORM (east) - Two floors extending right
   { minX: 3.0 - 0.75, maxX: 3.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: 0.1, type: 'floor' }, 
-  // floor-from-6-2 at x=4.5 is the ELEVATOR - handled by elevatorSystem.ts!
   
   // LOWER ARTWORK PLATFORM (octagonal platform at y=-2.1)b
   { minX: 6.0 - 0.75, maxX: 6.0 + 0.75, minZ: -0.75, maxZ: 0.75, y: -2, type: 'floor' },
@@ -152,6 +158,72 @@ export const platforms: Platform[] = [
     triangleVertices: [{x: -13.08, z: -3.0}, {x: -14.58, z: -1.5}, {x: -13.08, z: -1.5}] },
 ];
 
+// Initialize spatial grid for fast collision detection
+function initializeSpatialGrid() {
+  if (gridInitialized) return;
+  
+  spatialGrid.clear();
+  
+  for (const platform of platforms) {
+    // Calculate which grid cells this platform overlaps
+    const minGridX = Math.floor(platform.minX / GRID_SIZE);
+    const maxGridX = Math.floor(platform.maxX / GRID_SIZE);
+    const minGridZ = Math.floor(platform.minZ / GRID_SIZE);
+    const maxGridZ = Math.floor(platform.maxZ / GRID_SIZE);
+    
+    for (let gx = minGridX; gx <= maxGridX; gx++) {
+      for (let gz = minGridZ; gz <= maxGridZ; gz++) {
+        const key = `${gx},${gz}`;
+        if (!spatialGrid.has(key)) {
+          spatialGrid.set(key, []);
+        }
+        spatialGrid.get(key)!.push(platform);
+      }
+    }
+  }
+  
+  gridInitialized = true;
+}
+
+// Get platforms near a position using spatial grid
+function getPlatformsNear(x: number, z: number): Platform[] {
+  initializeSpatialGrid();
+  
+  const gridX = Math.floor(x / GRID_SIZE);
+  const gridZ = Math.floor(z / GRID_SIZE);
+  const key = `${gridX},${gridZ}`;
+  
+  return spatialGrid.get(key) || [];
+}
+
+// Cache for recent position lookups
+const positionCache = new Map<string, { height: number | null, timestamp: number }>();
+const CACHE_DURATION = 100; 
+const MAX_CACHE_SIZE = 1000; 
+
+// Clean old cache entries periodically
+let lastCacheCleanup = 0;
+function cleanupCache() {
+  const now = Date.now();
+  if (now - lastCacheCleanup < 5000) return; 
+  
+  lastCacheCleanup = now;
+  const entries = Array.from(positionCache.entries());
+  for (const [key, value] of entries) {
+    if (now - value.timestamp > CACHE_DURATION * 10) { 
+      positionCache.delete(key);
+    }
+  }
+  
+  // If still too large, remove oldest entries
+  if (positionCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(positionCache.entries());
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+    const toRemove = entries.slice(0, positionCache.size - MAX_CACHE_SIZE);
+    toRemove.forEach(([key]) => positionCache.delete(key));
+  }
+}
+
 // Helper function: Check if a point is inside a triangle using barycentric coordinates
 function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v1: {x: number, z: number}, v2: {x: number, z: number}): boolean {
   const area = 0.5 * (-v1.z * v2.x + v0.z * (-v1.x + v2.x) + v0.x * (v1.z - v2.z) + v1.x * v2.z);
@@ -162,12 +234,27 @@ function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v
 
 // Check if a position is on any platform and return the platform height
 export function getHeightAtPosition(x: number, z: number): number | null {
-  // First check if on elevator - elevator takes priority
-  if (isOnElevator(x, z)) {
-    return getElevatorHeight();
+  cleanupCache();
+  
+  // Check cache first (round to 2 decimal places for cache key)
+  const cacheKey = `${Math.round(x * 100) / 100},${Math.round(z * 100) / 100}`;
+  const now = Date.now();
+  const cached = positionCache.get(cacheKey);
+  
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.height;
   }
   
-  for (const platform of platforms) {
+  // First check if on elevator - elevator takes priority
+  if (isOnElevator(x, z)) {
+    const height = getElevatorHeight();
+    positionCache.set(cacheKey, { height, timestamp: now });
+    return height;
+  }
+  
+  const nearbyPlatforms = getPlatformsNear(x, z);
+  
+  for (const platform of nearbyPlatforms) {
     // First check bounding box
     if (x >= platform.minX && x <= platform.maxX &&
         z >= platform.minZ && z <= platform.maxZ) {
@@ -175,14 +262,18 @@ export function getHeightAtPosition(x: number, z: number): number | null {
       // If it's a triangle, do precise triangle collision check
       if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
         if (isPointInTriangle(x, z, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
+          positionCache.set(cacheKey, { height: platform.y, timestamp: now });
           return platform.y;
         }
       } else {
         // For rectangles/stairs, bounding box check is enough
+        positionCache.set(cacheKey, { height: platform.y, timestamp: now });
         return platform.y;
       }
     }
   }
+  
+  positionCache.set(cacheKey, { height: null, timestamp: now });
   return null; 
 }
 
@@ -205,11 +296,21 @@ export function constrainToPlatform(
     }
   }
   
-  // Find the platform at the new position
+  // Use spatial grid to find nearby platforms only
+  const nearbyPlatforms = getPlatformsNear(newX, newZ);
   let targetPlatform: Platform | null = null;
-  for (const platform of platforms) {
+  
+  for (const platform of nearbyPlatforms) {
     if (newX >= platform.minX && newX <= platform.maxX &&
         newZ >= platform.minZ && newZ <= platform.maxZ) {
+      
+      // For triangles, check precise collision
+      if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
+        if (!isPointInTriangle(newX, newZ, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
+          continue; 
+        }
+      }
+      
       targetPlatform = platform;
       break;
     }
@@ -221,7 +322,6 @@ export function constrainToPlatform(
       const movementZ = newZ - currentZ;
       const movementX = newX - currentX;
       
-      // Check if movement is primarily along the stair axis (up OR down), NOT from the sides
       const validDirection = 
         (targetPlatform.stairDirection === 'south' && Math.abs(movementZ) > Math.abs(movementX) * 2) || 
         (targetPlatform.stairDirection === 'north' && Math.abs(movementZ) > Math.abs(movementX) * 2) || 
@@ -229,7 +329,6 @@ export function constrainToPlatform(
         (targetPlatform.stairDirection === 'west' && Math.abs(movementX) > Math.abs(movementZ) * 2);   
       
       if (!validDirection) {
-        // Trying to climb stairs from wrong direction (perpendicular/diagonal) - block movement
         return { x: currentX, y: currentY, z: currentZ, onPlatform: false };
       }
     }
@@ -247,7 +346,7 @@ export function constrainToPlatform(
 
 // Smooth height transition for stairs
 export function smoothHeightTransition(currentY: number, targetY: number, delta: number): number {
-  const transitionSpeed = 3; 
+  const transitionSpeed = 8; 
   const diff = targetY - currentY;
   
   if (Math.abs(diff) < 0.01) {
