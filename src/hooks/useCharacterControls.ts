@@ -13,12 +13,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   const positionRef = useRef<[number, number, number]>(initialPosition);
   const rotationRef = useRef(0);
   const isMovingRef = useRef(false);
-  
-  // SIMPLIFIED: Just go back to direct position updates for now
-  // const smoothPosition = useRef<[number, number, number]>(initialPosition);
-  // const targetPosition = useRef<[number, number, number]>(initialPosition);
-  // const positionEasing = 0.15;
-  
+
   const keysRef = useRef({
     forward: false,
     backward: false,

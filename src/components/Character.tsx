@@ -18,7 +18,7 @@ const Character: React.FC<CharacterProps> = ({ position, rotation, isMoving }) =
   // Animation time
   const timeRef = useRef(0);
 
-  // DISABLED: Animate character - TESTING if this causes teleporting
+  // DISABLED: Animate character - 
   // useFrame((state, delta) => {
   //   if (isMoving) {
   //     timeRef.current += delta * 8; // Speed of animation
