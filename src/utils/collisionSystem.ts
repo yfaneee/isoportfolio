@@ -6,6 +6,12 @@ const GRID_SIZE = 3; // Grid cell size (3x3 units per cell)
 const spatialGrid: Map<string, Platform[]> = new Map();
 let gridInitialized = false;
 
+// Force reset grid when platforms change
+export function resetSpatialGrid() {
+  gridInitialized = false;
+  spatialGrid.clear();
+}
+
 export interface Platform {
   minX: number;
   maxX: number;
@@ -58,6 +64,25 @@ export const platforms: Platform[] = [
 
   
   // NOW THE FLOORS 
+  
+  // BONE-WHITE SLAB - Central slab on the 3x3 grid (HIGHER PRIORITY - placed first)
+  { minX: 0 - 0.50, maxX: 0 + 0.50, minZ: 0 - 0.50, maxZ: 0 + 0.50, y: 0.22, type: 'floor' },
+  
+  // HIGH-BLOCK SLAB - On the high block
+  { minX: 3 - 0.45, maxX: 3 + 0.45, minZ: -12 - 0.45, maxZ: -12 + 0.45, y: 3.43, type: 'floor' },
+  
+  // 5 STAIRCASE SLABS - On the impossible staircase
+  { minX: -10.625 - 0.45, maxX: -10.625 + 0.45, minZ: 1.5 - 0.45, maxZ: 1.5 + 0.45, y: 3.74, type: 'floor' },
+  { minX: -13.625 - 0.45, maxX: -13.625 + 0.45, minZ: 1.5 - 0.45, maxZ: 1.5 + 0.45, y: 4.22, type: 'floor' },
+  { minX: -13.625 - 0.45, maxX: -13.625 + 0.45, minZ: -1.5 - 0.45, maxZ: -1.5 + 0.45, y: 4.73, type: 'floor' },
+  { minX: -10.625 - 0.45, maxX: -10.625 + 0.45, minZ: -1.5 - 0.45, maxZ: -1.5 + 0.45, y: 5.23, type: 'floor' },
+  { minX: -7.625 - 0.45, maxX: -7.625 + 0.45, minZ: -1.5 - 0.45, maxZ: -1.5 + 0.45, y: 5.73, type: 'floor' },
+  
+  // SMALLER-BLOCK SLAB - On the smaller block
+  { minX: -1.5 - 0.45, maxX: -1.5 + 0.45, minZ: -10.4 - 0.45, maxZ: -10.4 + 0.45, y: 1.78, type: 'floor' },
+  
+  // ARTWORK-PLATFORM SLAB - On the octagonal platform
+  { minX: 10.50 - 0.45, maxX: 10.50 + 0.45, minZ: -0.01 - 0.45, maxZ: -0.01 + 0.45, y: -1.90, type: 'floor' },
   
   // 3x3 MAIN GRID - Starting area
   { minX: -2.25, maxX: 2.25, minZ: -2.25, maxZ: 2.25, y: 0.1, type: 'floor' },
