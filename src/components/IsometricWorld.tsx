@@ -339,167 +339,140 @@ const IsometricWorld: React.FC = () => {
     const stairEndX = -1 * spacing - spacing * 0.4 - spacing * 0.28 * 9; 
     const platformLevel = topStairLevel + floorHeight * 1; 
     
-    // LEARNING OUTCOMES PLATFORM - Parametric Generation System
-    const platformCenterX = stairEndX - spacing * 0.8;
+    // NEW LEARNING OUTCOMES PLATFORM - Square Ramp Structure
+    const platformCenterX = stairEndX - spacing * 3.18;
     const platformCenterZ = 0;
     
-    // Core platform structure - defined as data
-    const learningOutcomesPlatform = {
-      coreFloors: [
-        { x: 0, z: 0, key: 'floor-1' },           // Closest to stairs
-        { x: -spacing, z: 0, key: 'floor-2' },    // Center
-        { x: -spacing, z: -spacing, key: 'floor-3' }, // Left
-        { x: -spacing, z: spacing, key: 'floor-4' },  // Right
-      ],
-      
-      // Triangular connectors (with rotation in radians)
-      triangles: [
-        { x: -spacing * 0.5, z: spacing * 0.5, rotation: -Math.PI / 4 + 0.785, key: 'triangle-4-1' },
-        { x: -spacing * 0.5, z: -spacing * 0.5, rotation: Math.PI / 4 + 0.785, key: 'triangle-3-1' },
-        { x: -spacing * 1.5, z: spacing + spacing * 0.5, rotation: 0, key: 'triangle-left-4' },
-        { x: -spacing * 1.5, z: spacing + spacing * 0.5, rotation: Math.PI, key: 'triangle-opposed-T3' },
-        { x: -spacing * 1.5, z: -spacing - spacing * 0.5, rotation: Math.PI / 2, key: 'triangle-T5' },
-        { x: -spacing * 1.5, z: -spacing - spacing * 0.5, rotation: -Math.PI / 2, key: 'triangle-T6' },
-        { x: -spacing * 2.5, z: spacing * 2.5, rotation: -Math.PI / 4 + 0.785, key: 'triangle-T7' },
-        { x: -spacing * 2.5, z: -spacing * 2.5, rotation: Math.PI / 4 + 0.785, key: 'triangle-T8' },
-      ],
-      
-      // Fill floors (completing the octagonal pattern)
-      fillFloors: [
-        { x: -spacing * 2, z: spacing * 2, key: 'fill-floor-right' },
-        { x: -spacing * 2, z: -spacing * 2, key: 'fill-floor-left' },
-      ],
-      
-      // Extension floors (outer ring)
-      extensionFloors: [
-        { x: -spacing * 3, z: spacing * 3, key: 'extension-floor-1' },
-        { x: -spacing * 3, z: spacing * 2, key: 'extension-floor-2' },
-        { x: -spacing * 3, z: -spacing * 3, key: 'extension-floor-3' },
-        { x: -spacing * 3, z: -spacing * 2, key: 'extension-floor-4' },
-      ],
-      
-      // Continuation pattern (extended wing)
-      continuationPattern: [
-        { type: 'triangle', x: -spacing * 3.5, z: spacing * 2.5, rotation: -Math.PI / 2, key: 'triangle-T9' },
-        { type: 'floor', x: -spacing * 4, z: spacing * 2, key: 'extension-floor-5' },
-        { type: 'triangle', x: -spacing * 4.5, z: spacing * 1.5, rotation: -Math.PI / 2, key: 'triangle-T10' },
-        { type: 'floor', x: -spacing * 5, z: spacing * 1, key: 'extension-floor-6' },
-        { type: 'triangle', x: -spacing * 5.5, z: spacing * 0.5, rotation: -Math.PI / 2, key: 'triangle-T11' },
-        { type: 'triangle', x: -spacing * 4.5, z: spacing + spacing * 0.5, rotation: Math.PI / 2, key: 'triangle-T12' },
-        { type: 'floor', x: -spacing * 5, z: 0, key: 'extension-floor-7' },
-        { type: 'floor', x: -spacing * 6, z: 0, key: 'extension-floor-8' },
-        { type: 'floor', x: -spacing * 5, z: -spacing, key: 'extension-floor-9' },
-        { type: 'triangle', x: -spacing * 5.5, z: -spacing * 0.5, rotation: Math.PI, key: 'triangle-T13' },
-        { type: 'triangle', x: -spacing * 4.5, z: -spacing * 1.5, rotation: Math.PI, key: 'triangle-T14' },
-        { type: 'triangle', x: -spacing * 3.5, z: -spacing * 2.5, rotation: Math.PI, key: 'triangle-T15' },
-        { type: 'floor', x: -spacing * 4, z: -spacing * 2, key: 'extension-floor-10' },
-        { type: 'triangle', x: -spacing * 4.5, z: -spacing * 1.5, rotation: -Math.PI / 4 + 0.785, key: 'triangle-T16' },
-      ],
-    };
+    // NEW 5x3 RECTANGULAR RAMP PLATFORM - The ramp IS the structure  
+    const rampWidth = 5; 
+    const rampDepth = 3;
+    const holeWidth = 3;
+    const holeDepth = 1; 
+    const maxRampHeight = 3; 
     
-    // Triangle geometry (shared)
-    const rightTriangleGeometry = new THREE.BufferGeometry();
-    const triangleVertices = new Float32Array([
-      0, 0, 0, floorSize, 0, 0, 0, 0, floorSize,
-      0, floorHeight, 0, floorSize, floorHeight, 0, 0, floorHeight, floorSize,
-    ]);
-    const triangleIndices = [0, 1, 2, 3, 5, 4, 0, 3, 4, 0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 3, 2, 3, 0];
-    rightTriangleGeometry.setIndex(triangleIndices);
-    rightTriangleGeometry.setAttribute('position', new THREE.BufferAttribute(triangleVertices, 3));
-    rightTriangleGeometry.computeVertexNormals();
+    // Generate 5x3 rectangular ramp structure with hole in middle
+    const rampFloors = [];
+    
+    // Create the rectangular ramp perimeter
+    for (let x = 0; x < rampWidth; x++) {
+      for (let z = 0; z < rampDepth; z++) {
+        const isInHole = (x >= 1 && x <= 3) && (z >= 1 && z <= 1);
+        if (isInHole) continue;
+        
+        const isLastRampPiece = (x === 0) && (z === 1);
+        if (isLastRampPiece) continue;
 
-    // Generate core floors
-    learningOutcomesPlatform.coreFloors.forEach(floor => {
-    floors.push(
-        <Box
-          key={floor.key}
-          position={[platformCenterX + floor.x, platformLevel, platformCenterZ + floor.z]}
-          args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(floor.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-          <meshStandardMaterial color={hoveredObject === floor.key ? hoverColor : floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
-        </Box>
-    );
-    });
-
-    // LEARNING OUTCOMES SLABS
-    // LO SLAB 1
+         // Height increases as we go around the perimeter
+         let rampHeight = 0;
+         if (x === 0 || x === rampWidth - 1 || z === 0 || z === rampDepth - 1) {
+           const perimeter = 2 * (rampWidth + rampDepth - 2);
+           let perimeterIndex = 0;
+           
+           if (z === 0) {
+             perimeterIndex = x;
+           } else if (x === rampWidth - 1) {
+             perimeterIndex = rampWidth + z - 1;
+           } else if (z === rampDepth - 1) {
+             perimeterIndex = rampWidth + rampDepth + (rampWidth - 1 - x) - 2;
+           } else if (x === 0) {
+             perimeterIndex = 2 * rampWidth + rampDepth + (rampDepth - 1 - z) - 3; 
+           }
+           
+           rampHeight = (perimeterIndex / perimeter) * maxRampHeight;
+         }
+        
+        const segmentKey = `ramp-segment-${x}-${z}`;
+         const segmentX = platformCenterX - (x - rampWidth/2 + 0.5) * spacing;
+         const segmentZ = platformCenterZ - (z - rampDepth/2 + 0.5) * spacing;
+        const segmentY = platformLevel + rampHeight;
+        
     floors.push(
       <Box
-        key="lo-slab-1"
-        position={[platformCenterX - spacing - 0.8, platformLevel + 0.21, platformCenterZ + 2.2]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('lo-slab-1')}
+            key={segmentKey}
+            position={[segmentX, segmentY, segmentZ]}
+            args={[floorSize, floorHeight, floorSize]}
+            onPointerOver={() => setHoveredObject(segmentKey)}
         onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lo-slab-1' ? '#F5F5DC' : '#F5F5DC'} 
+              color={hoveredObject === segmentKey ? hoverColor : floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
     );
+      }
+    }
 
-    // LO SLAB 2
+    // FOUNDATION for the ramp structure 
+    const rampFoundationHeight = 200;
+    
+    for (let x = 0; x < rampWidth; x++) {
+      for (let z = 0; z < rampDepth; z++) {
+        const isInHole = (x >= 1 && x <= 3) && (z >= 1 && z <= 1);
+        if (isInHole) continue;
+        
+        // Skip the very last piece of the ramp foundation too
+        const isLastRampPiece = (x === 0) && (z === 1);
+        if (isLastRampPiece) continue;
+
+        // Only create foundation for perimeter pieces
+        if (x === 0 || x === rampWidth - 1 || z === 0 || z === rampDepth - 1) {
+          const foundationKey = `ramp-foundation-${x}-${z}`;
+          const foundationX = platformCenterX - (x - rampWidth/2 + 0.5) * spacing;
+          const foundationZ = platformCenterZ - (z - rampDepth/2 + 0.5) * spacing;
+          
+          let rampHeight = 0;
+          if (x === 0 || x === rampWidth - 1 || z === 0 || z === rampDepth - 1) {
+            const perimeter = 2 * (rampWidth + rampDepth - 2);
+            let perimeterIndex = 0;
+            
+            if (z === 0) {
+              perimeterIndex = x;
+            } else if (x === rampWidth - 1) {
+              perimeterIndex = rampWidth + z - 1;
+            } else if (z === rampDepth - 1) {
+              perimeterIndex = rampWidth + rampDepth + (rampWidth - 1 - x) - 2;
+            } else if (x === 0) {
+              perimeterIndex = 2 * rampWidth + rampDepth + (rampDepth - 1 - z) - 3; 
+            }
+            
+            rampHeight = (perimeterIndex / perimeter) * maxRampHeight;
+          }
+          
+          const currentFloorY = platformLevel + rampHeight;
+          const foundationY = currentFloorY - rampFoundationHeight/2 - 0.15;
+          
     floors.push(
       <Box
-        key="lo-slab-2"
-        position={[platformCenterX - spacing - 4.5, platformLevel + 0.21, platformCenterZ + 3]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('lo-slab-2')}
-        onPointerOut={() => setHoveredObject(null)}
+              key={foundationKey}
+              position={[foundationX, foundationY, foundationZ]}
+              args={[floorSize, rampFoundationHeight, floorSize]}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lo-slab-2' ? '#F5F5DC' : '#F5F5DC'} 
+                color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
     );
+        }
+      }
+    }
 
-    // LO SLAB 3
+    // CONNECTING FLOOR - Bridge between stairs and learning outcomes platform
+    const connectingFloorX = stairEndX - spacing * 1.18; 
+    const connectingFloorZ = platformCenterZ;
+    const connectingFloorY = platformLevel; 
+    
     floors.push(
       <Box
-        key="lo-slab-3"
-        position={[platformCenterX - spacing - 6.75, platformLevel + 0.21, platformCenterZ]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('lo-slab-3')}
+        key="connecting-floor-to-platform"
+        position={[connectingFloorX, connectingFloorY, connectingFloorZ]}
+        args={[floorSize, floorHeight, floorSize]}
+        onPointerOver={() => setHoveredObject('connecting-floor-to-platform')}
         onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lo-slab-3' ? '#F5F5DC' : '#F5F5DC'} 
-        />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-
-    // LO SLAB 4
-    floors.push(
-      <Box
-        key="lo-slab-4"
-        position={[platformCenterX - spacing - 4.5, platformLevel + 0.21, platformCenterZ - 3]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('lo-slab-4')}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-        <meshStandardMaterial 
-          color={hoveredObject === 'lo-slab-4' ? '#F5F5DC' : '#F5F5DC'} 
-        />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-
-    // LO SLAB 5
-    floors.push(
-      <Box
-        key="lo-slab-5"
-        position={[platformCenterX - spacing - 0.8, platformLevel + 0.21, platformCenterZ - 2.2]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('lo-slab-5')}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-        <meshStandardMaterial 
-          color={hoveredObject === 'lo-slab-5' ? '#F5F5DC' : '#F5F5DC'} 
+          color={hoveredObject === 'connecting-floor-to-platform' ? hoverColor : floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -521,6 +494,32 @@ const IsometricWorld: React.FC = () => {
       </Box>
     );
 
+    // 5 SLABS STAIRCASE 
+    const staircaseSlabs = [
+      { x: -10.625, y: wallHeight * 1 + 0.5, z: 1.5, key: 'staircase-slab-1' },
+      { x: -13.625, y: wallHeight * 1 + 1.01, z: 1.5, key: 'staircase-slab-2' },
+      { x: -13.625, y: wallHeight * 1 + 1.52, z: -1.5, key: 'staircase-slab-3' },
+      { x: -10.625, y: wallHeight * 1 + 2.02, z: -1.5, key: 'staircase-slab-4' },
+      { x: -7.625, y: wallHeight * 1 + 2.52, z: -1.5, key: 'staircase-slab-5' }
+    ];
+
+    staircaseSlabs.forEach(slab => {
+    floors.push(
+      <Box
+          key={slab.key}
+          position={[slab.x, slab.y, slab.z]}
+        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
+          onPointerOver={() => setHoveredObject(slab.key)}
+        onPointerOut={() => setHoveredObject(null)}
+      >
+        <meshStandardMaterial 
+            color={hoveredObject === slab.key ? '#F5F5DC' : '#F5F5DC'} 
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
+    });
+
     // SLAB ON SMALLER BLOCKS ROW 
     floors.push(
       <Box
@@ -536,200 +535,6 @@ const IsometricWorld: React.FC = () => {
         <Edges color="#D27E17" linewidth={2} />
       </Box>
     );
-
-
-    // Generate triangles
-    learningOutcomesPlatform.triangles.forEach(tri => {
-    floors.push(
-      <mesh
-          key={tri.key}
-          position={[platformCenterX + tri.x, platformLevel - floorHeight/2, platformCenterZ + tri.z]}
-        geometry={rightTriangleGeometry}
-          rotation={[0, tri.rotation, 0]}
-          onPointerOver={() => setHoveredObject(tri.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-          <meshStandardMaterial color={hoveredObject === tri.key ? hoverColor : floorColor} flatShading={true} />
-        <Edges color="#D27E17" linewidth={2} />
-      </mesh>
-    );
-    });
-
-    // Generate fill floors
-    learningOutcomesPlatform.fillFloors.forEach(floor => {
-    floors.push(
-      <Box
-          key={floor.key}
-          position={[platformCenterX + floor.x, platformLevel, platformCenterZ + floor.z]}
-        args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(floor.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-          <meshStandardMaterial color={hoveredObject === floor.key ? hoverColor : floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-    });
-
-    // Generate extension floors
-    learningOutcomesPlatform.extensionFloors.forEach(floor => {
-    floors.push(
-      <Box
-          key={floor.key}
-          position={[platformCenterX + floor.x, platformLevel, platformCenterZ + floor.z]}
-        args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(floor.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-          <meshStandardMaterial color={hoveredObject === floor.key ? hoverColor : floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-    });
-
-    // Generate continuation pattern
-    learningOutcomesPlatform.continuationPattern.forEach(piece => {
-      if (piece.type === 'floor') {
-    floors.push(
-      <Box
-            key={piece.key}
-            position={[platformCenterX + piece.x, platformLevel, platformCenterZ + piece.z]}
-        args={[floorSize, floorHeight, floorSize]}
-            onPointerOver={() => setHoveredObject(piece.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-            <meshStandardMaterial color={hoveredObject === piece.key ? hoverColor : floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-      } else {
-    floors.push(
-      <mesh
-            key={piece.key}
-            position={[platformCenterX + piece.x, platformLevel - floorHeight/2, platformCenterZ + piece.z]}
-        geometry={rightTriangleGeometry}
-            rotation={[0, piece.rotation || 0, 0]}
-            onPointerOver={() => setHoveredObject(piece.key)}
-        onPointerOut={() => setHoveredObject(null)}
-      >
-            <meshStandardMaterial color={hoveredObject === piece.key ? hoverColor : floorColor} flatShading={true} />
-        <Edges color="#D27E17" linewidth={2} />
-      </mesh>
-    );
-      }
-    });
-
-    // MASSIVE FOUNDATION FOR LEARNING OUTCOMES PLATFORM
-    const platformFoundationHeight = 200;
-    const platformFoundationY = -platformFoundationHeight/2 + 2.85; 
-    
-    const foundationBlocks = [
-      // Row 1 (top, around extension floors)
-      { x: -spacing * 3, z: spacing * 3, width: floorSize, depth: floorSize },
-      { x: -spacing * 3, z: spacing * 2, width: floorSize, depth: floorSize },
-      { x: -spacing * 3, z: -spacing * 2, width: floorSize, depth: floorSize },
-      { x: -spacing * 3, z: -spacing * 3, width: floorSize, depth: floorSize },
-      
-      // Row 2 (fill floors level)
-      { x: -spacing * 2, z: spacing * 2, width: floorSize, depth: floorSize },
-      { x: -spacing * 2, z: -spacing * 2, width: floorSize, depth: floorSize },
-      
-      // Row 3 (core + triangles)
-      { x: -spacing, z: spacing, width: floorSize, depth: floorSize },
-      { x: -spacing, z: 0, width: floorSize, depth: floorSize },
-      { x: -spacing, z: -spacing, width: floorSize, depth: floorSize },
-      
-      // Row 4 (floor 1)
-      { x: 0, z: 0, width: floorSize, depth: floorSize },
-      
-      // Extended wing foundations
-      { x: -spacing * 4, z: spacing * 2, width: floorSize, depth: floorSize },
-      { x: -spacing * 4, z: -spacing * 2, width: floorSize, depth: floorSize },
-      { x: -spacing * 5, z: spacing, width: floorSize, depth: floorSize },
-      { x: -spacing * 5, z: 0, width: floorSize, depth: floorSize },
-      { x: -spacing * 5, z: -spacing, width: floorSize, depth: floorSize },
-      { x: -spacing * 6, z: 0, width: floorSize, depth: floorSize },
-    ];
-    
-    foundationBlocks.forEach((block, index) => {
-    floors.push(
-      <Box
-          key={`platform-foundation-${index}`}
-          position={[platformCenterX + block.x, platformFoundationY, platformCenterZ + block.z]}
-          args={[block.width, platformFoundationHeight, block.depth]}
-        >
-          <meshStandardMaterial color="#FAA32B" />
-        <Edges color="#D27E17" linewidth={2} />
-      </Box>
-    );
-    });
-    
-    // Add triangular foundation pieces to complete the octagonal walls
-    const triangleFoundationGeometry = new THREE.BufferGeometry();
-    const triFoundationVertices = new Float32Array([
-      // Top triangle (at platform level)
-      0, 0, 0,                    
-      floorSize, 0, 0,           // vertex 1
-      0, 0, floorSize,           // vertex 2
-      // Bottom triangle (deep underground)
-      0, -platformFoundationHeight, 0,          // vertex 3
-      floorSize, -platformFoundationHeight, 0,  // vertex 4
-      0, -platformFoundationHeight, floorSize,  // vertex 5
-    ]);
-    
-    const triFoundationIndices = [
-      // Top face (both sides for double-sided rendering)
-      0, 1, 2,
-      0, 2, 1,
-      // Bottom face (both sides)
-      3, 5, 4,
-      3, 4, 5,
-      // Side wall 1 (front) - both sides
-      0, 3, 4,  0, 4, 1,
-      0, 4, 3,  0, 1, 4,
-      // Side wall 2 (hypotenuse - the angled face) - both sides
-      1, 4, 5,  1, 5, 2,
-      1, 5, 4,  1, 2, 5,
-      // Side wall 3 (back) - both sides
-      2, 5, 3,  2, 3, 0,
-      2, 3, 5,  2, 0, 3
-    ];
-    
-    triangleFoundationGeometry.setIndex(triFoundationIndices);
-    triangleFoundationGeometry.setAttribute('position', new THREE.BufferAttribute(triFoundationVertices, 3));
-    triangleFoundationGeometry.computeVertexNormals();
-    
-    // Add all the triangular foundation pieces matching the platform triangles
-    learningOutcomesPlatform.triangles.forEach(tri => {
-    floors.push(
-        <mesh
-          key={`${tri.key}-foundation`}
-          position={[platformCenterX + tri.x, platformLevel - floorHeight/2, platformCenterZ + tri.z]}
-          geometry={triangleFoundationGeometry}
-          rotation={[0, tri.rotation, 0]}
-        >
-          <meshStandardMaterial color="#FAA32B" flatShading={true} />
-        <Edges color="#D27E17" linewidth={2} />
-        </mesh>
-    );
-    });
-
-    // Add triangular foundations from the continuation pattern
-    learningOutcomesPlatform.continuationPattern.forEach(piece => {
-      if (piece.type === 'triangle') {
-    floors.push(
-          <mesh
-            key={`${piece.key}-foundation`}
-            position={[platformCenterX + piece.x, platformLevel - floorHeight/2, platformCenterZ + piece.z]}
-            geometry={triangleFoundationGeometry}
-            rotation={[0, piece.rotation || 0, 0]}
-          >
-            <meshStandardMaterial color="#FAA32B" flatShading={true} />
-        <Edges color="#D27E17" linewidth={2} />
-          </mesh>
-    );
-      }
-    });
 
     floors.push(
       <Box
@@ -1134,7 +939,55 @@ const IsometricWorld: React.FC = () => {
         </Box>
       );
     }
+
+    // 12x3 PLATFORM 
+    const platform12x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9; 
+    const platform12x3Y = -floorHeight * 9; 
     
+    // Create the simple 12x3 platform 
+    for (let x = 0; x < 3; x++) {
+      for (let z = 0; z < 12; z++) {
+        const platformKey = `platform-12x3-${x}-${z}`;
+        const platformX = (x - 1) * spacing; 
+        const platformZ = platform12x3StartZ + z * spacing; 
+        const platformY = platform12x3Y;
+        
+        floors.push(
+          <Box
+            key={platformKey}
+            position={[platformX, platformY, platformZ]}
+            args={[floorSize, floorHeight, floorSize]}
+            onPointerOver={() => setHoveredObject(platformKey)}
+            onPointerOut={() => setHoveredObject(null)}
+          >
+            <meshStandardMaterial 
+              color={hoveredObject === platformKey ? hoverColor : floorColor}
+            />
+            <Edges color="#D27E17" linewidth={2} />
+          </Box>
+        );
+      }
+    }
+
+    // FOUNDATION for the 12x3 platform 
+    const platform12x3FoundationHeight = 200;
+    const platform12x3FoundationWidth = 3 * spacing; 
+    const platform12x3FoundationDepth = 12 * spacing;
+    const platform12x3FoundationCenterZ = platform12x3StartZ + (12 * spacing) / 2 - spacing/2; 
+    const foundationY = platform12x3Y - platform12x3FoundationHeight/2 - 0.15;
+    
+    floors.push(
+      <Box
+        key="platform-12x3-foundation-big"
+        position={[0, foundationY, platform12x3FoundationCenterZ]}
+        args={[platform12x3FoundationWidth, platform12x3FoundationHeight, platform12x3FoundationDepth]}
+      >
+        <meshStandardMaterial 
+          color={floorColor}
+        />
+        <Edges color="#D27E17" linewidth={2} />
+      </Box>
+    );
     return <>{floors}</>;
   };
    

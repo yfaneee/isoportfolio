@@ -54,7 +54,7 @@ export const platforms: Platform[] = [
   { minX: -4.95, maxX: -4.05, minZ: -0.75, maxZ: 0.85, y: 2.25, type: 'stair', stairDirection: 'west' },
   { minX: -5.4, maxX: -4.5, minZ: -0.75, maxZ: 0.85, y: 2.55, type: 'stair', stairDirection: 'west' },
   { minX: -5.85, maxX: -5.4, minZ: -0.75, maxZ: 0.85, y: 2.85, type: 'stair', stairDirection: 'west' },
-  { minX: -6.3, maxX: -5.85, minZ: -0.75, maxZ: 0.85, y: 3, type: 'stair', stairDirection: 'west' },
+  { minX: -6.6, maxX: -5.85, minZ: -0.75, maxZ: 0.85, y: 3, type: 'stair', stairDirection: 'west' },
 
   
   // NOW THE FLOORS 
@@ -101,61 +101,46 @@ export const platforms: Platform[] = [
   // TALL WALL BLOCKS - Top surface (walkable on top of the highest blocks)
   { minX: -3.75, maxX: 3.45, minZ: -12.35, maxZ: -11.55, y: 3.25, type: 'floor' },
   
-  // LEARNING OUTCOMES PLATFORM - 
-  { minX: -7.08 - 0.75, maxX: -7.08 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -8.58 - 0.75, maxX: -8.58 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -8.58 - 0.75, maxX: -8.58 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -8.58 - 0.75, maxX: -8.58 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 3.1, type: 'floor' }, 
+  // NEW 5x3 RECTANGULAR RAMP PLATFORM - Learning Outcomes 
+  // Connecting floor between stairs and platform
+  { minX: -7.26 - 0.75, maxX: -7.26 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.75, y: 3.1, type: 'floor' },
+  { minX: -7.56 - 0.75, maxX: -7.66 + 0.75, minZ: 0 - 0.75, maxZ: 1.5 + 0.75, y: 3.1, type: 'floor' },
   
-  // Triangles (RIGHT ANGLE triangles, 1.5 units on two sides) - from learningOutcomesPlatform.triangles
-  { minX: -8.58, maxX: -7.08, minZ: 0, maxZ: 1.5, y: 3.1, type: 'triangle', 
-    triangleVertices: [{x: -7.08, z: 0}, {x: -8.58, z: 0}, {x: -7.08, z: 1.5}] },
-  { minX: -8.58, maxX: -7.08, minZ: -1.5, maxZ: 0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -7.08, z: 0}, {x: -8.58, z: 0}, {x: -7.08, z: -1.5}] }, 
-  { minX: -10.08, maxX: -8.58, minZ: 1.5, maxZ: 3.0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -8.58, z: 1.5}, {x: -10.08, z: 3.0}, {x: -8.58, z: 3.0}] }, 
-  { minX: -10.08, maxX: -8.58, minZ: -3.0, maxZ: -1.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -8.58, z: -1.5}, {x: -10.08, z: -3.0}, {x: -8.58, z: -3.0}] },
-  { minX: -11.58, maxX: -10.08, minZ: 3.0, maxZ: 4.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -10.08, z: 3.0}, {x: -11.58, z: 4.5}, {x: -10.08, z: 4.5}] }, 
-  { minX: -11.58, maxX: -10.08, minZ: -4.5, maxZ: -3.0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -10.08, z: -3.0}, {x: -11.58, z: -4.5}, {x: -10.08, z: -4.5}] },
+  // 5x3 Ramp platform floors (perimeter only, with hole in middle) - REVERSED
+  { minX: -9.1 - 0.75, maxX: -9 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 3.35, type: 'floor' },
+  { minX: -10.56 - 0.75, maxX: -10.5 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 3.6, type: 'floor' },
+  { minX: -12.1 - 0.75, maxX: -12 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 3.86, type: 'floor' },
+  { minX: -13.62 - 0.75, maxX: -13.50 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 4.1, type: 'floor' },
   
-  // Fill floors (2 tiles) - from learningOutcomesPlatform.fillFloors
-  { minX: -10.08 - 0.75, maxX: -10.08 + 0.75, minZ: 3.0 - 0.75, maxZ: 3.0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -10.08 - 0.75, maxX: -10.08 + 0.75, minZ: -3.0 - 0.75, maxZ: -3.0 + 0.75, y: 3.1, type: 'floor' }, 
+  // Right edge (x=4) - 3 floors with increasing height
+  { minX: -13.66 - 0.75, maxX: -13.66 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.83, y: 4.35, type: 'floor' },
+  { minX: -13.66 - 0.75, maxX: -13.66 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.42 + 0.75, y: 4.6, type: 'floor' },
   
-  // Extension floors (4 tiles) - from learningOutcomesPlatform.extensionFloors
-  { minX: -11.58 - 0.75, maxX: -11.58 + 0.75, minZ: 4.5 - 0.75, maxZ: 4.5 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -11.58 - 0.75, maxX: -11.58 + 0.75, minZ: 3.0 - 0.75, maxZ: 3.0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -11.58 - 0.75, maxX: -11.58 + 0.75, minZ: -4.5 - 0.75, maxZ: -4.5 + 0.75, y: 3.1, type: 'floor' },
-  { minX: -11.58 - 0.75, maxX: -11.58 + 0.75, minZ: -3.0 - 0.75, maxZ: -3.0 + 0.75, y: 3.1, type: 'floor' },
+  // Top edge (z=2) - 4 floors collision boundaries
+  { minX: -12.25 - 0.75, maxX: -12.15 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 4.85, type: 'floor' },
+  { minX: -10.75 - 0.75, maxX: -10.65 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 5.10, type: 'floor' },
+  { minX: -9.25 - 0.75, maxX: -9.22 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 5.35, type: 'floor' },
+  { minX: -7.75 - 0.75, maxX: -7.82 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 5.55, type: 'floor' },
   
-  // Continuation pattern floors - from learningOutcomesPlatform.continuationPattern (only 'floor' type)
-  { minX: -13.08 - 0.75, maxX: -13.08 + 0.75, minZ: 3.0 - 0.75, maxZ: 3.0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -14.58 - 0.75, maxX: -14.58 + 0.75, minZ: 1.5 - 0.75, maxZ: 1.5 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -14.58 - 0.75, maxX: -14.58 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -16.08 - 0.75, maxX: -16.08 + 0.75, minZ: 0 - 0.75, maxZ: 0 + 0.75, y: 3.1, type: 'floor' }, 
-  { minX: -14.58 - 0.75, maxX: -14.58 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 3.1, type: 'floor' },
-  { minX: -13.08 - 0.75, maxX: -13.08 + 0.75, minZ: -3.0 - 0.75, maxZ: -3.0 + 0.75, y: 3.1, type: 'floor' }, 
+  // DOWNWARD STAIRS - Three sets of 3 stairs each (fixed collision boundaries)
+  // First set of downward stairs
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 2.80 - 0.75, maxZ: 2.70 + 0.75, y: -0.2, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.1 - 0.75, maxZ: 3.1 + 0.75, y: -0.47, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.55 - 0.75, maxZ: 3.55 + 0.75, y: -0.8, type: 'floor' },
   
-  // Continuation pattern triangles - from learningOutcomesPlatform.continuationPattern (only 'triangle' type)
-  { minX: -13.08, maxX: -11.58, minZ: 3.0, maxZ: 4.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -11.58, z: 3.0}, {x: -13.08, z: 4.5}, {x: -13.08, z: 3.0}] },
-  { minX: -14.58, maxX: -13.08, minZ: 1.5, maxZ: 3.0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -13.08, z: 1.5}, {x: -14.58, z: 3.0}, {x: -14.58, z: 1.5}] }, 
-  { minX: -16.08, maxX: -14.58, minZ: 0, maxZ: 1.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -14.58, z: 0}, {x: -16.08, z: 1.5}, {x: -16.08, z: 0}] }, 
-  { minX: -14.58, maxX: -13.08, minZ: 1.5, maxZ: 3.0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -13.08, z: 3.0}, {x: -14.58, z: 1.5}, {x: -13.08, z: 1.5}] },
-  { minX: -16.08, maxX: -14.58, minZ: -1.5, maxZ: 0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -14.58, z: 0}, {x: -16.08, z: -1.5}, {x: -16.08, z: 0}] }, 
-  { minX: -14.58, maxX: -13.08, minZ: -3.0, maxZ: -1.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -13.08, z: -1.5}, {x: -14.58, z: -3.0}, {x: -14.58, z: -1.5}] }, 
-  { minX: -13.08, maxX: -11.58, minZ: -4.5, maxZ: -3.0, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -11.58, z: -3.0}, {x: -13.08, z: -4.5}, {x: -13.08, z: -3.0}] }, 
-  { minX: -14.58, maxX: -13.08, minZ: -3.0, maxZ: -1.5, y: 3.1, type: 'triangle',
-    triangleVertices: [{x: -13.08, z: -3.0}, {x: -14.58, z: -1.5}, {x: -13.08, z: -1.5}] },
+  // Second set of downward stairs
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4 - 0.75, maxZ: 4 + 0.75, y: -1.1, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.45 - 0.75, maxZ: 4.45 + 0.75, y: -1.4, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.90 - 0.75, maxZ: 4.90 + 0.75, y: -1.7, type: 'floor' },
+  
+  // Third set of downward stairs
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.35 - 0.75, maxZ: 5.35 + 0.75, y: -2.0, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.80 - 0.75, maxZ: 5.80 + 0.75, y: -2.3, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.25 - 0.75, maxZ: 6.25 + 0.75, y: -2.6, type: 'floor' },
+  
+  // 12x3 PLATFORM - All 36 floor pieces (3x12) - collision boundaries moved forward
+  { minX: -1.5 - 0.75, maxX: 1.5 + 0.75, minZ: 7.7 - 0.75, maxZ: 24.1 + 0.75, y: -2.6, type: 'floor' },
+  
 ];
 
 // Initialize spatial grid for fast collision detection
