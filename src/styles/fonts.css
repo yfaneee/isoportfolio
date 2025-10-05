@@ -1,0 +1,14 @@
+/* Coolvetica Fonts */
+@font-face {
+  font-family: 'Coolvetica Rg';
+  src: url('../../public/fonts/CoolveticaRg.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Coolvetica Rg Cond';
+  src: url('../../public/fonts/CoolveticaRgCond.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { constrainToPlatform, smoothHeightTransition } from '../utils/collisionSystem';
-import { isOnElevator, triggerElevator, getElevatorHeight } from '../utils/elevatorSystem';
+import { constrainToPlatform, smoothHeightTransition, getHeightAtPosition } from '../utils/collisionSystem';
+import { isOnElevator, triggerElevator, getElevatorHeight, shiftElevator } from '../utils/elevatorSystem';
 
 interface CharacterState {
   position: [number, number, number];
@@ -8,9 +8,23 @@ interface CharacterState {
   isMoving: boolean;
 }
 
-export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0]) => {
-  // Use refs instead of state to avoid re-renders
-  const positionRef = useRef<[number, number, number]>(initialPosition);
+interface CharacterControlsReturn {
+  updateCharacter: (delta: number) => void;
+  getCharacterState: () => CharacterState;
+  positionRef: React.MutableRefObject<[number, number, number]>;
+  rotationRef: React.MutableRefObject<number>;
+  isMovingRef: React.MutableRefObject<boolean>;
+  centerOnSlab: () => void;
+  teleportToLocation: (location: string) => void;
+}
+
+export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void) => {
+  const platformHeight = getHeightAtPosition(initialPosition[0], initialPosition[2]);
+  const adjustedPosition: [number, number, number] = platformHeight !== null
+    ? [initialPosition[0], platformHeight, initialPosition[2]]
+    : initialPosition;
+
+  const positionRef = useRef<[number, number, number]>(adjustedPosition);
   const rotationRef = useRef(0);
   const isMovingRef = useRef(false);
 
@@ -19,8 +33,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     backward: false,
     left: false,
     right: false,
-    shift: false,
+    space: false,
   });
+
 
   // Handle keyboard input - SIMPLIFIED
   useEffect(() => {
@@ -34,13 +49,21 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = true;
       } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = true;
-      } else if (key === 'shift') {
-        if (!keysRef.current.shift) {
-          keysRef.current.shift = true;
+      } else if (key === ' ') {
+        if (!keysRef.current.space) {
+          keysRef.current.space = true;
           // Check if on elevator and trigger it
           const [x, , z] = positionRef.current;
           if (isOnElevator(x, z)) {
             triggerElevator();
+          } else {
+            // Check if on central slab 
+            const isOnCentralSlab = x >= -0.50 && x <= 0.50 && z >= -0.50 && z <= 0.50;
+            if (isOnCentralSlab && onSpacePress) {
+              // Center character on slab
+              centerOnSlab();
+              onSpacePress();
+            }
           }
         }
       }
@@ -56,8 +79,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = false;
       } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = false;
-      } else if (key === 'shift') {
-        keysRef.current.shift = false;
+      } else if (key === ' ') {
+        keysRef.current.space = false;
       }
     };
 
@@ -137,12 +160,80 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     isMoving: isMovingRef.current,
   });
 
+  const centerOnSlab = () => {
+    const centerHeight = getHeightAtPosition(0, 0);
+    positionRef.current = [0, centerHeight || 0.22, 0];
+  };
+
+  const teleportToLocation = (location: string) => {
+    let targetPosition: [number, number, number] = [0, 0, 0];
+    
+    switch (location) {
+      case 'transferable':
+        // Transferable production - first staircase slab
+        targetPosition = [-13.625, 4.22, 1.5];
+        break;
+      case 'conceptualize':
+        // Conceptualize - second staircase slab
+        targetPosition = [-10.625, 3.74, 1.5];
+        break;
+      case 'creative':
+        // Creative iterations - third staircase slab
+        targetPosition = [-13.625, 4.73, -1.5];
+        break;
+      case 'professional':
+        // Professional standards - fourth staircase slab
+        targetPosition = [-10.625, 5.23, -1.5];
+        break;
+      case 'leadership':
+        // Personal leadership - fifth staircase slab
+        targetPosition = [-7.625, 5.73, -1.5];
+        break;
+      case 'studio':
+        // Studio - high block
+        targetPosition = [3, 3.43, -12];
+        break;
+      case 'ironfilms':
+        // IronFilms - smaller block
+        targetPosition = [-1.5, 1.78, -10.4];
+        break;
+      case 'artwork':
+        // Artwork - artwork platform
+        targetPosition = [10.50, -1.90, -0.01];
+        break;
+      case 'projects':
+        // Projects - 12x3 platform
+        targetPosition = [0, -2.6, 15.9];
+        break;
+      default:
+        // Default to center slab
+        const centerHeight = getHeightAtPosition(0, 0);
+        targetPosition = [0, centerHeight || 0.22, 0];
+    }
+    
+    // Get the correct height at the target position
+    const correctHeight = getHeightAtPosition(targetPosition[0], targetPosition[2]);
+    if (correctHeight !== null) {
+      targetPosition[1] = correctHeight;
+    }
+    
+    // Fix elevator state when teleporting to artwork platform
+    if (location === 'artwork') {
+      shiftElevator.currentY = shiftElevator.bottomY;
+      shiftElevator.wasOnElevator = false; 
+    }
+    
+    positionRef.current = targetPosition;
+  };
+
   return {
     updateCharacter,
     getCharacterState,
     positionRef,
     rotationRef,
     isMovingRef,
+    centerOnSlab,
+    teleportToLocation,
   };
 };
 

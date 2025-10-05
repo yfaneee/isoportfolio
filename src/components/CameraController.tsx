@@ -8,13 +8,15 @@ interface CameraControllerProps {
   introComplete: boolean;
   onIntroComplete: () => void;
   isCharacterMoving: boolean;
+  showMenu: boolean;
 }
 
-const CameraController: React.FC<CameraControllerProps> = ({ 
-  characterControllerRef, 
+const CameraController: React.FC<CameraControllerProps> = ({
+  characterControllerRef,
   introComplete,
   onIntroComplete,
-  isCharacterMoving
+  isCharacterMoving,
+  showMenu
 }) => {
   const { camera } = useThree();
   const orbitControlsRef = useRef<any>(null);
@@ -24,6 +26,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const isUsingOrbitControls = useRef(false);
   const hasUsedOrbitControls = useRef(false);
   const orbitTargetInitialized = useRef(false);
+  const cameraAnimationRef = useRef<{isAnimating: boolean, startTime: number, startPos: THREE.Vector3, startLookAt: THREE.Vector3}>({
+    isAnimating: false,
+    startTime: 0,
+    startPos: new THREE.Vector3(),
+    startLookAt: new THREE.Vector3()
+  });
 
   useEffect(() => {
     if (isCharacterMoving) {
@@ -32,6 +40,21 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   }, [isCharacterMoving]);
 
+  // Handle smooth camera animation when menu state changes
+  useEffect(() => {
+    if (introComplete && !isUsingOrbitControls.current) {
+      // Start camera animation when menu visibility changes
+      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      
+      cameraAnimationRef.current = {
+        isAnimating: true,
+        startTime: Date.now(),
+        startPos: camera.position.clone(),
+        startLookAt: new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2])
+      };
+    }
+  }, [showMenu, introComplete, camera.position]);
+
   // Orbit controls handlers
   const handleOrbitStart = () => {
     isUsingOrbitControls.current = true;
@@ -39,8 +62,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
     hasUsedOrbitControls.current = true;
     
     if (!orbitTargetInitialized.current && orbitControlsRef.current && characterControllerRef.current) {
-      const characterPosition = characterControllerRef.current.getPosition() || [0, 0, 0];
-      orbitControlsRef.current.target.set(characterPosition[0], characterPosition[1], characterPosition[2]);
+      const characterPosition = characterControllerRef.current.getPosition() || [0, 0.22, 0];
+      const menuOffsetX = showMenu ? 3 : 0;
+      orbitControlsRef.current.target.set(characterPosition[0] + menuOffsetX, characterPosition[1], characterPosition[2]);
       orbitControlsRef.current.update();
       orbitTargetInitialized.current = true;
     }
@@ -60,32 +84,72 @@ const CameraController: React.FC<CameraControllerProps> = ({
         ? 4 * t * t * t 
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      // Animate camera from far to close
+      // Animate camera from far to close 
+      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      const menuOffsetX = showMenu ? 3 : 0;
+      const targetCameraPos = [
+        characterPosition[0] + 8 + menuOffsetX,
+        characterPosition[1] + 7,
+        characterPosition[2] + 8
+      ];
+
       camera.position.set(
-        0 + eased * 8,
-        40 - eased * (40 - 7),
-        40 - eased * (40 - 8)
+        0 + eased * targetCameraPos[0],
+        40 - eased * (40 - targetCameraPos[1]),
+        40 - eased * (40 - targetCameraPos[2])
       );
-      camera.lookAt(0, 0, 0);
+      camera.lookAt(characterPosition[0] + menuOffsetX, characterPosition[1], characterPosition[2]);
       
       if (t >= 1) {
-        // Set final camera position
-        camera.position.set(8, 7, 8);
-        camera.lookAt(0, 0, 0);
         onIntroComplete();
       }
     } else if (isFollowingCharacter.current && !isUsingOrbitControls.current && !hasUsedOrbitControls.current) {
-      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
       
-      // Direct camera following - 
+      // Calculate target positions
+      const menuOffsetX = showMenu ? -5 : 0;
+      const menuOffsetZ = showMenu ? -1 : 0;
+      const menuOffsetY = showMenu ? -3 : 0;
+      
       const targetPos = new THREE.Vector3(
-        characterPosition[0] + 8,
-        characterPosition[1] + 7, 
-        characterPosition[2] + 8
+        characterPosition[0] + 8 + menuOffsetX,
+        characterPosition[1] + 7 + menuOffsetY,
+        characterPosition[2] + 8 + menuOffsetZ
       );
-      const lookAtPos = new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2]);
-      camera.position.copy(targetPos);
-      camera.lookAt(lookAtPos);
+      const targetLookAt = new THREE.Vector3(
+        characterPosition[0] + menuOffsetX, 
+        characterPosition[1] + menuOffsetY, 
+        characterPosition[2] + menuOffsetZ
+      );
+
+      // Handle smooth camera animation
+      if (cameraAnimationRef.current.isAnimating) {
+        const elapsed = Date.now() - cameraAnimationRef.current.startTime;
+        const animationDuration = 1000; // 1 second
+        const t = Math.min(elapsed / animationDuration, 1);
+        
+        // Smooth easing function
+        const easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        
+        // Interpolate camera position
+        camera.position.lerpVectors(cameraAnimationRef.current.startPos, targetPos, easedT);
+        
+        // Interpolate look at position
+        const currentLookAt = cameraAnimationRef.current.startLookAt.clone();
+        currentLookAt.lerp(targetLookAt, easedT);
+        camera.lookAt(currentLookAt);
+        
+        // End animation
+        if (t >= 1) {
+          cameraAnimationRef.current.isAnimating = false;
+          camera.position.copy(targetPos);
+          camera.lookAt(targetLookAt);
+        }
+      } else {
+        // Direct camera following (no animation)
+        camera.position.copy(targetPos);
+        camera.lookAt(targetLookAt);
+      }
     }
   });
 

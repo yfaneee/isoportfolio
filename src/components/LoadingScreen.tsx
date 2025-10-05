@@ -35,12 +35,13 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
         style={{
           padding: '1rem 2rem',
           fontSize: '1.5rem',
+          fontFamily: '"Coolvetica Rg", sans-serif',
           backgroundColor: '#FAA32B',
           color: 'white',
           border: 'none',
           borderRadius: '8px',
           cursor: 'pointer',
-          fontWeight: 'bold',
+          fontWeight: 'normal',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease'
         }}

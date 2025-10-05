@@ -6,17 +6,29 @@ import PlatformDebugger from '../components/PlatformDebugger';
 
 interface IsometricSceneProps {
   onIntroComplete: () => void;
+  showMenu: boolean;
+  onMovementStart: () => void;
+  onSpacePress?: () => void;
+  characterControllerRef: React.RefObject<any>;
 }
 
-const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
+const IsometricScene: React.FC<IsometricSceneProps> = ({
+  onIntroComplete,
+  showMenu,
+  onMovementStart,
+  onSpacePress,
+  characterControllerRef
+}) => {
   const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
-  const characterControllerRef = useRef<any>(null);
 
-  // Remove the delayed position callback - camera will access position directly
+  // Handle character movement - hide menu when moving
   const handleMovementChange = useCallback((moving: boolean) => {
     setIsCharacterMoving(moving);
-  }, []);
+    if (moving) {
+      onMovementStart();
+    }
+  }, [onMovementStart]);
 
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
@@ -39,11 +51,12 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
       />
       
       {/* Custom camera controller with intro animation */}
-      <CameraController 
+      <CameraController
         characterControllerRef={characterControllerRef}
         introComplete={introComplete}
         onIntroComplete={handleIntroComplete}
         isCharacterMoving={isCharacterMoving}
+        showMenu={showMenu}
       />
       
       {/* The isometric world */}
@@ -53,10 +66,11 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({ onIntroComplete }) => {
       <PlatformDebugger enabled={false} />
       
       {/* The playable character */}
-      <CharacterController 
+      <CharacterController
         ref={characterControllerRef}
         onMovementChange={handleMovementChange}
         introComplete={introComplete}
+        onSpacePress={onSpacePress}
       />
     </>
   );
