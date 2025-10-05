@@ -4,12 +4,13 @@ import './MenuIcon.css';
 interface MenuIconProps {
   onClick: () => void;
   isVisible: boolean;
+  isMenuOpen?: boolean;
 }
 
-const MenuIcon: React.FC<MenuIconProps> = ({ onClick, isVisible }) => {
+const MenuIcon: React.FC<MenuIconProps> = ({ onClick, isVisible, isMenuOpen = false }) => {
   return (
     <div 
-      className={`menu-icon ${isVisible ? 'visible' : ''}`}
+      className={`menu-icon ${isVisible ? 'visible' : ''} ${isMenuOpen ? 'menu-open' : ''}`}
       onClick={onClick}
       style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >

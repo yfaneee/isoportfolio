@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import IsometricWorld from '../components/IsometricWorld';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
@@ -10,6 +10,7 @@ interface IsometricSceneProps {
   onMovementStart: () => void;
   onSpacePress?: () => void;
   characterControllerRef: React.RefObject<any>;
+  showLoadingScreen: boolean;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -17,7 +18,8 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   showMenu,
   onMovementStart,
   onSpacePress,
-  characterControllerRef
+  characterControllerRef,
+  showLoadingScreen
 }) => {
   const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
@@ -57,6 +59,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onIntroComplete={handleIntroComplete}
         isCharacterMoving={isCharacterMoving}
         showMenu={showMenu}
+        showLoadingScreen={showLoadingScreen}
       />
       
       {/* The isometric world */}

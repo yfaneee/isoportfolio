@@ -1,26 +1,10 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Box, Plane, Edges, Cylinder, Text } from '@react-three/drei';
+import React from 'react';
+import { Box, Plane, Edges } from '@react-three/drei';
 import * as THREE from 'three';
 
 const IsometricWorld: React.FC = () => {
-  const [hoveredObject, setHoveredObject] = useState<string | null>(null);
-
   // Main color for the floors
   const floorColor = '#FAA32B';
-  const hoverColor = '#FFB84D'; 
-  
-  // Smooth hover handler with useCallback to prevent recreating functions
-  const handlePointerOver = useCallback((id: string) => (e: any) => {
-    e.stopPropagation(); 
-    if (hoveredObject !== id) { 
-      setHoveredObject(id);
-    }
-  }, [hoveredObject]);
-  
-  const handlePointerOut = useCallback((e: any) => {
-    e.stopPropagation();
-    setHoveredObject(null);
-  }, []);
 
   const CentralFloors = () => {
     const floors = [];
@@ -57,11 +41,9 @@ const IsometricWorld: React.FC = () => {
             key={floorId}
             position={[x, 0, z]}
             args={[floorSize, floorHeight, floorSize]}
-            onPointerOver={() => setHoveredObject(floorId)}
-            onPointerOut={() => setHoveredObject(null)}
           >
             <meshStandardMaterial 
-              color={hoveredObject === floorId ? hoverColor : floorColor}
+              color={floorColor}
             />
             <Edges color="#D27E17" linewidth={2} />
           </Box>
@@ -75,11 +57,9 @@ const IsometricWorld: React.FC = () => {
         key="bone-white-slab"
         position={[0, floorHeight - 0.092, 0]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('bone-white-slab')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'bone-white-slab' ? '#F5F5DC' : '#F5F5DC'} 
+          color={'#F5F5DC'} 
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -90,11 +70,9 @@ const IsometricWorld: React.FC = () => {
         key="extension-1"
         position={[0, 0, -1 * spacing - spacing]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('extension-1')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'extension-1' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -106,11 +84,9 @@ const IsometricWorld: React.FC = () => {
         key="extension-2"
         position={[0, 0, -1 * spacing - spacing * 2]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('extension-2')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'extension-2' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -146,11 +122,9 @@ const IsometricWorld: React.FC = () => {
             key={floorId}
             position={[x, 0, z]}
             args={[floorSize, floorHeight, floorSize]}
-            onPointerOver={() => setHoveredObject(floorId)}
-            onPointerOut={() => setHoveredObject(null)}
           >
             <meshStandardMaterial 
-              color={hoveredObject === floorId ? hoverColor : floorColor}
+              color={floorColor}
             />
             <Edges color="#D27E17" linewidth={2} />
           </Box>
@@ -171,11 +145,9 @@ const IsometricWorld: React.FC = () => {
           key={`wall-outer-${col}`}
           position={[x, wallHeight / 1.83, z]}
           args={[floorSize, wallHeight, floorSize]}
-          onPointerOver={handlePointerOver(`wall-outer-${col}`)}
-          onPointerOut={handlePointerOut}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `wall-outer-${col}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -194,11 +166,9 @@ const IsometricWorld: React.FC = () => {
           key={`wall-stair-${step}`}
           position={[stairStartX, floorHeight * step, stairStartZ - step * stairSpacing]}
           args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={handlePointerOver(`wall-stair-${step}`)}
-          onPointerOut={handlePointerOut}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `wall-stair-${step}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -246,11 +216,9 @@ const IsometricWorld: React.FC = () => {
           key={`wall-second-${col}`}
           position={[x, secondWallHeight / 1.7, secondWallZ + 0.15]}
           args={[floorSize, secondWallHeight, secondWallDepth]}
-          onPointerOver={handlePointerOver(`wall-second-${col}`)}
-          onPointerOut={handlePointerOut}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `wall-second-${col}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -269,11 +237,9 @@ const IsometricWorld: React.FC = () => {
           key={`middle-stair-${step}`}
           position={[middleStairsStartX, floorHeight * step, middleStairsStartZ - step * middleStairSpacing]}
         args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={handlePointerOver(`middle-stair-${step}`)}
-          onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-            color={hoveredObject === `middle-stair-${step}` ? hoverColor : floorColor}
+            color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -287,11 +253,9 @@ const IsometricWorld: React.FC = () => {
           key={`stair-set1-${step}`}
           position={[-1 * spacing - spacing * 0.4 - spacing * 0.3 * step, floorHeight * step, 0]}
         args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`stair-set1-${step}`)}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-            color={hoveredObject === `stair-set1-${step}` ? hoverColor : floorColor}
+            color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -305,11 +269,9 @@ const IsometricWorld: React.FC = () => {
           key={`stair-set2-${step}`}
           position={[-1 * spacing - spacing * 0.4 - spacing * 0.3 * 3 - spacing * 0.3 * step, floorHeight * (3 + step), 0]}
         args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`stair-set2-${step}`)}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-            color={hoveredObject === `stair-set2-${step}` ? hoverColor : floorColor}
+            color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -323,11 +285,9 @@ const IsometricWorld: React.FC = () => {
           key={`stair-set3-${step}`}
           position={[-1 * spacing - spacing * 0.4 - spacing * 0.3 * 6 - spacing * 0.3 * step, floorHeight * (6 + step), 0]}
         args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`stair-set3-${step}`)}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-            color={hoveredObject === `stair-set3-${step}` ? hoverColor : floorColor}
+            color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -346,12 +306,7 @@ const IsometricWorld: React.FC = () => {
     // NEW 5x3 RECTANGULAR RAMP PLATFORM - The ramp IS the structure  
     const rampWidth = 5; 
     const rampDepth = 3;
-    const holeWidth = 3;
-    const holeDepth = 1; 
-    const maxRampHeight = 3; 
-    
-    // Generate 5x3 rectangular ramp structure with hole in middle
-    const rampFloors = [];
+    const maxRampHeight = 3;
     
     // Create the rectangular ramp perimeter
     for (let x = 0; x < rampWidth; x++) {
@@ -391,11 +346,9 @@ const IsometricWorld: React.FC = () => {
             key={segmentKey}
             position={[segmentX, segmentY, segmentZ]}
             args={[floorSize, floorHeight, floorSize]}
-            onPointerOver={() => setHoveredObject(segmentKey)}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-              color={hoveredObject === segmentKey ? hoverColor : floorColor}
+              color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -468,11 +421,9 @@ const IsometricWorld: React.FC = () => {
         key="connecting-floor-to-platform"
         position={[connectingFloorX, connectingFloorY, connectingFloorZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('connecting-floor-to-platform')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'connecting-floor-to-platform' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -484,11 +435,9 @@ const IsometricWorld: React.FC = () => {
         key="high-block-slab"
         position={[3, wallHeight / 1.83 + wallHeight/2 + 0.07, grid5x5BaseZ - 4 * spacing]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('high-block-slab')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'high-block-slab' ? '#F5F5DC' : '#F5F5DC'} 
+          color={'#F5F5DC'} 
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -509,11 +458,9 @@ const IsometricWorld: React.FC = () => {
           key={slab.key}
           position={[slab.x, slab.y, slab.z]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-          onPointerOver={() => setHoveredObject(slab.key)}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-            color={hoveredObject === slab.key ? '#F5F5DC' : '#F5F5DC'} 
+            color={'#F5F5DC'} 
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -526,11 +473,9 @@ const IsometricWorld: React.FC = () => {
         key="smaller-block-slab"
         position={[-1.5, secondWallHeight / 1.7 + secondWallHeight/2 + 0.07, secondWallZ + 0.15]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('smaller-block-slab')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'smaller-block-slab' ? '#F5F5DC' : '#F5F5DC'} 
+          color={'#F5F5DC'} 
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -541,11 +486,9 @@ const IsometricWorld: React.FC = () => {
         key="floor-from-6-1"
         position={[1 * spacing + spacing, 0, 0]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('floor-from-6-1')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'floor-from-6-1' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -556,11 +499,9 @@ const IsometricWorld: React.FC = () => {
         key="floor-from-6-2"
         position={[1 * spacing + spacing * 2, 0, 0]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('floor-from-6-2')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'floor-from-6-2' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -600,11 +541,9 @@ const IsometricWorld: React.FC = () => {
           key={`pillar-${index}`}
           position={[pos[0], pos[1], pos[2]]}
           args={[0.1, pillarHeight, 0.1]}
-          onPointerOver={() => setHoveredObject(`pillar-${index}`)}
-          onPointerOut={() => setHoveredObject(null)}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `pillar-${index}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -617,11 +556,9 @@ const IsometricWorld: React.FC = () => {
         key="lower-floor"
         position={[structureX, lowerFloorY, structureZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('lower-floor')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lower-floor' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -649,11 +586,9 @@ const IsometricWorld: React.FC = () => {
         key="lower-extension-1"
         position={[structureX + spacing, lowerFloorY, structureZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('lower-extension-1')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lower-extension-1' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -664,11 +599,9 @@ const IsometricWorld: React.FC = () => {
         key="lower-extension-2"
         position={[structureX + spacing * 2, lowerFloorY, structureZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={() => setHoveredObject('lower-extension-2')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'lower-extension-2' ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -684,11 +617,9 @@ const IsometricWorld: React.FC = () => {
         key="artwork-platform-slab"
         position={[octBaseX + spacing * 2, lowerFloorY + floorHeight/2 + 0.07, octBaseZ]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        onPointerOver={() => setHoveredObject('artwork-platform-slab')}
-        onPointerOut={() => setHoveredObject(null)}
       >
         <meshStandardMaterial 
-          color={hoveredObject === 'artwork-platform-slab' ? '#F5F5DC' : '#F5F5DC'} 
+          color={'#F5F5DC'} 
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -700,11 +631,9 @@ const IsometricWorld: React.FC = () => {
         key="oct-ext-1"
         position={[octBaseX + spacing, lowerFloorY, octBaseZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={handlePointerOver("oct-ext-1")}
-        onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-          color={hoveredObject === "oct-ext-1" ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -715,11 +644,9 @@ const IsometricWorld: React.FC = () => {
         key="oct-ext-2"
         position={[octBaseX + spacing * 2, lowerFloorY, octBaseZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={handlePointerOver("oct-ext-2")}
-        onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-          color={hoveredObject === "oct-ext-2" ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -730,11 +657,9 @@ const IsometricWorld: React.FC = () => {
         key="oct-ext-3"
         position={[octBaseX + spacing * 3, lowerFloorY, octBaseZ]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={handlePointerOver("oct-ext-3")}
-        onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-          color={hoveredObject === "oct-ext-3" ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -749,11 +674,9 @@ const IsometricWorld: React.FC = () => {
         key="oct-cross-1"
         position={[middleX, lowerFloorY, octBaseZ + spacing]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={handlePointerOver("oct-cross-1")}
-        onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-          color={hoveredObject === "oct-cross-1" ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -765,11 +688,9 @@ const IsometricWorld: React.FC = () => {
         key="oct-cross-2"
         position={[middleX, lowerFloorY, octBaseZ - spacing]}
         args={[floorSize, floorHeight, floorSize]}
-        onPointerOver={handlePointerOver("oct-cross-2")}
-        onPointerOut={handlePointerOut}
       >
         <meshStandardMaterial 
-          color={hoveredObject === "oct-cross-2" ? hoverColor : floorColor}
+          color={floorColor}
         />
         <Edges color="#D27E17" linewidth={2} />
       </Box>
@@ -805,12 +726,10 @@ const IsometricWorld: React.FC = () => {
           key={tri.key}
           position={[tri.x, lowerFloorY - floorHeight/2, tri.z]}
           rotation={[0, tri.rotation, 0]}
-          onPointerOver={handlePointerOver(tri.key)}
-          onPointerOut={handlePointerOut}
         >
           <primitive object={triGeo} attach="geometry" />
           <meshStandardMaterial
-            color={hoveredObject === tri.key ? hoverColor : floorColor}
+            color={floorColor}
             flatShading={true}
           />
           <Edges color="#D27E17" linewidth={2} />
@@ -893,11 +812,9 @@ const IsometricWorld: React.FC = () => {
           key={`down-stair-set1-${step}`}
           position={[0, -floorHeight * step, 1 * spacing + spacing * 0.4 + spacing * 0.3 * step]}
           args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`down-stair-set1-${step}`)}
-          onPointerOut={() => setHoveredObject(null)}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `down-stair-set1-${step}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -911,11 +828,9 @@ const IsometricWorld: React.FC = () => {
           key={`down-stair-set2-${step}`}
           position={[0, -floorHeight * (3 + step), 1 * spacing + spacing * 0.4 + spacing * 0.3 * 3 + spacing * 0.3 * step]}
           args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`down-stair-set2-${step}`)}
-          onPointerOut={() => setHoveredObject(null)}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `down-stair-set2-${step}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -929,11 +844,9 @@ const IsometricWorld: React.FC = () => {
           key={`down-stair-set3-${step}`}
           position={[0, -floorHeight * (6 + step), 1 * spacing + spacing * 0.4 + spacing * 0.3 * 6 + spacing * 0.3 * step]}
           args={[floorSize, floorHeight, floorSize]}
-          onPointerOver={() => setHoveredObject(`down-stair-set3-${step}`)}
-          onPointerOut={() => setHoveredObject(null)}
         >
           <meshStandardMaterial 
-            color={hoveredObject === `down-stair-set3-${step}` ? hoverColor : floorColor}
+            color={floorColor}
           />
           <Edges color="#D27E17" linewidth={2} />
         </Box>
@@ -957,11 +870,9 @@ const IsometricWorld: React.FC = () => {
             key={platformKey}
             position={[platformX, platformY, platformZ]}
             args={[floorSize, floorHeight, floorSize]}
-            onPointerOver={() => setHoveredObject(platformKey)}
-            onPointerOut={() => setHoveredObject(null)}
           >
             <meshStandardMaterial 
-              color={hoveredObject === platformKey ? hoverColor : floorColor}
+              color={floorColor}
             />
             <Edges color="#D27E17" linewidth={2} />
           </Box>

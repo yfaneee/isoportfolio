@@ -15,21 +15,13 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
       left: 0,
       width: '100vw',
       height: '100vh',
-      background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 1000,
-      color: '#333',
-      fontFamily: 'Arial, sans-serif'
+      pointerEvents: 'none' // Allow clicks to pass through to the 3D scene
     }}>
-      <div style={{
-        textAlign: 'center',
-        marginBottom: '2rem'
-      }}>
-      </div>
-      
       <button
         onClick={onStart}
         style={{
@@ -43,7 +35,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
           cursor: 'pointer',
           fontWeight: 'normal',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          pointerEvents: 'auto' // Re-enable pointer events for the button
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.backgroundColor = '#E8931F';

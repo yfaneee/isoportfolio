@@ -1,7 +1,7 @@
 .menu-icon {
   position: fixed;
-  top: 2rem;
-  right: 2rem;
+  top: 5rem;
+  right: 5rem;
   width: 100px;
   height: 30px;
   display: flex;
@@ -21,7 +21,7 @@
   display: block;
   width: 100%;
   height: 6px;
-  background-color: #333; 
+  background-color: #1b1a1a; 
   border-radius: 2px;
   transition: all 0.3s ease-in-out;
 }
@@ -46,4 +46,28 @@
 
 .menu-icon:hover .menu-line.bottom {
   transform: translateX(5px);
+}
+
+/* Menu open state - transform to X */
+.menu-icon.menu-open .menu-line.top {
+  transform: rotate(45deg) translate(6px, 6px);
+  width: 100%;
+}
+
+.menu-icon.menu-open .menu-line.bottom {
+  transform: rotate(-45deg) translate(6px, -6px);
+  width: 100%;
+}
+
+/* Hover effect when menu is open */
+.menu-icon.menu-open:hover .menu-line {
+  background-color: #555;
+}
+
+.menu-icon.menu-open:hover .menu-line.top {
+  transform: rotate(45deg) translate(6px, 6px) scale(1.1);
+}
+
+.menu-icon.menu-open:hover .menu-line.bottom {
+  transform: rotate(-45deg) translate(6px, -6px) scale(1.1);
 }

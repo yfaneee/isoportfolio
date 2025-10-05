@@ -42,8 +42,10 @@ function App() {
   }, [showMenu]);
 
   const handleMenuIconClick = useCallback(() => {
-    if (!showMenu) {
-      setShowMenu(true);
+    setShowMenu(!showMenu);
+    if (menuTimerRef.current) {
+      clearTimeout(menuTimerRef.current);
+      menuTimerRef.current = null;
     }
   }, [showMenu]);
 
@@ -77,28 +79,27 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {/* Three.js Canvas for the isometric world - hidden when loading screen is visible */}
-        {!showLoadingScreen && (
-          <Canvas
-            camera={{
-              position: [10, 10, 10],
-              fov: 50
-            }}
-            style={{ 
-              width: '100vw', 
-              height: '100vh',
-              background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)'
-            }}
-          >
-            <IsometricScene
-              onIntroComplete={handleIntroComplete}
-              showMenu={showMenu}
-              onMovementStart={handleMovementStart}
-              onSpacePress={handleSpacePress}
-              characterControllerRef={characterControllerRef}
-            />
-          </Canvas>
-        )}
+        {/* Three.js Canvas for the isometric world - always visible */}
+        <Canvas
+          camera={{
+            position: [10, 10, 10],
+            fov: 50
+          }}
+          style={{ 
+            width: '100vw', 
+            height: '100vh',
+            background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)'
+          }}
+        >
+          <IsometricScene
+            onIntroComplete={handleIntroComplete}
+            showMenu={showMenu}
+            onMovementStart={handleMovementStart}
+            onSpacePress={handleSpacePress}
+            characterControllerRef={characterControllerRef}
+            showLoadingScreen={showLoadingScreen}
+          />
+        </Canvas>
         
         {/* Controls UI Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <ControlsUI introComplete={introComplete} />}
@@ -109,12 +110,12 @@ function App() {
         {/* Menu Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
 
-        {/* Menu Icon - visible when intro is complete and menu is not shown */}
-        {!showLoadingScreen && introComplete && !showMenu && (
-          <MenuIcon onClick={handleMenuIconClick} isVisible={!showMenu} />
+        {/* Menu Icon - visible when intro is complete */}
+        {!showLoadingScreen && introComplete && (
+          <MenuIcon onClick={handleMenuIconClick} isVisible={true} isMenuOpen={showMenu} />
         )}
 
-        {/* Loading Screen */}
+        {/* Loading Screen - now just the start button overlay */}
         <LoadingScreen onStart={handleStart} isVisible={showLoadingScreen} />
       </div>
     </Router>

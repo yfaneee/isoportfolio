@@ -9,6 +9,7 @@ interface CameraControllerProps {
   onIntroComplete: () => void;
   isCharacterMoving: boolean;
   showMenu: boolean;
+  showLoadingScreen: boolean;
 }
 
 const CameraController: React.FC<CameraControllerProps> = ({
@@ -16,7 +17,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
   introComplete,
   onIntroComplete,
   isCharacterMoving,
-  showMenu
+  showMenu,
+  showLoadingScreen
 }) => {
   const { camera } = useThree();
   const orbitControlsRef = useRef<any>(null);
@@ -40,6 +42,13 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   }, [isCharacterMoving]);
 
+  // Reset intro time when loading screen changes
+  useEffect(() => {
+    if (showLoadingScreen) {
+      introTimeRef.current = 0;
+    }
+  }, [showLoadingScreen]);
+
   // Handle smooth camera animation when menu state changes
   useEffect(() => {
     if (introComplete && !isUsingOrbitControls.current) {
@@ -53,7 +62,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
         startLookAt: new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2])
       };
     }
-  }, [showMenu, introComplete, camera.position]);
+  }, [showMenu, introComplete, camera.position, characterControllerRef]);
 
   // Orbit controls handlers
   const handleOrbitStart = () => {
@@ -75,7 +84,13 @@ const CameraController: React.FC<CameraControllerProps> = ({
   };
 
   useFrame((state, delta) => {
-    if (!introComplete) {
+    if (showLoadingScreen) {
+      // Loading screen state - show preview from far away
+      camera.position.set(0, 40, 40);
+      camera.lookAt(0, 0.22, 0);
+      // Reset intro time when in loading screen
+      introTimeRef.current = 0;
+    } else if (!introComplete) {
       // Intro animation
       introTimeRef.current += delta;
       const t = Math.min(introTimeRef.current / introDuration, 1);
