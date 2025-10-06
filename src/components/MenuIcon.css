@@ -76,7 +76,7 @@
 @media (max-width: 1366px) and (min-width: 1261px) {
   .menu-icon {
     top: 4rem;
-    right: 2.5rem;
+    right: 1.2rem;
     width: 90px;
     height: 26px;
   }
@@ -89,7 +89,7 @@
 @media (max-width: 1260px) and (min-width: 1025px) {
   .menu-icon {
     top: 3.5rem;
-    right: 1.4rem;
+    right: 1.2rem;
     width: 85px;
     height: 25px;
   }
@@ -102,7 +102,7 @@
 @media (max-width: 1024px) {
   .menu-icon {
     top: 3rem;
-    right: 2.5rem;
+    right: 1.2rem;
     width: 80px;
     height: 24px;
   }
