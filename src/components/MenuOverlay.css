@@ -221,13 +221,13 @@
 
 @media (max-height: 800px) {
   .menu-section h3 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   .learning-outcomes-links a,
   .project-links a,
   .work-links a {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     padding: 0.7rem;
   }
 }
