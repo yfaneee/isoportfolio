@@ -14,7 +14,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   introComplete,
   onSpacePress
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation } = useCharacterControls([0, 0, 0], onSpacePress);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0, 0], onSpacePress);
   const lastMoving = useRef(false);
 
   // Expose direct position access method
@@ -22,7 +22,9 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
     getPosition: () => positionRef.current,
     getRotation: () => rotationRef.current,
     isMoving: () => isMovingRef.current,
-    teleportToLocation: (location: string) => teleportToLocation(location)
+    teleportToLocation: (location: string) => teleportToLocation(location),
+    handleTouch: (touch: Touch) => handleTouch(touch),
+    stopMovement: () => stopMovement()
   }));
 
   // Force re-render by using state 

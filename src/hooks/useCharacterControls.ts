@@ -37,7 +37,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   });
 
 
-  // Handle keyboard input and touch controls
+  // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
@@ -84,60 +84,12 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       }
     };
 
-    // Touch controls for mobile
-    const handleTouchStart = (e: TouchEvent) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const rect = (e.target as Element)?.getBoundingClientRect();
-      if (!rect) return;
-      
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const deltaX = touch.clientX - centerX;
-      const deltaY = touch.clientY - centerY;
-      
-      // Determine direction based on touch position relative to center
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Horizontal movement
-        if (deltaX > 0) {
-          keysRef.current.right = true;
-        } else {
-          keysRef.current.left = true;
-        }
-      } else {
-        // Vertical movement
-        if (deltaY > 0) {
-          keysRef.current.backward = true;
-        } else {
-          keysRef.current.forward = true;
-        }
-      }
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      e.preventDefault();
-      keysRef.current.forward = false;
-      keysRef.current.backward = false;
-      keysRef.current.left = false;
-      keysRef.current.right = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('touchmove', handleTouchMove);
     };
   }, []);
 
@@ -274,6 +226,46 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     positionRef.current = targetPosition;
   };
 
+  // Touch handler for mobile devices
+  const handleTouch = (touch: Touch) => {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const deltaX = touch.clientX - centerX;
+    const deltaY = touch.clientY - centerY;
+    
+    // Determine direction based on touch position relative to center
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal movement
+      if (deltaX > 0) {
+        keysRef.current.right = true;
+        keysRef.current.left = false;
+      } else {
+        keysRef.current.left = true;
+        keysRef.current.right = false;
+      }
+      keysRef.current.forward = false;
+      keysRef.current.backward = false;
+    } else {
+      // Vertical movement
+      if (deltaY > 0) {
+        keysRef.current.backward = true;
+        keysRef.current.forward = false;
+      } else {
+        keysRef.current.forward = true;
+        keysRef.current.backward = false;
+      }
+      keysRef.current.left = false;
+      keysRef.current.right = false;
+    }
+  };
+
+  const stopMovement = () => {
+    keysRef.current.forward = false;
+    keysRef.current.backward = false;
+    keysRef.current.left = false;
+    keysRef.current.right = false;
+  };
+
   return {
     updateCharacter,
     getCharacterState,
@@ -282,6 +274,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     isMovingRef,
     centerOnSlab,
     teleportToLocation,
+    handleTouch,
+    stopMovement,
   };
 };
 

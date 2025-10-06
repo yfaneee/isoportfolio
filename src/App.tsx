@@ -94,7 +94,27 @@ function App() {
           style={{ 
             width: '100vw', 
             height: '100vh',
-            background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)'
+            background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)',
+            touchAction: 'none'
+          }}
+          onTouchStart={(e) => {
+            // Only handle touch on the canvas, not UI elements
+            if (e.target === e.currentTarget && characterControllerRef.current) {
+              e.preventDefault();
+              characterControllerRef.current.handleTouch(e.touches[0]);
+            }
+          }}
+          onTouchEnd={(e) => {
+            if (e.target === e.currentTarget && characterControllerRef.current) {
+              e.preventDefault();
+              characterControllerRef.current.stopMovement();
+            }
+          }}
+          onTouchMove={(e) => {
+            if (e.target === e.currentTarget && characterControllerRef.current) {
+              e.preventDefault();
+              characterControllerRef.current.handleTouch(e.touches[0]);
+            }
           }}
         >
           <IsometricScene
