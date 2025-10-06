@@ -9,6 +9,8 @@ interface CameraControllerProps {
   onIntroComplete: () => void;
   isCharacterMoving: boolean;
   showMenu: boolean;
+  showContent: boolean;
+  isTransitioning: boolean;
   showLoadingScreen: boolean;
 }
 
@@ -18,6 +20,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
   onIntroComplete,
   isCharacterMoving,
   showMenu,
+  showContent,
+  isTransitioning,
   showLoadingScreen
 }) => {
   const { camera } = useThree();
@@ -49,10 +53,10 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   }, [showLoadingScreen]);
 
-  // Handle smooth camera animation when menu state changes
+  // Handle smooth camera animation when menu or content box state changes
   useEffect(() => {
     if (introComplete && !isUsingOrbitControls.current) {
-      // Start camera animation when menu visibility changes
+      // Start camera animation when menu or content box visibility changes
       const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
       
       cameraAnimationRef.current = {
@@ -62,7 +66,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
         startLookAt: new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2])
       };
     }
-  }, [showMenu, introComplete, camera.position, characterControllerRef]);
+  }, [showMenu, showContent, isTransitioning, introComplete, camera.position, characterControllerRef]);
 
   // Orbit controls handlers
   const handleOrbitStart = () => {
@@ -100,8 +104,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
       // Animate camera from far to close 
-      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
-      const menuOffsetX = showMenu ? 3 : 0;
+             const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+             const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
+             const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
       
       // Responsive camera positioning 
       const width = window.innerWidth;
@@ -118,18 +123,24 @@ const CameraController: React.FC<CameraControllerProps> = ({
         cameraHeight = 7.5;
       }
       
-      const targetCameraPos = [
-        characterPosition[0] + cameraDistance + menuOffsetX,
-        characterPosition[1] + cameraHeight,
-        characterPosition[2] + cameraDistance
-      ];
+      // Zoom in when content box is open (but not during transition)
+      if (showContent && !isTransitioning) {
+        cameraDistance *= 0.7; 
+        cameraHeight *= 0.8; 
+      }
+      
+             const targetCameraPos = [
+               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX,
+               characterPosition[1] + cameraHeight,
+               characterPosition[2] + cameraDistance
+             ];
 
       camera.position.set(
         0 + eased * targetCameraPos[0],
         40 - eased * (40 - targetCameraPos[1]),
         40 - eased * (40 - targetCameraPos[2])
       );
-      camera.lookAt(characterPosition[0] + menuOffsetX, characterPosition[1], characterPosition[2]);
+             camera.lookAt(characterPosition[0] + menuOffsetX + contentOffsetX, characterPosition[1], characterPosition[2]);
       
       if (t >= 1) {
         onIntroComplete();
@@ -137,36 +148,45 @@ const CameraController: React.FC<CameraControllerProps> = ({
     } else if (isFollowingCharacter.current && !isUsingOrbitControls.current && !hasUsedOrbitControls.current) {
       const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
       
-      // Calculate target positions
-      const menuOffsetX = showMenu ? -5 : 0;
-      const menuOffsetZ = showMenu ? -1 : 0;
-      const menuOffsetY = showMenu ? -3 : 0;
+             // Calculate target positions
+             const menuOffsetX = showMenu && !isTransitioning ? -5 : 0;
+             const menuOffsetZ = showMenu && !isTransitioning ? -1 : 0;
+             const menuOffsetY = showMenu && !isTransitioning ? -3 : 0;
+             const contentOffsetX = showContent && !isTransitioning ? 4 : 0;
+             const contentOffsetZ = showContent && !isTransitioning ? -2 : 0;
+             const contentOffsetY = showContent && !isTransitioning ? 2 : 0;
       
-      // Responsive camera positioning (iPad Pro/1024, Laptop 1366, Wide 1600)
+      // Responsive camera positioning 
       const width = window.innerWidth;
       let cameraDistance = 8;
       let cameraHeight = 7;
-      if (width <= 1024) { // iPad Pro
+      if (width <= 1024) { 
         cameraDistance = 11.5;
         cameraHeight = 8.5;
-      } else if (width <= 1366) { // common laptop
+      } else if (width <= 1366) { 
         cameraDistance = 10;
         cameraHeight = 8;
-      } else if (width >= 1600) { // wide
+      } else if (width >= 1600) { 
         cameraDistance = 9;
         cameraHeight = 7.5;
       }
       
-      const targetPos = new THREE.Vector3(
-        characterPosition[0] + cameraDistance + menuOffsetX,
-        characterPosition[1] + cameraHeight + menuOffsetY,
-        characterPosition[2] + cameraDistance + menuOffsetZ
-      );
-      const targetLookAt = new THREE.Vector3(
-        characterPosition[0] + menuOffsetX, 
-        characterPosition[1] + menuOffsetY, 
-        characterPosition[2] + menuOffsetZ
-      );
+      // Zoom in when content box is open (but not during transition)
+      if (showContent && !isTransitioning) {
+        cameraDistance *= 0.6; 
+        cameraHeight *= 0.5; 
+      }
+      
+             const targetPos = new THREE.Vector3(
+               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX,
+               characterPosition[1] + cameraHeight + menuOffsetY + contentOffsetY,
+               characterPosition[2] + cameraDistance + menuOffsetZ + contentOffsetZ
+             );
+             const targetLookAt = new THREE.Vector3(
+               characterPosition[0] + menuOffsetX + contentOffsetX,
+               characterPosition[1] + menuOffsetY + contentOffsetY,
+               characterPosition[2] + menuOffsetZ + contentOffsetZ
+             );
 
       // Handle smooth camera animation
       if (cameraAnimationRef.current.isAnimating) {

@@ -57,10 +57,15 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
           if (isOnElevator(x, z)) {
             triggerElevator();
           } else {
-            // Check if on central slab 
-            const isOnCentralSlab = x >= -0.50 && x <= 0.50 && z >= -0.50 && z <= 0.50;
-            if (isOnCentralSlab && onSpacePress) {
-              // Center character on slab
+            // Check if on smaller-block-slab 
+            const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
+            // Check if on high-block-slab
+            const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
+            // Check if on middle bone white slab 
+            const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
+            
+            if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab) && onSpacePress) {
+              // Center character on slab and trigger space press
               centerOnSlab();
               onSpacePress();
             }
@@ -161,8 +166,29 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   });
 
   const centerOnSlab = () => {
-    const centerHeight = getHeightAtPosition(0, 0);
-    positionRef.current = [0, centerHeight || 0.22, 0];
+    const [x, , z] = positionRef.current;
+    
+    // Determine which slab we're on and center accordingly
+    const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
+    const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
+    const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
+    
+    let centerX = x;
+    let centerZ = z;
+    
+    if (isOnSmallerBlockSlab) {
+      centerX = -1.5;
+      centerZ = -10.35;
+    } else if (isOnHighBlockSlab) {
+      centerX = 3;
+      centerZ = -12;
+    } else if (isOnMiddleSlab) {
+      centerX = 0;
+      centerZ = 0;
+    }
+    
+    const centerHeight = getHeightAtPosition(centerX, centerZ);
+    positionRef.current = [centerX, centerHeight || 0.22, centerZ];
   };
 
   const teleportToLocation = (location: string) => {

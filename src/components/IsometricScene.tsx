@@ -7,6 +7,8 @@ import PlatformDebugger from '../components/PlatformDebugger';
 interface IsometricSceneProps {
   onIntroComplete: () => void;
   showMenu: boolean;
+  showContent: boolean;
+  isTransitioning: boolean;
   onMovementStart: () => void;
   onSpacePress?: () => void;
   characterControllerRef: React.RefObject<any>;
@@ -16,6 +18,8 @@ interface IsometricSceneProps {
 const IsometricScene: React.FC<IsometricSceneProps> = ({
   onIntroComplete,
   showMenu,
+  showContent,
+  isTransitioning,
   onMovementStart,
   onSpacePress,
   characterControllerRef,
@@ -53,14 +57,16 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
       />
       
       {/* Custom camera controller with intro animation */}
-      <CameraController
-        characterControllerRef={characterControllerRef}
-        introComplete={introComplete}
-        onIntroComplete={handleIntroComplete}
-        isCharacterMoving={isCharacterMoving}
-        showMenu={showMenu}
-        showLoadingScreen={showLoadingScreen}
-      />
+             <CameraController
+               characterControllerRef={characterControllerRef}
+               introComplete={introComplete}
+               onIntroComplete={handleIntroComplete}
+               isCharacterMoving={isCharacterMoving}
+               showMenu={showMenu}
+               showContent={showContent}
+               isTransitioning={isTransitioning}
+               showLoadingScreen={showLoadingScreen}
+             />
       
       {/* The isometric world */}
       <IsometricWorld />

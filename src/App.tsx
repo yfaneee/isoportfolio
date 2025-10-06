@@ -7,6 +7,8 @@ import ControlsUI from './components/ControlsUI';
 import LoadingScreen from './components/LoadingScreen';
 import MenuOverlay from './components/MenuOverlay';
 import MenuIcon from './components/MenuIcon';
+import Content from './components/Content';
+import { getContentForSlab, ContentItem } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import './App.css';
 import './styles/fonts.css';
@@ -15,7 +17,10 @@ function App() {
   const [introComplete, setIntroComplete] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [currentContent, setCurrentContent] = useState<ContentItem | null>(null);
   const [menuDelayOver, setMenuDelayOver] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
 
@@ -37,24 +42,61 @@ function App() {
         menuTimerRef.current = null;
       }
     }
+    if (showContent) {
+      setShowContent(false);
+    }
     // Whether or not the menu is shown, the intro/menu delay is considered over after first movement
     setMenuDelayOver(true);
-  }, [showMenu]);
+  }, [showMenu, showContent]);
 
   const handleSpacePress = useCallback(() => {
-    if (!showMenu) {
-      setShowMenu(true);
+    if (!showMenu && !showContent) {
+      const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      
+      // Get content for the current slab
+      const content = getContentForSlab(characterPos[0], characterPos[2]);
+      
+      const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
+                            characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
+      
+      if (content) {
+        setCurrentContent(content);
+        setShowContent(true);
+      } else if (isOnMiddleSlab) {
+        setShowMenu(true);
+      } else {
+        setShowMenu(true);
+      }
     }
-  }, [showMenu]);
+  }, [showMenu, showContent]);
 
   const handleMenuIconClick = useCallback(() => {
-    setShowMenu(!showMenu);
-    if (menuTimerRef.current) {
-      clearTimeout(menuTimerRef.current);
-      menuTimerRef.current = null;
+    if (showContent && !isTransitioning) {
+      setIsTransitioning(true);
+      setShowContent(false);
+      setCurrentContent(null);
+      
+      // Wait for content to close, then open menu
+      setTimeout(() => {
+        setShowMenu(true);
+        setMenuDelayOver(true);
+        setIsTransitioning(false);
+      }, 400); 
+    } else if (!showMenu && !isTransitioning) {
+      setShowMenu(true);
+      if (menuTimerRef.current) {
+        clearTimeout(menuTimerRef.current);
+        menuTimerRef.current = null;
+      }
+      setMenuDelayOver(true);
+    } else if (showMenu && !isTransitioning) {
+      setShowMenu(false);
+      if (menuTimerRef.current) {
+        clearTimeout(menuTimerRef.current);
+        menuTimerRef.current = null;
+      }
     }
-    setMenuDelayOver(true);
-  }, [showMenu]);
+  }, [showMenu, showContent, isTransitioning]);
 
   const handleNavigateToLocation = useCallback((location: string) => {
     // Hide menu
@@ -123,24 +165,29 @@ function App() {
             }
           }}
         >
-          <IsometricScene
-            onIntroComplete={handleIntroComplete}
-            showMenu={showMenu}
-            onMovementStart={handleMovementStart}
-            onSpacePress={handleSpacePress}
-            characterControllerRef={characterControllerRef}
-            showLoadingScreen={showLoadingScreen}
-          />
+                 <IsometricScene
+                   onIntroComplete={handleIntroComplete}
+                   showMenu={showMenu}
+                   showContent={showContent}
+                   isTransitioning={isTransitioning}
+                   onMovementStart={handleMovementStart}
+                   onSpacePress={handleSpacePress}
+                   characterControllerRef={characterControllerRef}
+                   showLoadingScreen={showLoadingScreen}
+                 />
         </Canvas>
         
         {/* Controls UI Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <ControlsUI introComplete={introComplete} />}
         
         {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay */}
-        <UI visible={introComplete && !showMenu && menuDelayOver} />
+        <UI visible={introComplete && !showMenu && !showContent && menuDelayOver} />
 
         {/* Menu Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
+
+        {/* Content Box - hidden when loading screen is visible */}
+        {!showLoadingScreen && <Content isVisible={showContent} content={currentContent} />}
 
         {/* Menu Icon - visible when intro is complete */}
         {!showLoadingScreen && introComplete && (
