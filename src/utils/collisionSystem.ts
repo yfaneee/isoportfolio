@@ -205,10 +205,32 @@ export function warmupCollisionSystem(): void {
     [0, -3.0],
     [3.0, 0],
     [-3.0, 0],
+    [0, 1.5],
+    [-1.5, 0],
+    [0, 3.0],
+    [1.5, 1.5],
+    [-1.5, -1.5],
   ];
   for (const [x, z] of samplePoints) {
     // Intentionally ignore result; this fills caches
     getHeightAtPosition(x, z);
+  }
+}
+
+// Pre-calculate common platform lookups
+const commonPlatforms = new Map<string, Platform[]>();
+export function preloadCommonPlatforms(): void {
+  initializeSpatialGrid();
+  const commonPositions = [
+    [0, 0], [1.5, 0], [0, 1.5], [-1.5, 0], [0, -1.5],
+    [3, 0], [0, 3], [-3, 0], [0, -3], [1.5, 1.5]
+  ];
+  
+  for (const [x, z] of commonPositions) {
+    const key = `${Math.round(x * 100) / 100},${Math.round(z * 100) / 100}`;
+    if (!commonPlatforms.has(key)) {
+      commonPlatforms.set(key, getPlatformsNear(x, z));
+    }
   }
 }
 

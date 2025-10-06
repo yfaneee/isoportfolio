@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import IsometricScene from './components/IsometricScene';
@@ -7,6 +7,7 @@ import ControlsUI from './components/ControlsUI';
 import LoadingScreen from './components/LoadingScreen';
 import MenuOverlay from './components/MenuOverlay';
 import MenuIcon from './components/MenuIcon';
+import { preloadCommonPlatforms } from './utils/collisionSystem';
 import './App.css';
 import './styles/fonts.css';
 
@@ -76,6 +77,11 @@ function App() {
         clearTimeout(menuTimerRef.current);
       }
     };
+  }, []);
+
+  // Preload collision system on app start
+  useEffect(() => {
+    preloadCommonPlatforms();
   }, []);
 
   const handleStart = useCallback(() => {
