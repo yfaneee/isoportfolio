@@ -25,7 +25,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color="#FAA32B"
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -45,7 +45,7 @@ const IsometricWorld: React.FC = () => {
             <meshStandardMaterial 
               color={floorColor}
             />
-            <Edges color="#D27E17" linewidth={2} />
+            {/* <Edges color="#D27E17" linewidth={2} /> */}
           </Box>
         );
       }
@@ -61,7 +61,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={'#F5F5DC'} 
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -74,7 +74,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -88,7 +88,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -106,7 +106,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color="#FAA32B"
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -126,7 +126,7 @@ const IsometricWorld: React.FC = () => {
             <meshStandardMaterial 
               color={floorColor}
             />
-            <Edges color="#D27E17" linewidth={2} />
+            {/* <Edges color="#D27E17" linewidth={2} /> */}
           </Box>
         );
       }
@@ -149,7 +149,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -170,7 +170,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -188,7 +188,7 @@ const IsometricWorld: React.FC = () => {
         args={[floorSize, connectingBlockHeight1, floorSize]}
       >
         <meshStandardMaterial color={floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     
@@ -200,7 +200,7 @@ const IsometricWorld: React.FC = () => {
         args={[floorSize, connectingBlockHeight2, floorSize]}
       >
         <meshStandardMaterial color={floorColor} />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -220,7 +220,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -241,7 +241,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
             color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     }
@@ -257,7 +257,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
             color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     }
@@ -273,7 +273,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
             color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     }
@@ -289,7 +289,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
             color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     }
@@ -350,7 +350,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
               color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
       }
@@ -404,7 +404,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
                 color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
         }
@@ -425,7 +425,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -439,7 +439,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={'#F5F5DC'} 
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -462,7 +462,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
             color={'#F5F5DC'} 
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     });
@@ -477,7 +477,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={'#F5F5DC'} 
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -490,7 +490,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -503,7 +503,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -545,7 +545,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     });
@@ -560,7 +560,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -590,7 +590,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -603,7 +603,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -621,7 +621,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={'#F5F5DC'} 
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     
@@ -635,7 +635,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     
@@ -648,7 +648,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     
@@ -661,7 +661,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -678,7 +678,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     
@@ -692,7 +692,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
 
@@ -732,7 +732,7 @@ const IsometricWorld: React.FC = () => {
             color={floorColor}
             flatShading={true}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </mesh>
       );
     });
@@ -762,7 +762,7 @@ const IsometricWorld: React.FC = () => {
           args={[floorSize, octFoundationHeight, floorSize]}
         >
           <meshStandardMaterial color="#FAA32B" />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     });
@@ -800,7 +800,7 @@ const IsometricWorld: React.FC = () => {
         >
           <primitive object={octFoundationTriGeometry} attach="geometry" />
           <meshStandardMaterial color="#FAA32B" flatShading={true} />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </mesh>
       );
     });
@@ -816,7 +816,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -832,7 +832,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -848,7 +848,7 @@ const IsometricWorld: React.FC = () => {
           <meshStandardMaterial 
             color={floorColor}
           />
-          <Edges color="#D27E17" linewidth={2} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
         </Box>
       );
     }
@@ -874,7 +874,7 @@ const IsometricWorld: React.FC = () => {
             <meshStandardMaterial 
               color={floorColor}
             />
-            <Edges color="#D27E17" linewidth={2} />
+            {/* <Edges color="#D27E17" linewidth={2} /> */}
           </Box>
         );
       }
@@ -896,7 +896,7 @@ const IsometricWorld: React.FC = () => {
         <meshStandardMaterial 
           color={floorColor}
         />
-        <Edges color="#D27E17" linewidth={2} />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
     return <>{floors}</>;

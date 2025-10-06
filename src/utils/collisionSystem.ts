@@ -195,6 +195,23 @@ function initializeSpatialGrid() {
   gridInitialized = true;
 }
 
+// Public warmup to avoid first-use jank
+export function warmupCollisionSystem(): void {
+  initializeSpatialGrid();
+  // Prime a few cache positions around origin and common areas
+  const samplePoints: Array<[number, number]> = [
+    [0, 0],
+    [1.5, 0],
+    [0, -3.0],
+    [3.0, 0],
+    [-3.0, 0],
+  ];
+  for (const [x, z] of samplePoints) {
+    // Intentionally ignore result; this fills caches
+    getHeightAtPosition(x, z);
+  }
+}
+
 // Get platforms near a position using spatial grid
 function getPlatformsNear(x: number, z: number): Platform[] {
   initializeSpatialGrid();

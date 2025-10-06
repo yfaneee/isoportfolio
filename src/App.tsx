@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import IsometricScene from './components/IsometricScene';
-import UI from '../src/components/UI';
+import UI from './components/UI';
 import ControlsUI from './components/ControlsUI';
 import LoadingScreen from './components/LoadingScreen';
 import MenuOverlay from './components/MenuOverlay';
@@ -14,14 +14,17 @@ function App() {
   const [introComplete, setIntroComplete] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [menuDelayOver, setMenuDelayOver] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
 
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
+    setMenuDelayOver(false);
 
     menuTimerRef.current = setTimeout(() => {
       setShowMenu(true);
+      setMenuDelayOver(true);
     }, 300);
   }, []);
 
@@ -33,6 +36,8 @@ function App() {
         menuTimerRef.current = null;
       }
     }
+    // Whether or not the menu is shown, the intro/menu delay is considered over after first movement
+    setMenuDelayOver(true);
   }, [showMenu]);
 
   const handleSpacePress = useCallback(() => {
@@ -47,6 +52,7 @@ function App() {
       clearTimeout(menuTimerRef.current);
       menuTimerRef.current = null;
     }
+    setMenuDelayOver(true);
   }, [showMenu]);
 
   const handleNavigateToLocation = useCallback((location: string) => {
@@ -104,8 +110,8 @@ function App() {
         {/* Controls UI Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <ControlsUI introComplete={introComplete} />}
         
-        {/* UI Overlay - hidden when loading screen is visible */}
-        {!showLoadingScreen && <UI />}
+        {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay */}
+        <UI visible={introComplete && !showMenu && menuDelayOver} />
 
         {/* Menu Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
