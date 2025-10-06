@@ -71,3 +71,85 @@
 .menu-icon.menu-open:hover .menu-line.bottom {
   transform: rotate(-45deg) translate(6px, -6px) scale(1.1);
 }
+
+/* Responsive design */
+@media (max-width: 1366px) and (min-width: 1261px) {
+  .menu-icon {
+    top: 4rem;
+    right: 2.5rem;
+    width: 90px;
+    height: 26px;
+  }
+  
+  .menu-line {
+    height: 5px;
+  }
+}
+
+@media (max-width: 1260px) and (min-width: 1025px) {
+  .menu-icon {
+    top: 3.5rem;
+    right: 1.7rem;
+    width: 85px;
+    height: 25px;
+  }
+  
+  .menu-line {
+    height: 5px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .menu-icon {
+    top: 3rem;
+    right: 3rem;
+    width: 80px;
+    height: 24px;
+  }
+  
+  .menu-line {
+    height: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-icon {
+    top: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 20px;
+  }
+  
+  .menu-line {
+    height: 4px;
+  }
+  
+  .menu-icon.menu-open .menu-line.top {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .menu-icon.menu-open .menu-line.bottom {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-icon {
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 50px;
+    height: 18px;
+  }
+  
+  .menu-line {
+    height: 3px;
+  }
+  
+  .menu-icon.menu-open .menu-line.top {
+    transform: rotate(45deg) translate(4px, 4px);
+  }
+  
+  .menu-icon.menu-open .menu-line.bottom {
+    transform: rotate(-45deg) translate(4px, -4px);
+  }
+}
