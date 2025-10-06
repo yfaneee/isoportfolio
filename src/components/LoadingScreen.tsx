@@ -25,8 +25,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
       <button
         onClick={onStart}
         style={{
-          padding: '1rem 2rem',
-          fontSize: '1.5rem',
+          padding: window.innerWidth <= 768 ? '0.8rem 1.5rem' : '1rem 2rem',
+          fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.5rem',
           fontFamily: '"Coolvetica Rg", sans-serif',
           backgroundColor: '#FAA32B',
           color: 'white',

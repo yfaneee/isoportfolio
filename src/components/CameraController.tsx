@@ -102,10 +102,26 @@ const CameraController: React.FC<CameraControllerProps> = ({
       // Animate camera from far to close 
       const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
       const menuOffsetX = showMenu ? 3 : 0;
+      
+      // Responsive camera positioning 
+      const width = window.innerWidth;
+      let cameraDistance = 8;
+      let cameraHeight = 7;
+      if (width <= 1024) { 
+        cameraDistance = 11.5;
+        cameraHeight = 8.5;
+      } else if (width <= 1366) { 
+        cameraDistance = 10;
+        cameraHeight = 8;
+      } else if (width >= 1600) { 
+        cameraDistance = 9;
+        cameraHeight = 7.5;
+      }
+      
       const targetCameraPos = [
-        characterPosition[0] + 8 + menuOffsetX,
-        characterPosition[1] + 7,
-        characterPosition[2] + 8
+        characterPosition[0] + cameraDistance + menuOffsetX,
+        characterPosition[1] + cameraHeight,
+        characterPosition[2] + cameraDistance
       ];
 
       camera.position.set(
@@ -126,10 +142,25 @@ const CameraController: React.FC<CameraControllerProps> = ({
       const menuOffsetZ = showMenu ? -1 : 0;
       const menuOffsetY = showMenu ? -3 : 0;
       
+      // Responsive camera positioning (iPad Pro/1024, Laptop 1366, Wide 1600)
+      const width = window.innerWidth;
+      let cameraDistance = 8;
+      let cameraHeight = 7;
+      if (width <= 1024) { // iPad Pro
+        cameraDistance = 11.5;
+        cameraHeight = 8.5;
+      } else if (width <= 1366) { // common laptop
+        cameraDistance = 10;
+        cameraHeight = 8;
+      } else if (width >= 1600) { // wide
+        cameraDistance = 9;
+        cameraHeight = 7.5;
+      }
+      
       const targetPos = new THREE.Vector3(
-        characterPosition[0] + 8 + menuOffsetX,
-        characterPosition[1] + 7 + menuOffsetY,
-        characterPosition[2] + 8 + menuOffsetZ
+        characterPosition[0] + cameraDistance + menuOffsetX,
+        characterPosition[1] + cameraHeight + menuOffsetY,
+        characterPosition[2] + cameraDistance + menuOffsetZ
       );
       const targetLookAt = new THREE.Vector3(
         characterPosition[0] + menuOffsetX, 

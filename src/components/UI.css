@@ -66,18 +66,95 @@
 }
 
 /* Responsive tweaks */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .controls-hint {
-    left: 10px;
-    bottom: 10px;
+    left: 8px;
+    bottom: 8px;
+    padding: 6px 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .controls-hint .keys kbd {
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+    padding: 0 4px;
+    margin-right: 2px;
+  }
+
+  .controls-hint .or {
+    font-size: 10px;
+  }
+
+  .controls-hint .label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .controls-hint {
+    left: 6px;
+    bottom: 6px;
+    padding: 4px 6px;
+    font-size: 10px;
+    gap: 3px;
+  }
+
+  .controls-hint .keys kbd {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+    padding: 0 3px;
+    margin-right: 1px;
+  }
+
+  .controls-hint .control-row {
+    gap: 4px;
+  }
+}
+
+/* iPad Pro 1024px width */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .controls-hint {
+    left: 8px;
+    bottom: 14px;
     padding: 6px 8px;
     font-size: 11px;
   }
+  .controls-hint .keys kbd {
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+}
 
+/* Laptop 1366px width */
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .controls-hint {
+    left: 14px;
+    bottom: 14px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
   .controls-hint .keys kbd {
     min-width: 20px;
     height: 20px;
     font-size: 11px;
-    padding: 0 5px;
+  }
+}
+
+/* Wide 1600px width */
+@media (max-width: 1600px) and (min-width: 1367px) {
+  .controls-hint {
+    left: 20px;
+    bottom: 24px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .controls-hint .keys kbd {
+    min-width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 }

@@ -142,3 +142,79 @@
     font-size: 1.8rem;
   }
 }
+
+@media (max-width: 1024px) {
+  .menu-overlay {
+    left: 2rem;
+    transform: translateX(-100%);
+    width: 500px;
+    height: calc(100vh - 6rem);
+    top: 3rem;
+  }
+  .menu-section h3 {
+    font-size: 1.4rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.3rem;
+    padding: 0.7rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .menu-overlay {
+    left: 8rem;
+    transform: translateX(-100%);
+    width: 550px;
+    height: calc(100vh - 6rem);
+    top: 3rem;
+  }
+  .menu-section h3 {
+    font-size: 1.5rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.4rem;
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
+
+/* Wider laptops/desktops: 1600px width */
+@media (max-width: 1600px) and (min-width: 1367px) {
+  .menu-overlay {
+    left: 9rem;
+    transform: translateX(-100%);
+    width: 600px;
+    height: calc(100vh - 7rem);
+    top: 3.5rem;
+  }
+  .menu-section h3 {
+    font-size: 1.6rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.5rem;
+    padding: 0.9rem;
+  }
+}
+
+@media (max-width: 1600px) and (min-width: 1367px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
