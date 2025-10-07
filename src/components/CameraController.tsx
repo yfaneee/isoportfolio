@@ -12,6 +12,7 @@ interface CameraControllerProps {
   showContent: boolean;
   isTransitioning: boolean;
   showLoadingScreen: boolean;
+  isNavigatingSlabs?: boolean;
 }
 
 const CameraController: React.FC<CameraControllerProps> = ({
@@ -22,7 +23,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
   showMenu,
   showContent,
   isTransitioning,
-  showLoadingScreen
+  showLoadingScreen,
+  isNavigatingSlabs = false
 }) => {
   const { camera } = useThree();
   const orbitControlsRef = useRef<any>(null);
@@ -53,10 +55,20 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   }, [showLoadingScreen]);
 
-  // Handle smooth camera animation when menu or content box state changes
+  // Handle camera animation 
+  const prevNavigatingRef = useRef(isNavigatingSlabs);
+  
   useEffect(() => {
     if (introComplete && !isUsingOrbitControls.current) {
-      // Start camera animation when menu or content box visibility changes
+      const wasNavigating = prevNavigatingRef.current;
+      const isNavigatingOff = wasNavigating && !isNavigatingSlabs;
+      
+      prevNavigatingRef.current = isNavigatingSlabs;
+      
+      if (isNavigatingOff) {
+        return;
+      }
+      
       const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
       
       cameraAnimationRef.current = {
@@ -66,7 +78,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
         startLookAt: new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2])
       };
     }
-  }, [showMenu, showContent, isTransitioning, introComplete, camera.position, characterControllerRef]);
+  }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
 
   // Orbit controls handlers
   const handleOrbitStart = () => {

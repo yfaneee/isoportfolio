@@ -16,9 +16,11 @@ interface CharacterControlsReturn {
   isMovingRef: React.MutableRefObject<boolean>;
   centerOnSlab: () => void;
   teleportToLocation: (location: string) => void;
+  onNavigatePrev?: () => void;
+  onNavigateNext?: () => void;
 }
 
-export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void) => {
+export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void, onNavigatePrev?: () => void, onNavigateNext?: () => void) => {
   const platformHeight = getHeightAtPosition(initialPosition[0], initialPosition[2]);
   const adjustedPosition: [number, number, number] = platformHeight !== null
     ? [initialPosition[0], platformHeight, initialPosition[2]]
@@ -41,13 +43,45 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      if (key === 'w' || key === 'arrowup') {
+      
+      // Check if content is open 
+      const isContentOpen = document.querySelector('.content-box.visible') !== null;
+      
+      // Handle arrow keys for navigation when content is open
+      if (isContentOpen) {
+        if (key === 'arrowleft') {
+          e.preventDefault();
+          console.log('Left arrow pressed, onNavigatePrev:', onNavigatePrev);
+          if (onNavigatePrev) {
+            onNavigatePrev();
+          }
+          return;
+        } else if (key === 'arrowright') {
+          e.preventDefault();
+          console.log('Right arrow pressed, onNavigateNext:', onNavigateNext);
+          if (onNavigateNext) {
+            onNavigateNext();
+          }
+          return;
+        }
+      }
+      
+      // Normal movement controls 
+      if (key === 'w') {
         keysRef.current.forward = true;
-      } else if (key === 's' || key === 'arrowdown') {
+      } else if (key === 's') {
         keysRef.current.backward = true;
-      } else if (key === 'a' || key === 'arrowleft') {
+      } else if (key === 'a') {
         keysRef.current.left = true;
-      } else if (key === 'd' || key === 'arrowright') {
+      } else if (key === 'd') {
+        keysRef.current.right = true;
+      } else if (!isContentOpen && key === 'arrowup') {
+        keysRef.current.forward = true;
+      } else if (!isContentOpen && key === 'arrowdown') {
+        keysRef.current.backward = true;
+      } else if (!isContentOpen && key === 'arrowleft') {
+        keysRef.current.left = true;
+      } else if (!isContentOpen && key === 'arrowright') {
         keysRef.current.right = true;
       } else if (key === ' ') {
         if (!keysRef.current.space) {
@@ -64,8 +98,19 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Check if on middle bone white slab 
             const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
             
-            if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab) && onSpacePress) {
-              // Center character on slab and trigger space press
+            // Check staircase slabs
+            const isOnStaircaseSlab1 = x >= -11.075 && x <= -10.175 && z >= 1.05 && z <= 1.95;
+            const isOnStaircaseSlab2 = x >= -14.075 && x <= -13.175 && z >= 1.05 && z <= 1.95;
+            const isOnStaircaseSlab3 = x >= -14.075 && x <= -13.175 && z >= -1.95 && z <= -1.05;
+            const isOnStaircaseSlab4 = x >= -11.075 && x <= -10.175 && z >= -1.95 && z <= -1.05;
+            const isOnStaircaseSlab5 = x >= -8.075 && x <= -7.175 && z >= -1.95 && z <= -1.05;
+            
+            // Check artwork platform slab
+            const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
+            
+            if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
+                 isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
+                 isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab) && onSpacePress) {
               centerOnSlab();
               onSpacePress();
             }
@@ -96,24 +141,26 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [onNavigatePrev, onNavigateNext]);
 
-  // Update character position based on keys (called every frame)
+  // Update character position based on keys 
   const updateCharacter = (delta: number) => {
     const [currentX, currentY, currentZ] = positionRef.current;
-    
-    // Always check elevator first (even without movement input)
-    if (isOnElevator(currentX, currentZ)) {
-      const elevatorY = getElevatorHeight();
-      if (Math.abs(currentY - elevatorY) > 0.1) {
-        positionRef.current = [currentX, elevatorY, currentZ];
-        return; 
-      }
-    }
     
     // Check if any movement keys are pressed
     const hasInput = keysRef.current.forward || keysRef.current.backward || 
                      keysRef.current.left || keysRef.current.right;
+    
+    // Handle elevator logic - simplified
+    if (isOnElevator(currentX, currentZ)) {
+      const elevatorY = getElevatorHeight();
+      if (Math.abs(currentY - elevatorY) > 0.2) {
+        positionRef.current = [currentX, elevatorY, currentZ];
+      }
+      shiftElevator.wasOnElevator = true;
+    } else {
+      shiftElevator.wasOnElevator = false;
+    }
     
     if (!hasInput) {
       isMovingRef.current = false;
@@ -173,6 +220,16 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
     const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
     
+    // Check staircase slabs
+    const isOnStaircaseSlab1 = x >= -11.075 && x <= -10.175 && z >= 1.05 && z <= 1.95;
+    const isOnStaircaseSlab2 = x >= -14.075 && x <= -13.175 && z >= 1.05 && z <= 1.95;
+    const isOnStaircaseSlab3 = x >= -14.075 && x <= -13.175 && z >= -1.95 && z <= -1.05;
+    const isOnStaircaseSlab4 = x >= -11.075 && x <= -10.175 && z >= -1.95 && z <= -1.05;
+    const isOnStaircaseSlab5 = x >= -8.075 && x <= -7.175 && z >= -1.95 && z <= -1.05;
+    
+    // Check artwork platform slab
+    const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
+    
     let centerX = x;
     let centerZ = z;
     
@@ -184,6 +241,24 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       centerZ = -12;
     } else if (isOnMiddleSlab) {
       centerX = 0;
+      centerZ = 0;
+    } else if (isOnStaircaseSlab1) {
+      centerX = -10.625;
+      centerZ = 1.5;
+    } else if (isOnStaircaseSlab2) {
+      centerX = -13.625;
+      centerZ = 1.5;
+    } else if (isOnStaircaseSlab3) {
+      centerX = -13.625;
+      centerZ = -1.5;
+    } else if (isOnStaircaseSlab4) {
+      centerX = -10.625;
+      centerZ = -1.5;
+    } else if (isOnStaircaseSlab5) {
+      centerX = -7.625;
+      centerZ = -1.5;
+    } else if (isOnArtworkSlab) {
+      centerX = 10.5;
       centerZ = 0;
     }
     
@@ -243,13 +318,22 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       targetPosition[1] = correctHeight;
     }
     
-    // Fix elevator state when teleporting to artwork platform
+    // Fix elevator state when teleporting
     if (location === 'artwork') {
       shiftElevator.currentY = shiftElevator.bottomY;
       shiftElevator.wasOnElevator = false; 
+    } else {
+      // Reset elevator tracking for non-elevator teleports
+      shiftElevator.wasOnElevator = false;
     }
     
     positionRef.current = targetPosition;
+    
+    // Validate position with collision system to prevent bugs
+    const validated = constrainToPlatform(targetPosition[0], targetPosition[2], targetPosition[1], targetPosition[0], targetPosition[2]);
+    if (validated.onPlatform) {
+      positionRef.current = [validated.x, validated.y, validated.z];
+    }
   };
 
   // Touch handler for mobile devices
@@ -302,6 +386,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     teleportToLocation,
     handleTouch,
     stopMovement,
+    onNavigatePrev,
+    onNavigateNext,
   };
 };
 

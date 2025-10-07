@@ -11,8 +11,12 @@ interface IsometricSceneProps {
   isTransitioning: boolean;
   onMovementStart: () => void;
   onSpacePress?: () => void;
+  onNavigatePrev?: () => void;
+  onNavigateNext?: () => void;
   characterControllerRef: React.RefObject<any>;
   showLoadingScreen: boolean;
+  characterOpacity?: number;
+  isNavigatingSlabs?: boolean;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -22,8 +26,12 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   isTransitioning,
   onMovementStart,
   onSpacePress,
+  onNavigatePrev,
+  onNavigateNext,
   characterControllerRef,
-  showLoadingScreen
+  showLoadingScreen,
+  characterOpacity = 1,
+  isNavigatingSlabs = false
 }) => {
   const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
@@ -66,6 +74,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
                showContent={showContent}
                isTransitioning={isTransitioning}
                showLoadingScreen={showLoadingScreen}
+               isNavigatingSlabs={isNavigatingSlabs}
              />
       
       {/* The isometric world */}
@@ -80,6 +89,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onMovementChange={handleMovementChange}
         introComplete={introComplete}
         onSpacePress={onSpacePress}
+        onNavigatePrev={onNavigatePrev}
+        onNavigateNext={onNavigateNext}
+        opacity={characterOpacity}
       />
     </>
   );

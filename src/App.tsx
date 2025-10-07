@@ -8,8 +8,9 @@ import LoadingScreen from './components/LoadingScreen';
 import MenuOverlay from './components/MenuOverlay';
 import MenuIcon from './components/MenuIcon';
 import Content from './components/Content';
-import { getContentForSlab, ContentItem } from './data/ContentData';
+import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
+import { shiftElevator } from './utils/elevatorSystem';
 import './App.css';
 import './styles/fonts.css';
 
@@ -21,6 +22,9 @@ function App() {
   const [currentContent, setCurrentContent] = useState<ContentItem | null>(null);
   const [menuDelayOver, setMenuDelayOver] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [characterOpacity, setCharacterOpacity] = useState(1);
+  const [currentSlabKey, setCurrentSlabKey] = useState<string | null>(null);
+  const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
 
@@ -44,23 +48,29 @@ function App() {
     }
     if (showContent) {
       setShowContent(false);
+      setCurrentContent(null);
+      setCurrentSlabKey(null);
     }
-    // Whether or not the menu is shown, the intro/menu delay is considered over after first movement
     setMenuDelayOver(true);
   }, [showMenu, showContent]);
 
   const handleSpacePress = useCallback(() => {
+    console.log('handleSpacePress called, showMenu:', showMenu, 'showContent:', showContent);
     if (!showMenu && !showContent) {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      console.log('Character position:', characterPos);
       
       // Get content for the current slab
       const content = getContentForSlab(characterPos[0], characterPos[2]);
+      const slabKey = getSlabKeyFromPosition(characterPos[0], characterPos[2]);
+      console.log('Content found:', content, 'SlabKey:', slabKey);
       
       const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
       
       if (content) {
         setCurrentContent(content);
+        setCurrentSlabKey(slabKey);
         setShowContent(true);
       } else if (isOnMiddleSlab) {
         setShowMenu(true);
@@ -109,8 +119,176 @@ function App() {
     // Teleport character to location
     if (characterControllerRef.current) {
       characterControllerRef.current.teleportToLocation(location);
+      
+      setTimeout(() => {
+        const newPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+        const content = getContentForSlab(newPos[0], newPos[2]);
+        const slabKey = getSlabKeyFromPosition(newPos[0], newPos[2]);
+        
+        if (content) {
+          setCurrentContent(content);
+          setCurrentSlabKey(slabKey);
+          setShowContent(true);
+        }
+      }, 1200); 
     }
   }, []);
+
+  // Navigate to next slab with magic transition
+  const handleNavigateNext = useCallback(() => {
+    if (!currentSlabKey || !characterControllerRef.current) return;
+    
+    const currentIndex = slabNavigationOrder.indexOf(currentSlabKey);
+    const nextIndex = (currentIndex + 1) % slabNavigationOrder.length;
+    const nextSlabKey = slabNavigationOrder[nextIndex];
+    const nextLocation = getLocationFromSlabKey(nextSlabKey);
+    const nextContent = contentData[nextSlabKey];
+    
+    if (!nextContent) return;
+    
+    // Start slab navigation mode - camera will move independently
+    setIsNavigatingSlabs(true);
+    
+    // Smooth fade out with easing
+    const fadeOutDuration = 500; // 500ms 
+    const startTime = Date.now();
+    
+    const fadeOutAnimation = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / fadeOutDuration, 1);
+      
+      // Ease-in-out for smoother fade
+      const eased = progress < 0.5 
+        ? 2 * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      setCharacterOpacity(1 - eased);
+      
+      if (progress < 1) {
+        requestAnimationFrame(fadeOutAnimation);
+      } else {
+        // Character is now invisible, teleport
+        setTimeout(() => {
+          characterControllerRef.current.teleportToLocation(nextLocation);
+          
+          // Update content immediately
+          setCurrentContent(nextContent);
+          setCurrentSlabKey(nextSlabKey);
+          
+          // Reset elevator state after teleport to prevent conflicts
+          setTimeout(() => {
+            shiftElevator.wasOnElevator = false;
+            shiftElevator.isMoving = false;
+            shiftElevator.currentY = shiftElevator.topY;
+          }, 50);
+          
+          // Wait for camera to arrive, then fade character back in
+          setTimeout(() => {
+            const fadeInStartTime = Date.now();
+            
+            const fadeInAnimation = () => {
+              const elapsed = Date.now() - fadeInStartTime;
+              const progress = Math.min(elapsed / fadeOutDuration, 1);
+              
+              // Ease-in-out for smoother fade
+              const eased = progress < 0.5 
+                ? 2 * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+              
+              setCharacterOpacity(eased);
+              
+              if (progress < 1) {
+                requestAnimationFrame(fadeInAnimation);
+              } else {
+                setCharacterOpacity(1);
+                setIsNavigatingSlabs(false);
+              }
+            };
+            
+            fadeInAnimation();
+          }, 800); 
+        }, 100);
+      }
+    };
+    
+    fadeOutAnimation();
+  }, [currentSlabKey]);
+
+  // Navigate to previous slab with magic transition
+  const handleNavigatePrev = useCallback(() => {
+    if (!currentSlabKey || !characterControllerRef.current) return;
+    
+    const currentIndex = slabNavigationOrder.indexOf(currentSlabKey);
+    const prevIndex = (currentIndex - 1 + slabNavigationOrder.length) % slabNavigationOrder.length;
+    const prevSlabKey = slabNavigationOrder[prevIndex];
+    const prevLocation = getLocationFromSlabKey(prevSlabKey);
+    const prevContent = contentData[prevSlabKey];
+    
+    if (!prevContent) return;
+    
+    // Start slab navigation mode - camera will move independently
+    setIsNavigatingSlabs(true);
+    
+    // Smooth fade out with easing
+    const fadeOutDuration = 500; 
+    const startTime = Date.now();
+    
+    const fadeOutAnimation = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / fadeOutDuration, 1);
+      
+      // Ease-in-out for smoother fade
+      const eased = progress < 0.5 
+        ? 2 * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      setCharacterOpacity(1 - eased);
+      
+      if (progress < 1) {
+        requestAnimationFrame(fadeOutAnimation);
+      } else {
+        // Character is now invisible, teleport
+        setTimeout(() => {
+          characterControllerRef.current.teleportToLocation(prevLocation);
+          
+          // Update content immediately
+          setCurrentContent(prevContent);
+          setCurrentSlabKey(prevSlabKey);
+          
+          setTimeout(() => {
+            shiftElevator.wasOnElevator = false;
+          }, 50);
+          
+          // Wait for camera to arrive, then fade character back in
+          setTimeout(() => {
+            const fadeInStartTime = Date.now();
+            
+            const fadeInAnimation = () => {
+              const elapsed = Date.now() - fadeInStartTime;
+              const progress = Math.min(elapsed / fadeOutDuration, 1);
+              
+              const eased = progress < 0.5 
+                ? 2 * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+              
+              setCharacterOpacity(eased);
+              
+              if (progress < 1) {
+                requestAnimationFrame(fadeInAnimation);
+              } else {
+                setCharacterOpacity(1);
+                setIsNavigatingSlabs(false);
+              }
+            };
+            
+            fadeInAnimation();
+          }, 800); 
+        }, 100);
+      }
+    };
+    
+    fadeOutAnimation();
+  }, [currentSlabKey]);
 
   // Cleanup timer on unmount
   React.useEffect(() => {
@@ -165,16 +343,20 @@ function App() {
             }
           }}
         >
-                 <IsometricScene
-                   onIntroComplete={handleIntroComplete}
-                   showMenu={showMenu}
-                   showContent={showContent}
-                   isTransitioning={isTransitioning}
-                   onMovementStart={handleMovementStart}
-                   onSpacePress={handleSpacePress}
-                   characterControllerRef={characterControllerRef}
-                   showLoadingScreen={showLoadingScreen}
-                 />
+                <IsometricScene
+                  onIntroComplete={handleIntroComplete}
+                  showMenu={showMenu}
+                  showContent={showContent}
+                  isTransitioning={isTransitioning}
+                  onMovementStart={handleMovementStart}
+                  onSpacePress={handleSpacePress}
+                  onNavigatePrev={handleNavigatePrev}
+                  onNavigateNext={handleNavigateNext}
+                  characterControllerRef={characterControllerRef}
+                  showLoadingScreen={showLoadingScreen}
+                  characterOpacity={characterOpacity}
+                  isNavigatingSlabs={isNavigatingSlabs}
+                />
         </Canvas>
         
         {/* Controls UI Overlay - hidden when loading screen is visible */}
@@ -187,7 +369,16 @@ function App() {
         {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
 
         {/* Content Box - hidden when loading screen is visible */}
-        {!showLoadingScreen && <Content isVisible={showContent} content={currentContent} />}
+        {!showLoadingScreen && (
+          <Content 
+            isVisible={showContent} 
+            content={currentContent}
+            onNavigatePrev={handleNavigatePrev}
+            onNavigateNext={handleNavigateNext}
+            canNavigatePrev={!!currentSlabKey}
+            canNavigateNext={!!currentSlabKey}
+          />
+        )}
 
         {/* Menu Icon - visible when intro is complete */}
         {!showLoadingScreen && introComplete && (

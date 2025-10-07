@@ -7,14 +7,20 @@ interface CharacterControllerProps {
   onMovementChange: (moving: boolean) => void;
   introComplete: boolean;
   onSpacePress?: () => void;
+  onNavigatePrev?: () => void;
+  onNavigateNext?: () => void;
+  opacity?: number;
 }
 
 const CharacterController = React.forwardRef<any, CharacterControllerProps>(({ 
   onMovementChange,
   introComplete,
-  onSpacePress
+  onSpacePress,
+  onNavigatePrev,
+  onNavigateNext,
+  opacity = 1
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0, 0], onSpacePress);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
 
   // Expose direct position access method
@@ -50,6 +56,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
       position={renderPosition}
       rotation={rotationRef.current}
       isMoving={isMovingRef.current}
+      opacity={opacity}
     />
   );
 });
