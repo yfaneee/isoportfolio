@@ -3,9 +3,11 @@ import './UI.css';
 
 interface UIProps {
   visible: boolean;
+  canInteract?: boolean;
+  showContent?: boolean;
 }
 
-const UI: React.FC<UIProps> = ({ visible }) => {
+const UI: React.FC<UIProps> = ({ visible, canInteract = false, showContent = false }) => {
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   
   return (
@@ -18,12 +20,14 @@ const UI: React.FC<UIProps> = ({ visible }) => {
               <div className="control-row">
                 <span className="label">Touch to move</span>
               </div>
-              <div className="control-row">
-                <span className="keys">
-                  <kbd>Space</kbd>
-                </span>
-                <span className="label">Interact</span>
-              </div>
+              {canInteract && !showContent && (
+                <div className="control-row">
+                  <span className="keys">
+                    <kbd>Space</kbd>
+                  </span>
+                  <span className="label">Interact</span>
+                </div>
+              )}
             </>
           ) : (
             // Desktop controls
@@ -35,21 +39,25 @@ const UI: React.FC<UIProps> = ({ visible }) => {
                   <kbd>S</kbd>
                   <kbd>D</kbd>
                 </span>
-                <span className="or">or</span>
-                <span className="keys arrows">
-                  <kbd>↑</kbd>
-                  <kbd>←</kbd>
-                  <kbd>↓</kbd>
-                  <kbd>→</kbd>
-                </span>
                 <span className="label">Move</span>
               </div>
-              <div className="control-row">
-                <span className="keys">
-                  <kbd>Space</kbd>
-                </span>
-                <span className="label">Interact</span>
-              </div>
+              {canInteract && !showContent && (
+                <div className="control-row">
+                  <span className="keys">
+                    <kbd>Space</kbd>
+                  </span>
+                  <span className="label">Interact</span>
+                </div>
+              )}
+              {showContent && (
+                <div className="control-row">
+                  <span className="keys">
+                    <kbd>←</kbd>
+                    <kbd>→</kbd>
+                  </span>
+                  <span className="label">Navigate platforms</span>
+                </div>
+              )}
             </>
           )}
         </div>

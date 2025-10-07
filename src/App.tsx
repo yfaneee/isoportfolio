@@ -6,6 +6,7 @@ import UI from './components/UI';
 import ControlsUI from './components/ControlsUI';
 import LoadingScreen from './components/LoadingScreen';
 import MenuOverlay from './components/MenuOverlay';
+import InfoPanel from './components/InfoPanel';
 import MenuIcon from './components/MenuIcon';
 import Content from './components/Content';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
@@ -25,6 +26,7 @@ function App() {
   const [characterOpacity, setCharacterOpacity] = useState(1);
   const [currentSlabKey, setCurrentSlabKey] = useState<string | null>(null);
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
+  const [canInteract, setCanInteract] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
 
@@ -175,11 +177,14 @@ function App() {
           setCurrentContent(nextContent);
           setCurrentSlabKey(nextSlabKey);
           
-          // Reset elevator state after teleport to prevent conflicts
           setTimeout(() => {
             shiftElevator.wasOnElevator = false;
             shiftElevator.isMoving = false;
-            shiftElevator.currentY = shiftElevator.topY;
+            if (nextSlabKey === 'artwork-platform-slab') {
+              shiftElevator.currentY = shiftElevator.bottomY;
+            } else {
+              shiftElevator.currentY = shiftElevator.topY;
+            }
           }, 50);
           
           // Wait for camera to arrive, then fade character back in
@@ -257,6 +262,12 @@ function App() {
           
           setTimeout(() => {
             shiftElevator.wasOnElevator = false;
+            shiftElevator.isMoving = false;
+            if (prevSlabKey === 'artwork-platform-slab') {
+              shiftElevator.currentY = shiftElevator.bottomY;
+            } else {
+              shiftElevator.currentY = shiftElevator.topY;
+            }
           }, 50);
           
           // Wait for camera to arrive, then fade character back in
@@ -304,6 +315,39 @@ function App() {
     preloadCommonPlatforms();
   }, []);
 
+  // Check if character is on an interactable slab
+  useEffect(() => {
+    if (!introComplete || showMenu || showContent) {
+      setCanInteract(false);
+      return;
+    }
+
+    const checkInterval = setInterval(() => {
+      const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      const content = getContentForSlab(characterPos[0], characterPos[2]);
+      const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
+                            characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
+      
+      setCanInteract(!!(content || isOnMiddleSlab));
+    }, 100); 
+
+    return () => clearInterval(checkInterval);
+  }, [introComplete, showMenu, showContent]);
+
+  // Handle ESC key to close menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showMenu && !isTransitioning) {
+        handleMenuIconClick();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showMenu, isTransitioning, handleMenuIconClick]);
+
   const handleStart = useCallback(() => {
     setShowLoadingScreen(false);
   }, []);
@@ -320,7 +364,7 @@ function App() {
           style={{ 
             width: '100vw', 
             height: '100vh',
-            background: 'linear-gradient(135deg, #FCF5C4 0%, #F5E8A0 50%, #E8D570 100%)',
+            background: 'linear-gradient(135deg, #E5D3FF 0%, #C5A3FF 50%, #A580FF 100%)',
             touchAction: 'none'
           }}
           onTouchStart={(e) => {
@@ -363,10 +407,17 @@ function App() {
         {!showLoadingScreen && <ControlsUI introComplete={introComplete} />}
         
         {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay */}
-        <UI visible={introComplete && !showMenu && !showContent && menuDelayOver} />
+        <UI 
+          visible={introComplete && !showMenu && menuDelayOver} 
+          canInteract={canInteract}
+          showContent={showContent}
+        />
 
         {/* Menu Overlay - hidden when loading screen is visible */}
         {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
+
+        {/* Info Panel - hidden when loading screen is visible */}
+        {!showLoadingScreen && <InfoPanel isVisible={showMenu} />}
 
         {/* Content Box - hidden when loading screen is visible */}
         {!showLoadingScreen && (

@@ -20,7 +20,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 1000,
-      pointerEvents: 'none' // Allow clicks to pass through to the 3D scene
+      pointerEvents: 'none'
     }}>
       <button
         onClick={onStart}
@@ -28,23 +28,24 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
           padding: window.innerWidth <= 768 ? '0.8rem 1.5rem' : '1rem 2rem',
           fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.5rem',
           fontFamily: '"Coolvetica Rg", sans-serif',
-          backgroundColor: '#FAA32B',
-          color: 'white',
+          backgroundColor: '#E6E0FF',
+          color: '#2E003E',
           border: 'none',
           borderRadius: '8px',
           cursor: 'pointer',
           fontWeight: 'normal',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease',
-          pointerEvents: 'auto' // Re-enable pointer events for the button
+          pointerEvents: 'auto' 
         }}
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#E8931F';
+          e.currentTarget.style.backgroundColor = '#2E003E';
+          e.currentTarget.style.color = '#E6E0FF';
           e.currentTarget.style.transform = 'translateY(-2px)';
           e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.4)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#FAA32B';
+          e.currentTarget.style.backgroundColor = '#E6E0FF';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
         }}

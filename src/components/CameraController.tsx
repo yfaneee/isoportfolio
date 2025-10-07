@@ -57,6 +57,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
 
   // Handle camera animation 
   const prevNavigatingRef = useRef(isNavigatingSlabs);
+  const currentLookAtRef = useRef(new THREE.Vector3(0, 0.22, 0));
   
   useEffect(() => {
     if (introComplete && !isUsingOrbitControls.current) {
@@ -68,14 +69,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
       if (isNavigatingOff) {
         return;
       }
-      
-      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
-      
+    
       cameraAnimationRef.current = {
         isAnimating: true,
         startTime: Date.now(),
         startPos: camera.position.clone(),
-        startLookAt: new THREE.Vector3(characterPosition[0], characterPosition[1], characterPosition[2])
+        startLookAt: currentLookAtRef.current.clone()
       };
     }
   }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
@@ -104,6 +103,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
       // Loading screen state - show preview from far away
       camera.position.set(0, 40, 40);
       camera.lookAt(0, 0.22, 0);
+      currentLookAtRef.current.set(0, 0.22, 0);
       // Reset intro time when in loading screen
       introTimeRef.current = 0;
     } else if (!introComplete) {
@@ -152,7 +152,11 @@ const CameraController: React.FC<CameraControllerProps> = ({
         40 - eased * (40 - targetCameraPos[1]),
         40 - eased * (40 - targetCameraPos[2])
       );
-             camera.lookAt(characterPosition[0] + menuOffsetX + contentOffsetX, characterPosition[1], characterPosition[2]);
+             const introLookAtX = characterPosition[0] + menuOffsetX + contentOffsetX;
+             const introLookAtY = characterPosition[1];
+             const introLookAtZ = characterPosition[2];
+             camera.lookAt(introLookAtX, introLookAtY, introLookAtZ);
+             currentLookAtRef.current.set(introLookAtX, introLookAtY, introLookAtZ);
       
       if (t >= 1) {
         onIntroComplete();
@@ -195,10 +199,10 @@ const CameraController: React.FC<CameraControllerProps> = ({
                characterPosition[2] + cameraDistance + menuOffsetZ + contentOffsetZ
              );
              const targetLookAt = new THREE.Vector3(
-               characterPosition[0] + menuOffsetX + contentOffsetX,
-               characterPosition[1] + menuOffsetY + contentOffsetY,
-               characterPosition[2] + menuOffsetZ + contentOffsetZ
-             );
+              characterPosition[0] + menuOffsetX + contentOffsetX,
+              characterPosition[1] + menuOffsetY + contentOffsetY,
+              characterPosition[2] + menuOffsetZ + contentOffsetZ
+            );
 
       // Handle smooth camera animation
       if (cameraAnimationRef.current.isAnimating) {
@@ -217,16 +221,22 @@ const CameraController: React.FC<CameraControllerProps> = ({
         currentLookAt.lerp(targetLookAt, easedT);
         camera.lookAt(currentLookAt);
         
+        // Store current look-at for next animation
+        currentLookAtRef.current.copy(currentLookAt);
+        
         // End animation
         if (t >= 1) {
           cameraAnimationRef.current.isAnimating = false;
           camera.position.copy(targetPos);
           camera.lookAt(targetLookAt);
+          currentLookAtRef.current.copy(targetLookAt);
         }
       } else {
         // Direct camera following (no animation)
         camera.position.copy(targetPos);
         camera.lookAt(targetLookAt);
+        // Store current look-at for next animation
+        currentLookAtRef.current.copy(targetLookAt);
       }
     }
   });
