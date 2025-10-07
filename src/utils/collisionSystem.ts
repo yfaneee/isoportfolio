@@ -118,7 +118,7 @@ export const platforms: Platform[] = [
     triangleVertices: [{x: 10.5, z: 0}, {x: 12.0, z: -1.5}, {x: 12.0, z: 0}] }, 
   
   // 5x5 GRID FLOOR - Extended to include stair access areas
-  { minX: -3.55, maxX: 3.55, minZ: -9.3, maxZ: -5.25, y: 0.1, type: 'floor' },
+  { minX: -3.75, maxX: 3.55, minZ: -9.3, maxZ: -5.25, y: 0.1, type: 'floor' },
   
   // SECOND WALL BLOCKS - Medium height wall (smaller tall blocks)
   { minX: -3.75, maxX: 3.55, minZ: -10.4, maxZ: -9.6, y: 1.6, type: 'floor' },
