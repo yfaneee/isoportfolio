@@ -11,7 +11,7 @@ import MenuIcon from './components/MenuIcon';
 import Content from './components/Content';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
-import { shiftElevator } from './utils/elevatorSystem';
+import { shiftElevator, isOnElevator } from './utils/elevatorSystem';
 import './App.css';
 import './styles/fonts.css';
 
@@ -327,8 +327,9 @@ function App() {
       const content = getContentForSlab(characterPos[0], characterPos[2]);
       const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
+      const isOnElevatorPressurePlate = isOnElevator(characterPos[0], characterPos[2]);
       
-      setCanInteract(!!(content || isOnMiddleSlab));
+      setCanInteract(!!(content || isOnMiddleSlab || isOnElevatorPressurePlate));
     }, 100); 
 
     return () => clearInterval(checkInterval);

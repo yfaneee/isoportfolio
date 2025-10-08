@@ -863,17 +863,17 @@ const IsometricWorld: React.FC = () => {
       );
     }
 
-    // 12x3 PLATFORM 
-    const platform12x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9; 
-    const platform12x3Y = -floorHeight * 9; 
+    // 18x3 PLATFORM 
+    const platform18x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9; 
+    const platform18x3Y = -floorHeight * 9; 
     
-    // Create the simple 12x3 platform 
+    // Create the simple 18x3 platform 
     for (let x = 0; x < 3; x++) {
-      for (let z = 0; z < 12; z++) {
-        const platformKey = `platform-12x3-${x}-${z}`;
+      for (let z = 0; z < 18; z++) {
+        const platformKey = `platform-18x3-${x}-${z}`;
         const platformX = (x - 1) * spacing; 
-        const platformZ = platform12x3StartZ + z * spacing; 
-        const platformY = platform12x3Y;
+        const platformZ = platform18x3StartZ + z * spacing; 
+        const platformY = platform18x3Y;
         
         floors.push(
           <Box
@@ -890,18 +890,18 @@ const IsometricWorld: React.FC = () => {
       }
     }
 
-    // FOUNDATION for the 12x3 platform 
-    const platform12x3FoundationHeight = 200;
-    const platform12x3FoundationWidth = 3 * spacing; 
-    const platform12x3FoundationDepth = 12 * spacing;
-    const platform12x3FoundationCenterZ = platform12x3StartZ + (12 * spacing) / 2 - spacing/2; 
-    const foundationY = platform12x3Y - platform12x3FoundationHeight/2 - 0.15;
+    // FOUNDATION for the 18x3 platform 
+    const platform18x3FoundationHeight = 200;
+    const platform18x3FoundationWidth = 3 * spacing; 
+    const platform18x3FoundationDepth = 18 * spacing;
+    const platform18x3FoundationCenterZ = platform18x3StartZ + (18 * spacing) / 2 - spacing/2; 
+    const foundationY = platform18x3Y - platform18x3FoundationHeight/2 - 0.15;
     
     floors.push(
       <Box
-        key="platform-12x3-foundation-big"
-        position={[0, foundationY, platform12x3FoundationCenterZ]}
-        args={[platform12x3FoundationWidth, platform12x3FoundationHeight, platform12x3FoundationDepth]}
+        key="platform-18x3-foundation-big"
+        position={[0, foundationY, platform18x3FoundationCenterZ]}
+        args={[platform18x3FoundationWidth, platform18x3FoundationHeight, platform18x3FoundationDepth]}
       >
         <meshStandardMaterial 
           color={floorColor}
@@ -909,6 +909,538 @@ const IsometricWorld: React.FC = () => {
         {/* <Edges color="#D27E17" linewidth={2} /> */}
       </Box>
     );
+
+    // PROJECT SLABS on 18x3 platform 
+    const slabHeight = 0.1;
+    const slabSize = floorSize * 0.6;
+    const slabYOffset = platform18x3Y + floorHeight/2 + 0.07;
+    
+    // Project Slab 1
+    floors.push(
+      <Box
+        key="project-slab-1"
+        position={[-1, slabYOffset, platform18x3StartZ + 2 * spacing - 1.5]}
+        args={[slabSize, slabHeight, slabSize]}
+      >
+        <meshStandardMaterial 
+          color={'#F5F5DC'} 
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Project Slab 2
+    floors.push(
+      <Box
+        key="project-slab-2"
+        position={[-1, slabYOffset, platform18x3StartZ + 7 * spacing - 1.5]}
+        args={[slabSize, slabHeight, slabSize]}
+      >
+        <meshStandardMaterial 
+          color={'#F5F5DC'} 
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Project Slab 3 
+    floors.push(
+      <Box
+        key="project-slab-3"
+        position={[-1, slabYOffset, platform18x3StartZ + 12 * spacing - 1.5]}
+        args={[slabSize, slabHeight, slabSize]}
+      >
+        <meshStandardMaterial 
+          color={'#F5F5DC'} 
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Project Slab 4 
+    floors.push(
+      <Box
+        key="project-slab-4"
+        position={[-1, slabYOffset, platform18x3StartZ + 17 * spacing - 1.5]}
+        args={[slabSize, slabHeight, slabSize]}
+      >
+        <meshStandardMaterial 
+          color={'#F5F5DC'} 
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Extension on second row (z=1) of 18x3 platform
+    const secondRowZ = platform18x3StartZ + 1 * spacing;
+    const extensionX = -2.5 * spacing; 
+    
+    // Main continuation floor
+    floors.push(
+      <Box
+        key="platform-18x3-row2-extension"
+        position={[extensionX, platform18x3Y, secondRowZ]}
+        args={[floorSize, floorHeight, floorSize]}
+      >
+        <meshStandardMaterial 
+          color={'#C5A3FF'}
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Foundation for the extension floor
+    floors.push(
+      <Box
+        key="platform-18x3-row2-extension-foundation"
+        position={[extensionX, foundationY, secondRowZ]}
+        args={[floorSize, platform18x3FoundationHeight, floorSize]}
+      >
+        <meshStandardMaterial 
+          color={'#C5A3FF'}
+        />
+        {/* <Edges color="#D27E17" linewidth={2} /> */}
+      </Box>
+    );
+
+    // Two triangular pieces on either side
+    const triScale = 0.75; // Scale factor for triangle size
+    const extensionTriangles = [
+      // Right triangle 
+      { x: extensionX + spacing * 0.5, z: secondRowZ + spacing * 0.5, rotation: -Math.PI / 2, key: 'ext-tri-right' },
+      // Left triangle 
+      { x: extensionX + spacing * 0.5, z: secondRowZ - spacing * 0.5, rotation: Math.PI / 1, key: 'ext-tri-left' },
+    ];
+
+    extensionTriangles.forEach(tri => {
+      const triGeo = new THREE.BufferGeometry();
+      const triSize = floorSize * triScale;
+      const triVerts = new Float32Array([
+        0, 0, 0, triSize, 0, 0, 0, 0, triSize,
+        0, floorHeight, 0, triSize, floorHeight, 0, 0, floorHeight, triSize,
+      ]);
+      
+      const triIndices = [0, 1, 2, 3, 5, 4, 0, 3, 4, 0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 3, 2, 3, 0];
+      
+      triGeo.setAttribute('position', new THREE.BufferAttribute(triVerts, 3));
+      triGeo.setIndex(triIndices);
+      triGeo.computeVertexNormals();
+
+      floors.push(
+        <mesh
+          key={tri.key}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triGeo} attach="geometry" />
+          <meshStandardMaterial
+            color={'#C5A3FF'}
+            flatShading={true}
+          />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
+        </mesh>
+      );
+    });
+
+    // Triangular foundation pieces
+    const triFoundationGeometry = new THREE.BufferGeometry();
+    const triFoundationSize = floorSize * triScale;
+    const triFoundationVerts = new Float32Array([
+      0, 0, 0, triFoundationSize, 0, 0, 0, 0, triFoundationSize,
+      0, -platform18x3FoundationHeight, 0, triFoundationSize, -platform18x3FoundationHeight, 0, 0, -platform18x3FoundationHeight, triFoundationSize,
+    ]);
+    const triFoundationIndices = [
+      0, 1, 2, 0, 2, 1,
+      3, 5, 4, 3, 4, 5,
+      0, 3, 4, 0, 4, 1, 0, 4, 3, 0, 1, 4,
+      1, 4, 5, 1, 5, 2, 1, 5, 4, 1, 2, 5,
+      2, 5, 3, 2, 3, 0, 2, 3, 5, 2, 0, 3
+    ];
+    triFoundationGeometry.setAttribute('position', new THREE.BufferAttribute(triFoundationVerts, 3));
+    triFoundationGeometry.setIndex(triFoundationIndices);
+    triFoundationGeometry.computeVertexNormals();
+
+    extensionTriangles.forEach(tri => {
+      floors.push(
+        <mesh
+          key={`${tri.key}-foundation`}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triFoundationGeometry} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+          {/* <Edges color="#D27E17" linewidth={2} /> */}
+        </mesh>
+      );
+    });
+
+    // Billboard/Screen structure on the first floor
+    const billboardHeight = 2.7; 
+    const billboardWidth = 4; 
+    const billboardDepth = 0.3; 
+    const screenRecess = 0.1; 
+    const billboardPillarHeight = 2;
+    const pillarRadius = 0.2; 
+    
+    // billboard between the two triangles
+    const billboardX = extensionX + spacing * 0.5 - 0.7; 
+    const billboardZ = secondRowZ; 
+    const billboardY = platform18x3Y + billboardPillarHeight + billboardHeight/2; 
+    
+    // Pillar
+    floors.push(
+      <Box
+        key="billboard-pillar"
+        position={[billboardX, platform18x3Y + billboardPillarHeight/2, billboardZ]}
+        args={[pillarRadius * 2, billboardPillarHeight, pillarRadius * 1.5]}
+        rotation={[0, Math.PI / 4, 0]} 
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Main screen frame (outer box) 
+    floors.push(
+      <Box
+        key="billboard-frame"
+        position={[billboardX + 0.05, billboardY - 0.5, billboardZ + 0.05]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth, billboardHeight, billboardDepth]}
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Screen surface 
+    floors.push(
+      <Box
+        key="billboard-screen"
+        position={[billboardX + 0.15, billboardY - 0.5, billboardZ - 0.05 + billboardDepth/2 + screenRecess/2]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth - 0.4, billboardHeight - 0.4, screenRecess]}
+      >
+        <meshStandardMaterial color={'#2C2C2C'} />
+      </Box>
+    );
+    
+    // Second set - Row 7 (3 floor gap from row 2)
+    const row7Z = platform18x3StartZ + 6 * spacing;
+    
+    floors.push(
+      <Box
+        key="platform-18x3-row7-extension"
+        position={[extensionX, platform18x3Y, row7Z]}
+        args={[floorSize, floorHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    floors.push(
+      <Box
+        key="platform-18x3-row7-extension-foundation"
+        position={[extensionX, foundationY, row7Z]}
+        args={[floorSize, platform18x3FoundationHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    const extensionTriangles2 = [
+      { x: extensionX + spacing * 0.5, z: row7Z + spacing * 0.5, rotation: -Math.PI / 2, key: 'ext-tri2-right' },
+      { x: extensionX + spacing * 0.5, z: row7Z - spacing * 0.5, rotation: Math.PI / 1, key: 'ext-tri2-left' },
+    ];
+
+    extensionTriangles2.forEach(tri => {
+      const triGeo = new THREE.BufferGeometry();
+      const triSize = floorSize * triScale;
+      const triVerts = new Float32Array([
+        0, 0, 0, triSize, 0, 0, 0, 0, triSize,
+        0, floorHeight, 0, triSize, floorHeight, 0, 0, floorHeight, triSize,
+      ]);
+      const triIndices = [0, 1, 2, 3, 5, 4, 0, 3, 4, 0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 3, 2, 3, 0];
+      triGeo.setAttribute('position', new THREE.BufferAttribute(triVerts, 3));
+      triGeo.setIndex(triIndices);
+      triGeo.computeVertexNormals();
+
+      floors.push(
+        <mesh
+          key={tri.key}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triGeo} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    extensionTriangles2.forEach(tri => {
+      floors.push(
+        <mesh
+          key={`${tri.key}-foundation`}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triFoundationGeometry} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    // Billboard/Screen structure on row 7
+    const billboard2X = extensionX + spacing * 0.5 - 0.7; 
+    const billboard2Z = row7Z; 
+    const billboard2Y = platform18x3Y + billboardPillarHeight + billboardHeight/2; 
+    
+    // Pillar
+    floors.push(
+      <Box
+        key="billboard2-pillar"
+        position={[billboard2X, platform18x3Y + billboardPillarHeight/2, billboard2Z]}
+        args={[pillarRadius * 2, billboardPillarHeight, pillarRadius * 1.5]}
+        rotation={[0, Math.PI / 4, 0]} 
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Main screen frame (outer box) 
+    floors.push(
+      <Box
+        key="billboard2-frame"
+        position={[billboard2X + 0.05, billboard2Y - 0.5, billboard2Z + 0.05]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth, billboardHeight, billboardDepth]}
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Screen surface 
+    floors.push(
+      <Box
+        key="billboard2-screen"
+        position={[billboard2X + 0.15, billboard2Y - 0.5, billboard2Z - 0.05 + billboardDepth/2 + screenRecess/2]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth - 0.4, billboardHeight - 0.4, screenRecess]}
+      >
+        <meshStandardMaterial color={'#2C2C2C'} />
+      </Box>
+    );
+
+    // Third set - Row 12 (3 floor gap from row 7)
+    const row12Z = platform18x3StartZ + 11 * spacing;
+    
+    floors.push(
+      <Box
+        key="platform-18x3-row12-extension"
+        position={[extensionX, platform18x3Y, row12Z]}
+        args={[floorSize, floorHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    floors.push(
+      <Box
+        key="platform-18x3-row12-extension-foundation"
+        position={[extensionX, foundationY, row12Z]}
+        args={[floorSize, platform18x3FoundationHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    const extensionTriangles3 = [
+      { x: extensionX + spacing * 0.5, z: row12Z + spacing * 0.5, rotation: -Math.PI / 2, key: 'ext-tri3-right' },
+      { x: extensionX + spacing * 0.5, z: row12Z - spacing * 0.5, rotation: Math.PI / 1, key: 'ext-tri3-left' },
+    ];
+
+    extensionTriangles3.forEach(tri => {
+      const triGeo = new THREE.BufferGeometry();
+      const triSize = floorSize * triScale;
+      const triVerts = new Float32Array([
+        0, 0, 0, triSize, 0, 0, 0, 0, triSize,
+        0, floorHeight, 0, triSize, floorHeight, 0, 0, floorHeight, triSize,
+      ]);
+      const triIndices = [0, 1, 2, 3, 5, 4, 0, 3, 4, 0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 3, 2, 3, 0];
+      triGeo.setAttribute('position', new THREE.BufferAttribute(triVerts, 3));
+      triGeo.setIndex(triIndices);
+      triGeo.computeVertexNormals();
+
+      floors.push(
+        <mesh
+          key={tri.key}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triGeo} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    extensionTriangles3.forEach(tri => {
+      floors.push(
+        <mesh
+          key={`${tri.key}-foundation`}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triFoundationGeometry} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    // Billboard/Screen structure on row 12
+    const billboard3X = extensionX + spacing * 0.5 - 0.7; 
+    const billboard3Z = row12Z; 
+    const billboard3Y = platform18x3Y + billboardPillarHeight + billboardHeight/2; 
+    
+    // Pillar
+    floors.push(
+      <Box
+        key="billboard3-pillar"
+        position={[billboard3X, platform18x3Y + billboardPillarHeight/2, billboard3Z]}
+        args={[pillarRadius * 2, billboardPillarHeight, pillarRadius * 1.5]}
+        rotation={[0, Math.PI / 4, 0]} 
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Main screen frame (outer box) 
+    floors.push(
+      <Box
+        key="billboard3-frame"
+        position={[billboard3X + 0.05, billboard3Y - 0.5, billboard3Z + 0.05]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth, billboardHeight, billboardDepth]}
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Screen surface 
+    floors.push(
+      <Box
+        key="billboard3-screen"
+        position={[billboard3X + 0.15, billboard3Y - 0.5, billboard3Z - 0.05 + billboardDepth/2 + screenRecess/2]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth - 0.4, billboardHeight - 0.4, screenRecess]}
+      >
+        <meshStandardMaterial color={'#2C2C2C'} />
+      </Box>
+    );
+
+    // Fourth set - Row 17 (3 floor gap from row 12)
+    const row17Z = platform18x3StartZ + 16 * spacing;
+    
+    floors.push(
+      <Box
+        key="platform-18x3-row17-extension"
+        position={[extensionX, platform18x3Y, row17Z]}
+        args={[floorSize, floorHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    floors.push(
+      <Box
+        key="platform-18x3-row17-extension-foundation"
+        position={[extensionX, foundationY, row17Z]}
+        args={[floorSize, platform18x3FoundationHeight, floorSize]}
+      >
+        <meshStandardMaterial color={'#C5A3FF'} />
+      </Box>
+    );
+
+    const extensionTriangles4 = [
+      { x: extensionX + spacing * 0.5, z: row17Z + spacing * 0.5, rotation: -Math.PI / 2, key: 'ext-tri4-right' },
+      { x: extensionX + spacing * 0.5, z: row17Z - spacing * 0.5, rotation: Math.PI / 1, key: 'ext-tri4-left' },
+    ];
+
+    extensionTriangles4.forEach(tri => {
+      const triGeo = new THREE.BufferGeometry();
+      const triSize = floorSize * triScale;
+      const triVerts = new Float32Array([
+        0, 0, 0, triSize, 0, 0, 0, 0, triSize,
+        0, floorHeight, 0, triSize, floorHeight, 0, 0, floorHeight, triSize,
+      ]);
+      const triIndices = [0, 1, 2, 3, 5, 4, 0, 3, 4, 0, 4, 1, 1, 4, 5, 1, 5, 2, 2, 5, 3, 2, 3, 0];
+      triGeo.setAttribute('position', new THREE.BufferAttribute(triVerts, 3));
+      triGeo.setIndex(triIndices);
+      triGeo.computeVertexNormals();
+
+      floors.push(
+        <mesh
+          key={tri.key}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triGeo} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    extensionTriangles4.forEach(tri => {
+      floors.push(
+        <mesh
+          key={`${tri.key}-foundation`}
+          position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
+          rotation={[0, tri.rotation, 0]}
+        >
+          <primitive object={triFoundationGeometry} attach="geometry" />
+          <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
+        </mesh>
+      );
+    });
+
+    // Billboard/Screen structure on row 17
+    const billboard4X = extensionX + spacing * 0.5 - 0.7; 
+    const billboard4Z = row17Z; 
+    const billboard4Y = platform18x3Y + billboardPillarHeight + billboardHeight/2; 
+    
+    // Pillar
+    floors.push(
+      <Box
+        key="billboard4-pillar"
+        position={[billboard4X, platform18x3Y + billboardPillarHeight/2, billboard4Z]}
+        args={[pillarRadius * 2, billboardPillarHeight, pillarRadius * 1.5]}
+        rotation={[0, Math.PI / 4, 0]} 
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Main screen frame (outer box) 
+    floors.push(
+      <Box
+        key="billboard4-frame"
+        position={[billboard4X + 0.05, billboard4Y - 0.5, billboard4Z + 0.05]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth, billboardHeight, billboardDepth]}
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+    );
+    
+    // Screen surface 
+    floors.push(
+      <Box
+        key="billboard4-screen"
+        position={[billboard4X + 0.15, billboard4Y - 0.5, billboard4Z - 0.05 + billboardDepth/2 + screenRecess/2]}
+        rotation={[0, Math.PI / 4, 0]} 
+        args={[billboardWidth - 0.4, billboardHeight - 0.4, screenRecess]}
+      >
+        <meshStandardMaterial color={'#2C2C2C'} />
+      </Box>
+    );
+
     return <>{floors}</>;
   };
    

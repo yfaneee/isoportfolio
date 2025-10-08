@@ -163,8 +163,14 @@ export const platforms: Platform[] = [
   { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.80 - 0.75, maxZ: 5.80 + 0.75, y: -2.3, type: 'floor' },
   { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.25 - 0.75, maxZ: 6.25 + 0.75, y: -2.6, type: 'floor' },
   
-  // 12x3 PLATFORM - All 36 floor pieces (3x12) - collision boundaries moved forward
-  { minX: -1.5 - 0.75, maxX: 1.5 + 0.75, minZ: 7.7 - 0.75, maxZ: 24.1 + 0.75, y: -2.6, type: 'floor' },
+  // PROJECT SLABS on 18x3 platform (4 interactive slabs) - MUST BE BEFORE 18x3 PLATFORM for priority
+  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 2 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 2 * 1.5 - 1.5 + 0.45, y: -2.47, type: 'floor' },  
+  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 7 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 7 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' }, 
+  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 12 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 12 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
+  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 17 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 17 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
+  
+  // 18x3 PLATFORM -
+  { minX: -1.5 - 0.75, maxX: 1.5 + 0.75, minZ: 7.7 - 0.75, maxZ: 33.1 + 0.75, y: -2.6, type: 'floor' }, 
   
 ];
 
