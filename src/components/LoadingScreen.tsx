@@ -47,6 +47,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, isVisible }) => 
         onMouseOut={(e) => {
           e.currentTarget.style.backgroundColor = '#E6E0FF';
           e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.color = '#2E003E';
           e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
         }}
       >

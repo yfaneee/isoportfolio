@@ -30,7 +30,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
                <span className="control-desc">Interact / Activate elevator</span>
              </div>
              <div className="control-row">
-               <span className="key">← →</span>
+               <span className="key">← → Q E</span>
                <span className="control-desc">Navigate between platforms</span>
              </div>
              <div className="control-row">

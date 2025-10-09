@@ -2,7 +2,7 @@
 import { isOnElevator, getElevatorHeight, triggerElevator } from './elevatorSystem';
 
 // Performance optimization: Spatial grid for fast platform lookups
-const GRID_SIZE = 3; // Grid cell size (3x3 units per cell)
+const GRID_SIZE = 1.5; // Smaller grid cells for more precise lookups
 const spatialGrid: Map<string, Platform[]> = new Map();
 let gridInitialized = false;
 
@@ -240,42 +240,68 @@ export function preloadCommonPlatforms(): void {
   }
 }
 
-// Get platforms near a position using spatial grid
+// Get platforms near a position using spatial grid - optimized neighbor checking
 function getPlatformsNear(x: number, z: number): Platform[] {
   initializeSpatialGrid();
   
   const gridX = Math.floor(x / GRID_SIZE);
   const gridZ = Math.floor(z / GRID_SIZE);
-  const key = `${gridX},${gridZ}`;
   
-  return spatialGrid.get(key) || [];
-}
-
-// Cache for recent position lookups
-const positionCache = new Map<string, { height: number | null, timestamp: number }>();
-const CACHE_DURATION = 100; 
-const MAX_CACHE_SIZE = 1000; 
-
-// Clean old cache entries periodically
-let lastCacheCleanup = 0;
-function cleanupCache() {
-  const now = Date.now();
-  if (now - lastCacheCleanup < 5000) return; 
+  // Start with current cell
+  const currentKey = `${gridX},${gridZ}`;
+  const platforms: Platform[] = [];
+  const currentPlatforms = spatialGrid.get(currentKey);
   
-  lastCacheCleanup = now;
-  const entries = Array.from(positionCache.entries());
-  for (const [key, value] of entries) {
-    if (now - value.timestamp > CACHE_DURATION * 10) { 
-      positionCache.delete(key);
+  if (currentPlatforms) {
+    platforms.push(...currentPlatforms);
+  }
+  
+  // Only check neighbors if we're near cell edges (optimization)
+  const cellCenterX = (gridX + 0.5) * GRID_SIZE;
+  const cellCenterZ = (gridZ + 0.5) * GRID_SIZE;
+  const distFromCenterX = Math.abs(x - cellCenterX);
+  const distFromCenterZ = Math.abs(z - cellCenterZ);
+  
+  if (distFromCenterX > GRID_SIZE * 0.3 || distFromCenterZ > GRID_SIZE * 0.3) {
+    const neighborCells = [
+      `${gridX-1},${gridZ}`,
+      `${gridX+1},${gridZ}`,
+      `${gridX},${gridZ-1}`,
+      `${gridX},${gridZ+1}`
+    ];
+    
+    for (const key of neighborCells) {
+      const cellPlatforms = spatialGrid.get(key);
+      if (cellPlatforms) {
+        platforms.push(...cellPlatforms);
+      }
     }
   }
   
-  // If still too large, remove oldest entries
-  if (positionCache.size > MAX_CACHE_SIZE) {
-    const entries = Array.from(positionCache.entries());
-    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-    const toRemove = entries.slice(0, positionCache.size - MAX_CACHE_SIZE);
-    toRemove.forEach(([key]) => positionCache.delete(key));
+  return platforms;
+}
+
+// Cache for recent position lookups - optimized for performance
+const positionCache = new Map<string, { height: number | null, timestamp: number }>();
+const CACHE_DURATION = 100;
+const MAX_CACHE_SIZE = 300; 
+
+let lastCacheCleanup = 0;
+function cleanupCache() {
+  const now = Date.now();
+  if (now - lastCacheCleanup < 30000) return; 
+  
+  lastCacheCleanup = now;
+  
+  if (positionCache.size < MAX_CACHE_SIZE * 0.7) return;
+  
+  // More efficient cleanup - only remove oldest 25%
+  const entries = Array.from(positionCache.entries());
+  entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+  const toRemove = Math.floor(entries.length * 0.25);
+  
+  for (let i = 0; i < toRemove; i++) {
+    positionCache.delete(entries[i][0]);
   }
 }
 
@@ -289,15 +315,18 @@ function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v
 
 // Check if a position is on any platform and return the platform height
 export function getHeightAtPosition(x: number, z: number): number | null {
-  cleanupCache();
-  
-  // Check cache first (round to 2 decimal places for cache key)
-  const cacheKey = `${Math.round(x * 100) / 100},${Math.round(z * 100) / 100}`;
+  // Use cache for better performance
+  const cacheKey = `${Math.round(x * 20) / 20},${Math.round(z * 20) / 20}`;
   const now = Date.now();
   const cached = positionCache.get(cacheKey);
   
   if (cached && (now - cached.timestamp) < CACHE_DURATION) {
     return cached.height;
+  }
+  
+  // Cleanup cache less frequently
+  if (positionCache.size > MAX_CACHE_SIZE) {
+    cleanupCache();
   }
   
   // First check if on elevator - elevator takes priority
@@ -399,14 +428,19 @@ export function constrainToPlatform(
   return { x: newX, y: currentY, z: newZ, onPlatform: false };
 }
 
-// Smooth height transition for stairs
 export function smoothHeightTransition(currentY: number, targetY: number, delta: number): number {
-  const transitionSpeed = 8; 
   const diff = targetY - currentY;
+  const absDiff = Math.abs(diff);
   
-  if (Math.abs(diff) < 0.01) {
+  // Snap instantly if very close to prevent micro-twitching
+  if (absDiff < 0.006) {
     return targetY;
   }
   
-  return currentY + Math.sign(diff) * Math.min(Math.abs(diff), transitionSpeed * delta);
+  // Consistent smooth transition speed - no sudden changes
+  const transitionSpeed = 8; // Gentle, consistent speed
+  
+  // Simple lerp with consistent speed
+  const lerpFactor = Math.min(1.0, delta * transitionSpeed);
+  return currentY + diff * lerpFactor;
 }

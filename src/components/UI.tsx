@@ -54,6 +54,8 @@ const UI: React.FC<UIProps> = ({ visible, canInteract = false, showContent = fal
                   <span className="keys">
                     <kbd>←</kbd>
                     <kbd>→</kbd>
+                    <kbd>Q</kbd>
+                    <kbd>E</kbd>
                   </span>
                   <span className="label">Navigate platforms</span>
                 </div>

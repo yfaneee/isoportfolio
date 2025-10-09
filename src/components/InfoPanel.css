@@ -179,21 +179,3 @@
     font-size: 1.38rem;
   }
 }
-
-/* 1920px Full HD laptops/desktops */
-@media (max-width: 1920px) and (min-width: 1681px) {
-  .info-panel {
-    right: 10rem;
-    width: 530px;
-    height: calc(48vh);
-    top: 22rem;
-  }
-
-  .info-section p {
-    font-size: 1rem;
-  }
-
-  .info-section h3 {
-    font-size: 1.4rem;
-  }
-}

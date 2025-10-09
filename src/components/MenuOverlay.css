@@ -272,32 +272,6 @@
   }
 }
 
-/* 1920px Full HD laptops/desktops */
-@media (max-width: 1920px) and (min-width: 1681px) {
-  .menu-overlay {
-    left: 13rem;
-    transform: translateX(-100%);
-    width: 650px;
-    height: calc(100vh - 7rem);
-    top: 3.8rem;
-  }
-  .menu-section h3 {
-    font-size: 1.7rem;
-  }
-  .learning-outcomes-links a,
-  .project-links a,
-  .work-links a {
-    font-size: 1.6rem;
-    padding: 0.95rem;
-  }
-}
-
-@media (max-width: 1920px) and (min-width: 1681px) {
-  .menu-overlay.visible {
-    transform: translateX(0);
-  }
-}
-
 @media (max-height: 800px) {
   .menu-section h3 {
     font-size: 1.3rem;

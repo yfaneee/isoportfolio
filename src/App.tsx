@@ -32,12 +32,7 @@ function App() {
 
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
-    setMenuDelayOver(false);
-
-    menuTimerRef.current = setTimeout(() => {
-      setShowMenu(true);
-      setMenuDelayOver(true);
-    }, 300);
+    setMenuDelayOver(true);
   }, []);
 
   const handleMovementStart = useCallback(() => {

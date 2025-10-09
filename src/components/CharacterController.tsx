@@ -20,8 +20,10 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   onNavigateNext,
   opacity = 1
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
+  const introCompletedRef = useRef(false);
+  const [position, setPosition] = React.useState<[number, number, number]>(positionRef.current);
 
   // Expose direct position access method
   React.useImperativeHandle(ref, () => ({
@@ -33,17 +35,19 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
     stopMovement: () => stopMovement()
   }));
 
-  // Force re-render by using state 
-  const [renderPosition, setRenderPosition] = React.useState<[number, number, number]>(positionRef.current);
-  
-  // SINGLE useFrame loop - Update character AND force re-render
   useFrame((state, delta) => {
     if (introComplete) {
+      // No need to add visual offset
+      introCompletedRef.current = true;
+      
+      const oldPos = position;
       updateCharacter(delta);
       
-      setRenderPosition(positionRef.current);
+      const newPos = positionRef.current;
+      if (oldPos[0] !== newPos[0] || oldPos[1] !== newPos[1] || oldPos[2] !== newPos[2]) {
+        setPosition([...newPos]);
+      }
       
-      // Only trigger movement callback when it changes
       if (isMovingRef.current !== lastMoving.current) {
         onMovementChange(isMovingRef.current);
         lastMoving.current = isMovingRef.current;
@@ -53,7 +57,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
   return (
     <Character
-      position={renderPosition}
+      position={position}
       rotation={rotationRef.current}
       isMoving={isMovingRef.current}
       opacity={opacity}

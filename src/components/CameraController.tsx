@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface CameraControllerProps {
@@ -27,13 +26,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
   isNavigatingSlabs = false
 }) => {
   const { camera } = useThree();
-  const orbitControlsRef = useRef<any>(null);
   const introTimeRef = useRef(0);
   const introDuration = 3;
-  const isFollowingCharacter = useRef(true); 
-  const isUsingOrbitControls = useRef(false);
-  const hasUsedOrbitControls = useRef(false);
-  const orbitTargetInitialized = useRef(false);
+  const introCompleteTimeRef = useRef(0);
   const cameraAnimationRef = useRef<{isAnimating: boolean, startTime: number, startPos: THREE.Vector3, startLookAt: THREE.Vector3}>({
     isAnimating: false,
     startTime: 0,
@@ -41,12 +36,6 @@ const CameraController: React.FC<CameraControllerProps> = ({
     startLookAt: new THREE.Vector3()
   });
 
-  useEffect(() => {
-    if (isCharacterMoving) {
-      isFollowingCharacter.current = true;
-      hasUsedOrbitControls.current = false;
-    }
-  }, [isCharacterMoving]);
 
   // Reset intro time when loading screen changes
   useEffect(() => {
@@ -60,7 +49,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const currentLookAtRef = useRef(new THREE.Vector3(0, 0.22, 0));
   
   useEffect(() => {
-    if (introComplete && !isUsingOrbitControls.current) {
+    if (introComplete) {
       const wasNavigating = prevNavigatingRef.current;
       const isNavigatingOff = wasNavigating && !isNavigatingSlabs;
       
@@ -79,25 +68,6 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
 
-  // Orbit controls handlers
-  const handleOrbitStart = () => {
-    isUsingOrbitControls.current = true;
-    isFollowingCharacter.current = false;
-    hasUsedOrbitControls.current = true;
-    
-    if (!orbitTargetInitialized.current && orbitControlsRef.current && characterControllerRef.current) {
-      const characterPosition = characterControllerRef.current.getPosition() || [0, 0.22, 0];
-      const menuOffsetX = showMenu ? 3 : 0;
-      orbitControlsRef.current.target.set(characterPosition[0] + menuOffsetX, characterPosition[1], characterPosition[2]);
-      orbitControlsRef.current.update();
-      orbitTargetInitialized.current = true;
-    }
-  };
-
-  const handleOrbitEnd = () => {
-    isUsingOrbitControls.current = false;
-  };
-
   useFrame((state, delta) => {
     if (showLoadingScreen) {
       // Loading screen state - show preview from far away
@@ -115,8 +85,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
         ? 4 * t * t * t 
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      // Animate camera from far to close 
-             const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      // Animate camera from far to close - use fixed collision height during intro
+             const characterPosition = [0, 0.22, 0]; // Fixed position during intro to prevent camera jump
              const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
              const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
       
@@ -161,8 +131,28 @@ const CameraController: React.FC<CameraControllerProps> = ({
       if (t >= 1) {
         onIntroComplete();
       }
-    } else if (isFollowingCharacter.current && !isUsingOrbitControls.current && !hasUsedOrbitControls.current) {
-      const characterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+    } else {
+      if (introCompleteTimeRef.current === 0) {
+        introCompleteTimeRef.current = Date.now();
+      }
+      
+      const actualCharacterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      const introEndPosition = [0, 0.22, 0]; 
+      
+      const transitionDuration = 300; 
+      const timeSinceIntroComplete = Date.now() - introCompleteTimeRef.current;
+      const transitionProgress = Math.min(timeSinceIntroComplete / transitionDuration, 1);
+      
+      // Smooth easing
+      const eased = transitionProgress < 0.5 
+        ? 2 * transitionProgress * transitionProgress 
+        : 1 - Math.pow(-2 * transitionProgress + 2, 2) / 2;
+      
+      const characterPosition = [
+        introEndPosition[0] + (actualCharacterPosition[0] - introEndPosition[0]) * eased,
+        introEndPosition[1] + (actualCharacterPosition[1] - introEndPosition[1]) * eased,
+        introEndPosition[2] + (actualCharacterPosition[2] - introEndPosition[2]) * eased
+      ];
       
              // Calculate target positions
              const menuOffsetX = showMenu && !isTransitioning ? -5 : 0;
@@ -241,22 +231,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
   });
 
-  return (
-    <OrbitControls
-      ref={orbitControlsRef}
-      enabled={introComplete}
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-      minDistance={3}
-      maxDistance={25}
-      maxPolarAngle={Math.PI * 0.75}
-      enableDamping={true}
-      dampingFactor={0.05}
-      onStart={handleOrbitStart}
-      onEnd={handleOrbitEnd}
-    />
-  );
+  return null;
 };
 
 export default CameraController;

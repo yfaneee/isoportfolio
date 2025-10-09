@@ -19,7 +19,7 @@ export const shiftElevator: Elevator = {
   minZ: -0.75,
   maxZ: 0.75,
   topY: 0.1,     
-  bottomY: -2.1, 
+  bottomY: -2, 
   currentY: 0.1,  
   isMoving: false,
   wasOnElevator: false,

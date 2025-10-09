@@ -20,11 +20,18 @@ interface CharacterControlsReturn {
   onNavigateNext?: () => void;
 }
 
+const VISUAL_OFFSET = 0.11; 
+
 export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void, onNavigatePrev?: () => void, onNavigateNext?: () => void) => {
-  const platformHeight = getHeightAtPosition(initialPosition[0], initialPosition[2]);
-  const adjustedPosition: [number, number, number] = platformHeight !== null
-    ? [initialPosition[0], platformHeight, initialPosition[2]]
-    : initialPosition;
+  let adjustedPosition: [number, number, number];
+  if (initialPosition[1] !== 0) {
+    adjustedPosition = initialPosition;
+  } else {
+    const platformHeight = getHeightAtPosition(initialPosition[0], initialPosition[2]);
+    adjustedPosition = platformHeight !== null
+      ? [initialPosition[0], platformHeight, initialPosition[2]]
+      : initialPosition;
+  }
 
   const positionRef = useRef<[number, number, number]>(adjustedPosition);
   const rotationRef = useRef(0);
@@ -38,6 +45,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     space: false,
   });
 
+  // Simple collision system
+  const lastCollisionCheck = useRef(0);
+  const targetHeight = useRef<number | null>(null);
 
   // Handle keyboard input
   useEffect(() => {
@@ -47,18 +57,17 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       // Check if content is open 
       const isContentOpen = document.querySelector('.content-box.visible') !== null;
       
-      // Handle arrow keys for navigation when content is open
       if (isContentOpen) {
-        if (key === 'arrowleft') {
+        if (key === 'arrowleft' || key === 'q') {
           e.preventDefault();
-          console.log('Left arrow pressed, onNavigatePrev:', onNavigatePrev);
+          console.log('Left arrow/Q pressed, onNavigatePrev:', onNavigatePrev);
           if (onNavigatePrev) {
             onNavigatePrev();
           }
           return;
-        } else if (key === 'arrowright') {
+        } else if (key === 'arrowright' || key === 'e') {
           e.preventDefault();
-          console.log('Right arrow pressed, onNavigateNext:', onNavigateNext);
+          console.log('Right arrow/E pressed, onNavigateNext:', onNavigateNext);
           if (onNavigateNext) {
             onNavigateNext();
           }
@@ -143,21 +152,29 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     };
   }, [onNavigatePrev, onNavigateNext]);
 
-  // Update character position based on keys 
+  // Fixed update character - consistent collision vs visual separation
   const updateCharacter = (delta: number) => {
     const [currentX, currentY, currentZ] = positionRef.current;
     
-    // Check if any movement keys are pressed
+    // Always work with collision Y (visual Y minus offset)
+    const collisionY = currentY - VISUAL_OFFSET;
+    
     const hasInput = keysRef.current.forward || keysRef.current.backward || 
                      keysRef.current.left || keysRef.current.right;
     
-    // Handle elevator logic - simplified
-    if (isOnElevator(currentX, currentZ)) {
+    // Handle elevator logic using collision coordinates
+    const onElevator = isOnElevator(currentX, currentZ);
+    if (onElevator) {
       const elevatorY = getElevatorHeight();
-      if (Math.abs(currentY - elevatorY) > 0.2) {
-        positionRef.current = [currentX, elevatorY, currentZ];
+      if (Math.abs(collisionY - elevatorY) > 0.05) {
+        positionRef.current = [currentX, elevatorY + VISUAL_OFFSET, currentZ];
       }
       shiftElevator.wasOnElevator = true;
+      
+      if (!hasInput) {
+        isMovingRef.current = false;
+        return;
+      }
     } else {
       shiftElevator.wasOnElevator = false;
     }
@@ -183,25 +200,46 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       dz /= length;
     }
 
-    // Add back collision detection
+    // Movement with collision detection using collision coordinates
     const speed = 3;
     const newX = currentX + dx * speed * delta;
     const newZ = currentZ + dz * speed * delta;
     
-    const constrained = constrainToPlatform(newX, newZ, currentY, currentX, currentZ);
+    // Use collision Y for all collision calculations
+    const constrained = constrainToPlatform(newX, newZ, collisionY, currentX, currentZ);
     
     if (constrained.onPlatform) {
-      let finalY = constrained.y;
-      if (Math.abs(currentY - constrained.y) > 0.01) {
-        finalY = smoothHeightTransition(currentY, constrained.y, delta);
+      const now = performance.now();
+      const shouldUpdateHeight = now - lastCollisionCheck.current > 50; 
+      
+      let finalCollisionY = collisionY;
+      
+      if (shouldUpdateHeight) {
+        const heightDiff = Math.abs(collisionY - constrained.y);
+        
+        if (heightDiff > 0.05) {
+          targetHeight.current = constrained.y;
+          lastCollisionCheck.current = now;
+        }
       }
       
-      positionRef.current = [constrained.x, finalY, constrained.z];
+      if (targetHeight.current !== null) {
+        const heightDiff = Math.abs(collisionY - targetHeight.current);
+        
+        if (heightDiff > 0.1) {
+          finalCollisionY = smoothHeightTransition(collisionY, targetHeight.current, delta);
+        } else if (heightDiff > 0.02) {
+          finalCollisionY = collisionY + (targetHeight.current - collisionY) * 0.08;
+        }
+      }
+      
+      // Always add visual offset to final position
+      positionRef.current = [constrained.x, finalCollisionY + VISUAL_OFFSET, constrained.z];
     } else {
-      // Can't move there, stay in place
       isMovingRef.current = false;
       return;
     }
+    
     rotationRef.current = Math.atan2(dx, dz);
     isMovingRef.current = true;
   };
@@ -263,7 +301,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     }
     
     const centerHeight = getHeightAtPosition(centerX, centerZ);
-    positionRef.current = [centerX, centerHeight || 0.22, centerZ];
+    positionRef.current = [centerX, (centerHeight || 0.22) + VISUAL_OFFSET, centerZ];
   };
 
   const teleportToLocation = (location: string) => {
@@ -271,51 +309,43 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     
     switch (location) {
       case 'transferable':
-        // Transferable production - first staircase slab
         targetPosition = [-13.625, 4.22, 1.5];
         break;
       case 'conceptualize':
-        // Conceptualize - second staircase slab
         targetPosition = [-10.625, 3.74, 1.5];
         break;
       case 'creative':
-        // Creative iterations - third staircase slab
         targetPosition = [-13.625, 4.73, -1.5];
         break;
       case 'professional':
-        // Professional standards - fourth staircase slab
         targetPosition = [-10.625, 5.23, -1.5];
         break;
       case 'leadership':
-        // Personal leadership - fifth staircase slab
         targetPosition = [-7.625, 5.73, -1.5];
         break;
       case 'studio':
-        // Studio - high block
         targetPosition = [3, 3.43, -12];
         break;
       case 'ironfilms':
-        // IronFilms - smaller block
         targetPosition = [-1.5, 1.78, -10.4];
         break;
       case 'artwork':
-        // Artwork - artwork platform
         targetPosition = [10.50, -1.90, -0.01];
         break;
       case 'projects':
-        // Projects - 12x3 platform
         targetPosition = [0, -2.6, 15.9];
         break;
       default:
-        // Default to center slab
         const centerHeight = getHeightAtPosition(0, 0);
         targetPosition = [0, centerHeight || 0.22, 0];
     }
     
-    // Get the correct height at the target position
+    // Get the correct height at the target position with visual offset
     const correctHeight = getHeightAtPosition(targetPosition[0], targetPosition[2]);
     if (correctHeight !== null) {
-      targetPosition[1] = correctHeight;
+      targetPosition[1] = correctHeight + VISUAL_OFFSET;
+    } else {
+      targetPosition[1] = targetPosition[1] + VISUAL_OFFSET;
     }
     
     // Fix elevator state when teleporting
@@ -323,16 +353,17 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       shiftElevator.currentY = shiftElevator.bottomY;
       shiftElevator.wasOnElevator = false; 
     } else {
-      // Reset elevator tracking for non-elevator teleports
       shiftElevator.wasOnElevator = false;
     }
     
     positionRef.current = targetPosition;
+    targetHeight.current = targetPosition[1] - VISUAL_OFFSET;
     
-    // Validate position with collision system to prevent bugs
-    const validated = constrainToPlatform(targetPosition[0], targetPosition[2], targetPosition[1], targetPosition[0], targetPosition[2]);
+    // Validate position with collision system
+    const validated = constrainToPlatform(targetPosition[0], targetPosition[2], targetPosition[1] - VISUAL_OFFSET, targetPosition[0], targetPosition[2]);
     if (validated.onPlatform) {
-      positionRef.current = [validated.x, validated.y, validated.z];
+      positionRef.current = [validated.x, validated.y + VISUAL_OFFSET, validated.z];
+      targetHeight.current = validated.y;
     }
   };
 
@@ -390,4 +421,3 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     onNavigateNext,
   };
 };
-
