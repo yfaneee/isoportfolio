@@ -108,3 +108,92 @@
   }
 
 }
+
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .info-panel {
+    right: 3rem;
+    width: 420px;
+    height: calc(64vh);
+    top: 11.3rem;
+  }
+
+  .info-section p {
+    font-size: 0.9rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* 1440px laptops */
+@media (max-width: 1440px) and (min-width: 1367px) {
+  .info-panel {
+    right: 4rem;
+    width: 450px;
+    height: calc(60vh);
+    top: 13rem;
+  }
+
+  .info-section p {
+    font-size: 0.95rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.35rem;
+  }
+}
+
+/* 1536px laptops (Surface Laptop) */
+@media (max-width: 1536px) and (min-width: 1441px) {
+  .info-panel {
+    right: 5rem;
+    width: 470px;
+    height: calc(58vh);
+    top: 15rem;
+  }
+
+  .info-section p {
+    font-size: 0.97rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.37rem;
+  }
+}
+
+/* 1680px laptops */
+@media (max-width: 1680px) and (min-width: 1537px) {
+  .info-panel {
+    right: 7rem;
+    width: 500px;
+    height: calc(52vh);
+    top: 20.2rem;
+  }
+
+  .info-section p {
+    font-size: 0.98rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.38rem;
+  }
+}
+
+/* 1920px Full HD laptops/desktops */
+@media (max-width: 1920px) and (min-width: 1681px) {
+  .info-panel {
+    right: 10rem;
+    width: 530px;
+    height: calc(48vh);
+    top: 22rem;
+  }
+
+  .info-section p {
+    font-size: 1rem;
+  }
+
+  .info-section h3 {
+    font-size: 1.4rem;
+  }
+}

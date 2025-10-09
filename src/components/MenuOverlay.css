@@ -173,7 +173,7 @@
   .menu-overlay {
     left: 8rem;
     transform: translateX(-100%);
-    width: 550px;
+    width: 450px;
     height: calc(100vh - 6rem);
     top: 3rem;
   }
@@ -194,14 +194,40 @@
   }
 }
 
-/* Wider laptops/desktops: 1600px width */
-@media (max-width: 1600px) and (min-width: 1367px) {
+/* 1440px laptops */
+@media (max-width: 1440px) and (min-width: 1367px) {
   .menu-overlay {
-    left: 9rem;
+    left: 8.5rem;
     transform: translateX(-100%);
-    width: 600px;
-    height: calc(100vh - 7rem);
-    top: 3.5rem;
+    width: 480px;
+    height: calc(100vh - 6.5rem);
+    top: 3.2rem;
+  }
+  .menu-section h3 {
+    font-size: 1.55rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.45rem;
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 1440px) and (min-width: 1367px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
+
+/* 1536px laptops (Surface Laptop) */
+@media (max-width: 1536px) and (min-width: 1441px) {
+  .menu-overlay {
+    left: 9.5rem;
+    transform: translateX(-100%);
+    width: 520px;
+    height: calc(100vh - 6.5rem);
+    top: 3.3rem;
   }
   .menu-section h3 {
     font-size: 1.6rem;
@@ -210,11 +236,63 @@
   .project-links a,
   .work-links a {
     font-size: 1.5rem;
+    padding: 0.87rem;
+  }
+}
+
+@media (max-width: 1536px) and (min-width: 1441px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
+
+/* 1680px laptops */
+@media (max-width: 1680px) and (min-width: 1537px) {
+  .menu-overlay {
+    left: 11rem;
+    transform: translateX(-100%);
+    width: 600px;
+    height: calc(100vh - 7rem);
+    top: 3.5rem;
+  }
+  .menu-section h3 {
+    font-size: 1.65rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.55rem;
     padding: 0.9rem;
   }
 }
 
-@media (max-width: 1600px) and (min-width: 1367px) {
+@media (max-width: 1680px) and (min-width: 1537px) {
+  .menu-overlay.visible {
+    transform: translateX(0);
+  }
+}
+
+/* 1920px Full HD laptops/desktops */
+@media (max-width: 1920px) and (min-width: 1681px) {
+  .menu-overlay {
+    left: 13rem;
+    transform: translateX(-100%);
+    width: 650px;
+    height: calc(100vh - 7rem);
+    top: 3.8rem;
+  }
+  .menu-section h3 {
+    font-size: 1.7rem;
+  }
+  .learning-outcomes-links a,
+  .project-links a,
+  .work-links a {
+    font-size: 1.6rem;
+    padding: 0.95rem;
+  }
+}
+
+@media (max-width: 1920px) and (min-width: 1681px) {
   .menu-overlay.visible {
     transform: translateX(0);
   }
@@ -228,7 +306,17 @@
   .learning-outcomes-links a,
   .project-links a,
   .work-links a {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     padding: 0.7rem;
   }
+
+  .menu-sections {
+    gap: 0rem;
+  }
+
+  .menu-overlay {
+    left: 12rem;
+  }
 }
+
+
