@@ -17,6 +17,16 @@ interface IsometricSceneProps {
   showLoadingScreen: boolean;
   characterOpacity?: number;
   isNavigatingSlabs?: boolean;
+  selectedCharacterModel: string;
+  onPositionUpdate?: (position: { x: number; z: number }) => void;
+  onSlabInteraction?: (isOnSlab: boolean, slabType?: string) => void;
+  onBillboardFullscreenStart?: () => void;
+  onBillboardFullscreenEnd?: () => void;
+  onShowWebsite?: (websiteUrl: string, billboardKey: string) => void;
+  onHideWebsite?: () => void;
+  showWebsiteOverlay?: boolean;
+  triggerBillboardExit?: boolean;
+  onBillboardExitComplete?: () => void;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -31,7 +41,17 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   characterControllerRef,
   showLoadingScreen,
   characterOpacity = 1,
-  isNavigatingSlabs = false
+  isNavigatingSlabs = false,
+  selectedCharacterModel,
+  onPositionUpdate,
+  onSlabInteraction,
+  onBillboardFullscreenStart,
+  onBillboardFullscreenEnd,
+  onShowWebsite,
+  onHideWebsite,
+  showWebsiteOverlay = false,
+  triggerBillboardExit = false,
+  onBillboardExitComplete
 }) => {
   const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
@@ -78,7 +98,14 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
              />
       
       {/* The isometric world */}
-      <IsometricWorld />
+      <IsometricWorld 
+        onBillboardFullscreenStart={onBillboardFullscreenStart}
+        onBillboardFullscreenEnd={onBillboardFullscreenEnd}
+        onShowWebsite={onShowWebsite}
+        onHideWebsite={onHideWebsite}
+        triggerBillboardExit={triggerBillboardExit}
+        onBillboardExitComplete={onBillboardExitComplete}
+      />
       
       {/* Debug platform boundaries (red lines) */}
       <PlatformDebugger enabled={false} />
@@ -92,6 +119,10 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onNavigatePrev={onNavigatePrev}
         onNavigateNext={onNavigateNext}
         opacity={characterOpacity}
+        modelPath={selectedCharacterModel}
+        onPositionUpdate={onPositionUpdate}
+        onSlabInteraction={onSlabInteraction}
+        disableMovement={showWebsiteOverlay}
       />
     </>
   );

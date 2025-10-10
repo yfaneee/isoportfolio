@@ -43,6 +43,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     left: false,
     right: false,
     space: false,
+    shift: false,
   });
 
   // Simple collision system
@@ -92,6 +93,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = true;
       } else if (!isContentOpen && key === 'arrowright') {
         keysRef.current.right = true;
+      } else if (key === 'shift') {
+        keysRef.current.shift = true;
       } else if (key === ' ') {
         if (!keysRef.current.space) {
           keysRef.current.space = true;
@@ -117,11 +120,20 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Check artwork platform slab
             const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
             
+            // Check GitHub project slabs on 18x3 platform
+            const isOnGithubSlab1 = x >= -1.45 && x <= -0.55 && z >= 8.7 && z <= 9.6;   
+            const isOnGithubSlab2 = x >= -1.45 && x <= -0.55 && z >= 16.2 && z <= 17.1; 
+            const isOnGithubSlab3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
+            
             if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
-                 isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab) && onSpacePress) {
+                 isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
+                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3) && onSpacePress) {
               centerOnSlab();
               onSpacePress();
+              if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3) {
+                keysRef.current.space = false;
+              }
             }
           }
         }
@@ -138,6 +150,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         keysRef.current.left = false;
       } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = false;
+      } else if (key === 'shift') {
+        keysRef.current.shift = false;
       } else if (key === ' ') {
         keysRef.current.space = false;
       }
@@ -156,7 +170,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   const updateCharacter = (delta: number) => {
     const [currentX, currentY, currentZ] = positionRef.current;
     
-    // Always work with collision Y (visual Y minus offset)
+    // Always work with collision Y
     const collisionY = currentY - VISUAL_OFFSET;
     
     const hasInput = keysRef.current.forward || keysRef.current.backward || 
@@ -201,7 +215,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     }
 
     // Movement with collision detection using collision coordinates
-    const speed = 3;
+    const baseSpeed = 3;
+    const speedMultiplier = keysRef.current.shift ? 2 : 1; 
+    const speed = baseSpeed * speedMultiplier;
     const newX = currentX + dx * speed * delta;
     const newZ = currentZ + dz * speed * delta;
     

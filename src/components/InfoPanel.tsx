@@ -10,7 +10,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
     <div className={`info-panel ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
       <div className="info-content">
         <div className="info-section">
-          <h3>Portfolio</h3>
+          <h3>Menu</h3>
           <p>
             Welcome to my interactive 3D portfolio! Navigate through my work and projects 
             using the menu to quickly jump to different sections, or explore by walking 

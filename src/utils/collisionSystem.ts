@@ -223,13 +223,17 @@ export function warmupCollisionSystem(): void {
   }
 }
 
-// Pre-calculate common platform lookups
+// Pre-calculate common platform lookups with expanded coverage
 const commonPlatforms = new Map<string, Platform[]>();
 export function preloadCommonPlatforms(): void {
   initializeSpatialGrid();
+  // Expanded common positions to cover more of the world
   const commonPositions = [
     [0, 0], [1.5, 0], [0, 1.5], [-1.5, 0], [0, -1.5],
-    [3, 0], [0, 3], [-3, 0], [0, -3], [1.5, 1.5]
+    [3, 0], [0, 3], [-3, 0], [0, -3], [1.5, 1.5],
+    [-1.5, -1.5], [4.5, 0], [0, 4.5], [-4.5, 0], [0, -4.5],
+    // Key interactive areas
+    [-1.5, -10.4], [3, -12], [10.5, 0], [-10.625, 1.5], [-13.625, 1.5]
   ];
   
   for (const [x, z] of commonPositions) {
@@ -237,6 +241,11 @@ export function preloadCommonPlatforms(): void {
     if (!commonPlatforms.has(key)) {
       commonPlatforms.set(key, getPlatformsNear(x, z));
     }
+  }
+  
+  // Also preload height cache for these positions
+  for (const [x, z] of commonPositions) {
+    getHeightAtPosition(x, z);
   }
 }
 
@@ -281,28 +290,42 @@ function getPlatformsNear(x: number, z: number): Platform[] {
   return platforms;
 }
 
-// Cache for recent position lookups - optimized for performance
-const positionCache = new Map<string, { height: number | null, timestamp: number }>();
-const CACHE_DURATION = 100;
-const MAX_CACHE_SIZE = 300; 
+// Optimized cache for recent position lookups
+const positionCache = new Map<string, { height: number | null, timestamp: number, accessCount: number }>();
+const CACHE_DURATION = 200;
+const MAX_CACHE_SIZE = 1000;
+const CLEANUP_THRESHOLD = 800; 
 
 let lastCacheCleanup = 0;
 function cleanupCache() {
   const now = Date.now();
-  if (now - lastCacheCleanup < 30000) return; 
+  // Reduced cleanup frequency from 30s to 60s
+  if (now - lastCacheCleanup < 60000) return; 
   
   lastCacheCleanup = now;
   
-  if (positionCache.size < MAX_CACHE_SIZE * 0.7) return;
+  if (positionCache.size < CLEANUP_THRESHOLD) return;
   
-  // More efficient cleanup - only remove oldest 25%
+  // LRU-style cleanup - remove least recently used entries
   const entries = Array.from(positionCache.entries());
-  entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-  const toRemove = Math.floor(entries.length * 0.25);
+  // Sort by access count and timestamp (prioritize frequently used, recent entries)
+  entries.sort((a, b) => {
+    const scoreA = a[1].accessCount * 0.7 + (now - a[1].timestamp) * 0.3;
+    const scoreB = b[1].accessCount * 0.7 + (now - b[1].timestamp) * 0.3;
+    return scoreA - scoreB; 
+  });
+  
+  // Remove bottom 30% of entries
+  const toRemove = Math.floor(entries.length * 0.3);
   
   for (let i = 0; i < toRemove; i++) {
     positionCache.delete(entries[i][0]);
   }
+  
+  // Reset access counts for remaining entries to prevent overflow
+  positionCache.forEach((value) => {
+    value.accessCount = Math.max(1, Math.floor(value.accessCount * 0.8));
+  });
 }
 
 // Helper function: Check if a point is inside a triangle using barycentric coordinates
@@ -321,18 +344,20 @@ export function getHeightAtPosition(x: number, z: number): number | null {
   const cached = positionCache.get(cacheKey);
   
   if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    cached.accessCount = (cached.accessCount || 0) + 1;
+    cached.timestamp = now; 
     return cached.height;
   }
   
-  // Cleanup cache less frequently
-  if (positionCache.size > MAX_CACHE_SIZE) {
+  // Cleanup cache only when needed
+  if (positionCache.size > CLEANUP_THRESHOLD) {
     cleanupCache();
   }
   
   // First check if on elevator - elevator takes priority
   if (isOnElevator(x, z)) {
     const height = getElevatorHeight();
-    positionCache.set(cacheKey, { height, timestamp: now });
+    positionCache.set(cacheKey, { height, timestamp: now, accessCount: 1 });
     return height;
   }
   
@@ -346,18 +371,18 @@ export function getHeightAtPosition(x: number, z: number): number | null {
       // If it's a triangle, do precise triangle collision check
       if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
         if (isPointInTriangle(x, z, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
-          positionCache.set(cacheKey, { height: platform.y, timestamp: now });
+          positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
           return platform.y;
         }
       } else {
         // For rectangles/stairs, bounding box check is enough
-        positionCache.set(cacheKey, { height: platform.y, timestamp: now });
+        positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
         return platform.y;
       }
     }
   }
   
-  positionCache.set(cacheKey, { height: null, timestamp: now });
+  positionCache.set(cacheKey, { height: null, timestamp: now, accessCount: 1 });
   return null; 
 }
 
