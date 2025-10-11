@@ -16,6 +16,9 @@ interface IsometricSceneProps {
   characterControllerRef: React.RefObject<any>;
   showLoadingScreen: boolean;
   characterOpacity?: number;
+  characterScale?: number;
+  characterRotationY?: number;
+  characterPositionOffset?: [number, number, number];
   isNavigatingSlabs?: boolean;
   selectedCharacterModel: string;
   onPositionUpdate?: (position: { x: number; z: number }) => void;
@@ -41,6 +44,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   characterControllerRef,
   showLoadingScreen,
   characterOpacity = 1,
+  characterScale = 1,
+  characterRotationY = 0,
+  characterPositionOffset = [0, 0, 0],
   isNavigatingSlabs = false,
   selectedCharacterModel,
   onPositionUpdate,
@@ -119,6 +125,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onNavigatePrev={onNavigatePrev}
         onNavigateNext={onNavigateNext}
         opacity={characterOpacity}
+        scale={characterScale}
+        rotationY={characterRotationY}
+        positionOffset={characterPositionOffset}
         modelPath={selectedCharacterModel}
         onPositionUpdate={onPositionUpdate}
         onSlabInteraction={onSlabInteraction}

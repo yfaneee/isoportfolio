@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import Character from './Character';
 import { useCharacterControls } from '../hooks/useCharacterControls';
+import { isOnElevator } from '../utils/elevatorSystem';
 
 interface CharacterControllerProps {
   onMovementChange: (moving: boolean) => void;
@@ -10,6 +11,9 @@ interface CharacterControllerProps {
   onNavigatePrev?: () => void;
   onNavigateNext?: () => void;
   opacity?: number;
+  scale?: number;
+  rotationY?: number;
+  positionOffset?: [number, number, number];
   modelPath: string;
   onPositionUpdate?: (position: { x: number; z: number }) => void;
   onSlabInteraction?: (isOnSlab: boolean, slabType?: string, githubUrl?: string) => void;
@@ -23,24 +27,38 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   onNavigatePrev,
   onNavigateNext,
   opacity = 1,
+  scale = 1,
+  rotationY = 0,
+  positionOffset = [0, 0, 0],
   modelPath,
   onPositionUpdate,
   onSlabInteraction,
   disableMovement = false
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement, resetMovementState } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
   const introCompletedRef = useRef(false);
   const [position, setPosition] = React.useState<[number, number, number]>(positionRef.current);
+  const [isMoving, setIsMoving] = React.useState(false);
+  const [animationResetCounter, setAnimationResetCounter] = React.useState(0);
+  const lastResetRef = useRef(0);
 
   // Expose direct position access method
   React.useImperativeHandle(ref, () => ({
     getPosition: () => positionRef.current,
     getRotation: () => rotationRef.current,
     isMoving: () => isMovingRef.current,
-    teleportToLocation: (location: string) => teleportToLocation(location),
+    teleportToLocation: (location: string) => {
+      const now = Date.now();
+      if (now - lastResetRef.current > 1000) {
+        teleportToLocation(location);
+      } else {
+        teleportToLocation(location);
+      }
+    },
     handleTouch: (touch: Touch) => handleTouch(touch),
-    stopMovement: () => stopMovement()
+    stopMovement: () => stopMovement(),
+    resetMovementState: () => resetMovementState()
   }));
 
   useFrame((state, delta) => {
@@ -49,9 +67,12 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
       introCompletedRef.current = true;
       
       const oldPos = position;
+      const oldMoving = isMoving;
       updateCharacter(delta);
       
       const newPos = positionRef.current;
+      const newMoving = isMovingRef.current;
+      
       if (oldPos[0] !== newPos[0] || oldPos[1] !== newPos[1] || oldPos[2] !== newPos[2]) {
         setPosition([...newPos]);
         
@@ -107,6 +128,9 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
           );
           
+          // Check if on elevator
+          const isOnElevatorPressurePlate = isOnElevator(newPos[0], newPos[2]);
+          
           // Debug logging for GitHub slabs
           if (currentGithubSlab) {
             console.log('🎯 On GitHub slab:', currentGithubSlab.id, 'at position:', newPos);
@@ -122,10 +146,17 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             onSlabInteraction(true, 'artwork');
           } else if (currentGithubSlab) {
             onSlabInteraction(true, currentGithubSlab.id, currentGithubSlab.url);
+          } else if (isOnElevatorPressurePlate) {
+            onSlabInteraction(true, 'elevator');
           } else {
             onSlabInteraction(false);
           }
         }
+      }
+      
+      // Update isMoving state if it changed
+      if (oldMoving !== newMoving) {
+        setIsMoving(newMoving);
       }
       
       if (isMovingRef.current !== lastMoving.current) {
@@ -137,11 +168,18 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
   return (
     <Character
-      position={position}
+      position={[
+        position[0] + positionOffset[0], 
+        position[1] + positionOffset[1], 
+        position[2] + positionOffset[2]
+      ]}
       rotation={rotationRef.current}
-      isMoving={isMovingRef.current}
+      magicalRotationY={rotationY}
+      isMoving={isMoving}
       opacity={opacity}
+      scale={scale}
       modelPath={modelPath}
+      forceAnimationReset={animationResetCounter}
     />
   );
 });

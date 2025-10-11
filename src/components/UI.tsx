@@ -41,12 +41,14 @@ const UI: React.FC<UIProps> = ({ visible, canInteract = false, showContent = fal
                 </span>
                 <span className="label">Move</span>
               </div>
-              <div className="control-row">
-                <span className="keys">
-                  <kbd>Shift</kbd>
-                </span>
-                <span className="label">Run</span>
-              </div>
+              {!showContent && (
+                <div className="control-row">
+                  <span className="keys">
+                    <kbd>Shift</kbd>
+                  </span>
+                  <span className="label">Run</span>
+                </div>
+              )}
               {canInteract && !showContent && (
                 <div className="control-row">
                   <span className="keys">
@@ -58,8 +60,6 @@ const UI: React.FC<UIProps> = ({ visible, canInteract = false, showContent = fal
               {showContent && (
                 <div className="control-row">
                   <span className="keys">
-                    <kbd>←</kbd>
-                    <kbd>→</kbd>
                     <kbd>Q</kbd>
                     <kbd>E</kbd>
                   </span>

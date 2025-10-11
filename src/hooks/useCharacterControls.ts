@@ -16,6 +16,9 @@ interface CharacterControlsReturn {
   isMovingRef: React.MutableRefObject<boolean>;
   centerOnSlab: () => void;
   teleportToLocation: (location: string) => void;
+  handleTouch: (touch: Touch) => void;
+  stopMovement: () => void;
+  resetMovementState: () => void;
   onNavigatePrev?: () => void;
   onNavigateNext?: () => void;
 }
@@ -59,18 +62,20 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       const isContentOpen = document.querySelector('.content-box.visible') !== null;
       
       if (isContentOpen) {
-        if (key === 'arrowleft' || key === 'q') {
+        if (key === 'q') {
           e.preventDefault();
-          console.log('Left arrow/Q pressed, onNavigatePrev:', onNavigatePrev);
-          if (onNavigatePrev) {
-            onNavigatePrev();
+          // Clear all movement state before navigation
+          resetMovementState();
+          if (onNavigatePrevRef.current) {
+            onNavigatePrevRef.current();
           }
           return;
-        } else if (key === 'arrowright' || key === 'e') {
+        } else if (key === 'e') {
           e.preventDefault();
-          console.log('Right arrow/E pressed, onNavigateNext:', onNavigateNext);
-          if (onNavigateNext) {
-            onNavigateNext();
+          // Clear all movement state before navigation
+          resetMovementState();
+          if (onNavigateNextRef.current) {
+            onNavigateNextRef.current();
           }
           return;
         }
@@ -84,14 +89,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       } else if (key === 'a') {
         keysRef.current.left = true;
       } else if (key === 'd') {
-        keysRef.current.right = true;
-      } else if (!isContentOpen && key === 'arrowup') {
-        keysRef.current.forward = true;
-      } else if (!isContentOpen && key === 'arrowdown') {
-        keysRef.current.backward = true;
-      } else if (!isContentOpen && key === 'arrowleft') {
-        keysRef.current.left = true;
-      } else if (!isContentOpen && key === 'arrowright') {
         keysRef.current.right = true;
       } else if (key === 'shift') {
         keysRef.current.shift = true;
@@ -142,13 +139,15 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
 
     const handleKeyUp = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      if (key === 'w' || key === 'arrowup') {
+      
+      // Always allow movement key releases to prevent stuck keys
+      if (key === 'w') {
         keysRef.current.forward = false;
-      } else if (key === 's' || key === 'arrowdown') {
+      } else if (key === 's') {
         keysRef.current.backward = false;
-      } else if (key === 'a' || key === 'arrowleft') {
+      } else if (key === 'a') {
         keysRef.current.left = false;
-      } else if (key === 'd' || key === 'arrowright') {
+      } else if (key === 'd') {
         keysRef.current.right = false;
       } else if (key === 'shift') {
         keysRef.current.shift = false;
@@ -164,7 +163,18 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [onNavigatePrev, onNavigateNext]);
+  }, []); // Remove dependencies to prevent event listener recreation
+
+  const onNavigatePrevRef = useRef(onNavigatePrev);
+  const onNavigateNextRef = useRef(onNavigateNext);
+  
+  useEffect(() => {
+    onNavigatePrevRef.current = onNavigatePrev;
+  }, [onNavigatePrev]);
+  
+  useEffect(() => {
+    onNavigateNextRef.current = onNavigateNext;
+  }, [onNavigateNext]);
 
   // Fixed update character - consistent collision vs visual separation
   const updateCharacter = (delta: number) => {
@@ -323,6 +333,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   const teleportToLocation = (location: string) => {
     let targetPosition: [number, number, number] = [0, 0, 0];
     
+    // Store current animation state before teleportation
+    const wasMoving = isMovingRef.current;
+    
     switch (location) {
       case 'transferable':
         targetPosition = [-13.625, 4.22, 1.5];
@@ -372,6 +385,10 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       shiftElevator.wasOnElevator = false;
     }
     
+    // Ensure movement state is stopped before teleportation
+    resetMovementState();
+    
+    // Set new position
     positionRef.current = targetPosition;
     targetHeight.current = targetPosition[1] - VISUAL_OFFSET;
     
@@ -381,6 +398,10 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       positionRef.current = [validated.x, validated.y + VISUAL_OFFSET, validated.z];
       targetHeight.current = validated.y;
     }
+    
+    // Ensure character is in idle state after teleportation
+    isMovingRef.current = false;
+    
   };
 
   // Touch handler for mobile devices
@@ -423,6 +444,33 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     keysRef.current.right = false;
   };
 
+  const resetMovementState = () => {
+    // Reset all movement keys to ensure clean state after navigation
+    keysRef.current.forward = false;
+    keysRef.current.backward = false;
+    keysRef.current.left = false;
+    keysRef.current.right = false;
+    keysRef.current.space = false;
+    keysRef.current.shift = false;
+    isMovingRef.current = false;
+  };
+
+  // Monitor content visibility and reset movement state when content opens
+  useEffect(() => {
+    const checkContentVisibility = () => {
+      const isContentOpen = document.querySelector('.content-box.visible') !== null;
+      if (isContentOpen) {
+        // Clear movement state when content opens to prevent stuck keys
+        resetMovementState();
+      }
+    };
+
+    // Check every 100ms for content visibility changes
+    const interval = setInterval(checkContentVisibility, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return {
     updateCharacter,
     getCharacterState,
@@ -433,6 +481,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     teleportToLocation,
     handleTouch,
     stopMovement,
+    resetMovementState,
     onNavigatePrev,
     onNavigateNext,
   };

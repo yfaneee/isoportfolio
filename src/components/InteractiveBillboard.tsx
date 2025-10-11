@@ -67,10 +67,6 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     loader.load(
       imagePath,
       (texture) => {
-        console.log(`✅ Texture loaded successfully for ${billboardKey}:`, texture);
-        console.log('📐 Texture dimensions:', texture.image.width, 'x', texture.image.height);
-        console.log('🎨 Texture image src:', texture.image.src);
-        
         // Configure the texture properly
         texture.flipY = true;
         texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -81,13 +77,10 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
         
         websiteTexture.current = texture;
         setTextureLoaded(true);
-        console.log(`🔄 Texture stored in ref with flipY=true for ${billboardKey}`);
       },
-      (progress) => {
-        console.log('📥 Loading progress:', progress);
-      },
+      undefined, // progress callback removed
       (error) => {
-        console.error('❌ Failed to load texture:', error);
+        console.error('Failed to load texture:', error);
       }
     );
   }, [billboardKey]);

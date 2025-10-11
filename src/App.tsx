@@ -54,6 +54,9 @@ function App() {
   const [menuDelayOver, setMenuDelayOver] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [characterOpacity, setCharacterOpacity] = useState(1);
+  const [characterScale, setCharacterScale] = useState(1);
+  const [characterRotationY, setCharacterRotationY] = useState(0);
+  const [characterPositionOffset, setCharacterPositionOffset] = useState<[number, number, number]>([0, 0, 0]);
   const [currentSlabKey, setCurrentSlabKey] = useState<string | null>(null);
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [canInteract, setCanInteract] = useState(false);
@@ -198,50 +201,53 @@ function App() {
       
       setOverlayPosition({ x: centerX, y: bottomY });
       
-       // Set interaction text based on slab type
-       switch (slabType) {
-         case 'main':
-           setInteractionText('Menu');
-           break;
-         case 'lo1':
-           setInteractionText('LO 1: Conceptualize & Design');
-           break;
-         case 'lo2':
-           setInteractionText('LO 2: Transferable Production');
-           break;
-         case 'lo3':
-           setInteractionText('LO 3: Creative Iterations');
-           break;
-         case 'lo4':
-           setInteractionText('LO 4: Professional Standards');
-           break;
-         case 'lo5':
-           setInteractionText('LO 5: Personal Leadership');
-           break;
-         case 'project-studio':
-           setInteractionText('Studio SeaMonkeys');
-           break;
-         case 'smaller-block':
-           setInteractionText('IronFilms');
-           break;
-         case 'artwork':
-           setInteractionText('Artwork Gallery');
-           break;
-         case 'github-holleman':
-           setInteractionText('Open GitHub');
-           console.log('🎯 Setting interaction text for Holleman GitHub');
-           break;
-         case 'github-castle':
-           setInteractionText('Open GitHub');
-           console.log('🎯 Setting interaction text for Castle GitHub');
-           break;
-         case 'github-space':
-           setInteractionText('Open GitHub');
-           console.log('🎯 Setting interaction text for Space GitHub');
-           break;
-         default:
-           setInteractionText('Interact');
-       }
+      // Set interaction text based on slab type
+      switch (slabType) {
+        case 'main':
+          setInteractionText('Menu');
+          break;
+        case 'lo1':
+          setInteractionText('LO 1: Conceptualize & Design');
+          break;
+        case 'lo2':
+          setInteractionText('LO 2: Transferable Production');
+          break;
+        case 'lo3':
+          setInteractionText('LO 3: Creative Iterations');
+          break;
+        case 'lo4':
+          setInteractionText('LO 4: Professional Standards');
+          break;
+        case 'lo5':
+          setInteractionText('LO 5: Personal Leadership');
+          break;
+        case 'project-studio':
+          setInteractionText('Studio SeaMonkeys');
+          break;
+        case 'smaller-block':
+          setInteractionText('IronFilms');
+          break;
+        case 'artwork':
+          setInteractionText('Artwork Gallery');
+          break;
+        case 'github-holleman':
+          setInteractionText('Open GitHub');
+          console.log('🎯 Setting interaction text for Holleman GitHub');
+          break;
+        case 'github-castle':
+          setInteractionText('Open GitHub');
+          console.log('🎯 Setting interaction text for Castle GitHub');
+          break;
+        case 'github-space':
+          setInteractionText('Open GitHub');
+          console.log('🎯 Setting interaction text for Space GitHub');
+          break;
+        case 'elevator':
+          setInteractionText('Use Elevator');
+          break;
+        default:
+          setInteractionText('Interact');
+      }
       
       setShowInteractionOverlay(true);
     } else {
@@ -379,23 +385,41 @@ function App() {
     // Start slab navigation mode - camera will move independently
     setIsNavigatingSlabs(true);
     
-    // Smooth fade out with easing
-    const fadeOutDuration = 500; // 500ms 
+    // Enhanced magical disappearing effect
+    const fadeOutDuration = 800; // Longer for more dramatic effect
     const startTime = Date.now();
     
-    const fadeOutAnimation = () => {
+    const magicalFadeOut = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / fadeOutDuration, 1);
       
-      // Ease-in-out for smoother fade
-      const eased = progress < 0.5 
-        ? 2 * progress * progress 
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      // Advanced easing curve - starts slow, accelerates, then slows down
+      const eased = progress < 0.3 
+        ? 2 * progress * progress // Slow start
+        : progress < 0.7 
+        ? 1 - Math.pow(-2 * (progress - 0.3) + 1, 3) / 2 + 0.18 // Fast middle
+        : 1 - Math.pow(-2 * progress + 2, 4) / 2; // Smooth end
       
+      // Multiple visual effects
       setCharacterOpacity(1 - eased);
       
+      // Scale down with bounce effect
+      const scaleEased = 1 - Math.pow(eased, 0.7);
+      const bounceScale = scaleEased + Math.sin(progress * Math.PI * 3) * 0.1 * (1 - progress);
+      setCharacterScale(Math.max(0.1, bounceScale));
+      
+      // Spin rotation effect - accelerating spin
+      const spinSpeed = progress * progress * 8; 
+      setCharacterRotationY(spinSpeed * Math.PI);
+      
+      // Floating upward effect with slight wobble
+      const floatHeight = eased * 2; 
+      const wobbleX = Math.sin(progress * Math.PI * 4) * 0.3 * eased;
+      const wobbleZ = Math.cos(progress * Math.PI * 3) * 0.2 * eased;
+      setCharacterPositionOffset([wobbleX, floatHeight, wobbleZ]);
+      
       if (progress < 1) {
-        requestAnimationFrame(fadeOutAnimation);
+        requestAnimationFrame(magicalFadeOut);
       } else {
         // Character is now invisible, teleport
         setTimeout(() => {
@@ -415,36 +439,58 @@ function App() {
             }
           }, 50);
           
-          // Wait for camera to arrive, then fade character back in
+          // Wait for camera to arrive, then magical reappear
           setTimeout(() => {
             const fadeInStartTime = Date.now();
             
-            const fadeInAnimation = () => {
+            const magicalFadeIn = () => {
               const elapsed = Date.now() - fadeInStartTime;
               const progress = Math.min(elapsed / fadeOutDuration, 1);
               
-              // Ease-in-out for smoother fade
+              // Reverse easing for smooth appearance
               const eased = progress < 0.5 
                 ? 2 * progress * progress 
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
               
+              // Fade in opacity
               setCharacterOpacity(eased);
               
+              // Scale up with slight overshoot
+              const scaleTarget = 1 + Math.sin(progress * Math.PI) * 0.2; // Slight bounce
+              setCharacterScale(eased * scaleTarget);
+              
+              // Gentle rotation settle
+              const settleRotation = (1 - eased) * Math.PI * 0.5;
+              setCharacterRotationY(settleRotation);
+              
+              // Gentle descent with settle
+              const descendHeight = (1 - eased) * 1.5;
+              const settleX = Math.sin((1 - progress) * Math.PI * 2) * 0.1 * (1 - eased);
+              setCharacterPositionOffset([settleX, descendHeight, 0]);
+              
               if (progress < 1) {
-                requestAnimationFrame(fadeInAnimation);
+                requestAnimationFrame(magicalFadeIn);
               } else {
+                // Reset all effects to normal
                 setCharacterOpacity(1);
+                setCharacterScale(1);
+                setCharacterRotationY(0);
+                setCharacterPositionOffset([0, 0, 0]);
                 setIsNavigatingSlabs(false);
+                // Reset movement state to fix animation bug after navigation
+                if (characterControllerRef.current && characterControllerRef.current.resetMovementState) {
+                  characterControllerRef.current.resetMovementState();
+                }
               }
             };
             
-            fadeInAnimation();
+            magicalFadeIn();
           }, 800); 
         }, 100);
       }
     };
     
-    fadeOutAnimation();
+    magicalFadeOut();
   }, [currentSlabKey]);
 
   // Navigate to previous slab with magic transition
@@ -462,23 +508,40 @@ function App() {
     // Start slab navigation mode - camera will move independently
     setIsNavigatingSlabs(true);
     
-    // Smooth fade out with easing
-    const fadeOutDuration = 500; 
+    // Enhanced magical disappearing effect (same as next)
+    const fadeOutDuration = 800; // Longer for more dramatic effect
     const startTime = Date.now();
     
-    const fadeOutAnimation = () => {
+    const magicalFadeOut = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / fadeOutDuration, 1);
       
-      // Ease-in-out for smoother fade
-      const eased = progress < 0.5 
+      const eased = progress < 0.3 
         ? 2 * progress * progress 
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        : progress < 0.7 
+        ? 1 - Math.pow(-2 * (progress - 0.3) + 1, 3) / 2 + 0.18 
+        : 1 - Math.pow(-2 * progress + 2, 4) / 2; 
       
+      // Multiple visual effects
       setCharacterOpacity(1 - eased);
       
+      // Scale down with bounce effect
+      const scaleEased = 1 - Math.pow(eased, 0.7);
+      const bounceScale = scaleEased + Math.sin(progress * Math.PI * 3) * 0.1 * (1 - progress);
+      setCharacterScale(Math.max(0.1, bounceScale));
+      
+      // Spin rotation effect 
+      const spinSpeed = progress * progress * -8; 
+      setCharacterRotationY(spinSpeed * Math.PI);
+      
+      // Floating upward effect with slight wobble
+      const floatHeight = eased * 2; 
+      const wobbleX = Math.sin(progress * Math.PI * 4) * 0.3 * eased;
+      const wobbleZ = Math.cos(progress * Math.PI * 3) * 0.2 * eased;
+      setCharacterPositionOffset([wobbleX, floatHeight, wobbleZ]);
+      
       if (progress < 1) {
-        requestAnimationFrame(fadeOutAnimation);
+        requestAnimationFrame(magicalFadeOut);
       } else {
         // Character is now invisible, teleport
         setTimeout(() => {
@@ -498,35 +561,58 @@ function App() {
             }
           }, 50);
           
-          // Wait for camera to arrive, then fade character back in
+          // Wait for camera to arrive, then magical reappear
           setTimeout(() => {
             const fadeInStartTime = Date.now();
             
-            const fadeInAnimation = () => {
+            const magicalFadeIn = () => {
               const elapsed = Date.now() - fadeInStartTime;
               const progress = Math.min(elapsed / fadeOutDuration, 1);
               
+              // Reverse easing for smooth appearance
               const eased = progress < 0.5 
                 ? 2 * progress * progress 
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
               
+              // Fade in opacity
               setCharacterOpacity(eased);
               
+              // Scale up with slight overshoot
+              const scaleTarget = 1 + Math.sin(progress * Math.PI) * 0.2; 
+              setCharacterScale(eased * scaleTarget);
+              
+              // Gentle rotation settle
+              const settleRotation = (1 - eased) * Math.PI * -0.5; 
+              setCharacterRotationY(settleRotation);
+              
+              // Gentle descent with settle
+              const descendHeight = (1 - eased) * 1.5;
+              const settleX = Math.sin((1 - progress) * Math.PI * 2) * 0.1 * (1 - eased);
+              setCharacterPositionOffset([settleX, descendHeight, 0]);
+              
               if (progress < 1) {
-                requestAnimationFrame(fadeInAnimation);
+                requestAnimationFrame(magicalFadeIn);
               } else {
+                // Reset all effects to normal
                 setCharacterOpacity(1);
+                setCharacterScale(1);
+                setCharacterRotationY(0);
+                setCharacterPositionOffset([0, 0, 0]);
                 setIsNavigatingSlabs(false);
+                // Reset movement state to fix animation bug after navigation
+                if (characterControllerRef.current && characterControllerRef.current.resetMovementState) {
+                  characterControllerRef.current.resetMovementState();
+                }
               }
             };
             
-            fadeInAnimation();
+            magicalFadeIn();
           }, 800); 
         }, 100);
       }
     };
     
-    fadeOutAnimation();
+    magicalFadeOut();
   }, [currentSlabKey]);
 
   // Cleanup timer on unmount
@@ -648,6 +734,9 @@ function App() {
                   characterControllerRef={characterControllerRef}
                   showLoadingScreen={showLoadingScreen}
                   characterOpacity={characterOpacity}
+                  characterScale={characterScale}
+                  characterRotationY={characterRotationY}
+                  characterPositionOffset={characterPositionOffset}
                   isNavigatingSlabs={isNavigatingSlabs}
                   selectedCharacterModel={selectedCharacter.modelPath}
                   onPositionUpdate={handlePositionUpdate}
