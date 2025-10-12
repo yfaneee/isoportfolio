@@ -54,9 +54,9 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     // Load different textures for different billboards
     let imagePath = '';
     if (billboardKey === 'billboard1') {
-      imagePath = '/images/hollemanproj.png';
-    } else if (billboardKey === 'billboard2') {
       imagePath = '/images/castleportfolio.png';
+    } else if (billboardKey === 'billboard2') {
+      imagePath = '/images/hollemanproj.png';
     } else if (billboardKey === 'billboard3') {
       imagePath = '/images/spaceportfolio.png';
     } else {

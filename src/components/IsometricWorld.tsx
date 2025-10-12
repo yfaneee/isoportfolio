@@ -947,10 +947,10 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
 
       {/* Interactive Billboard/Screen structures  */}
       {[
-        { row: 2, key: 'billboard1', websiteUrl: 'https://holleman.vercel.app/' },
-        { row: 7, key: 'billboard2', websiteUrl: 'https://i503826.hera.fontysict.net/castle/' },
+        { row: 2, key: 'billboard1', websiteUrl: 'https://i503826.hera.fontysict.net/castle/' },
+        { row: 7, key: 'billboard2', websiteUrl: 'https://holleman.vercel.app/' },
         { row: 12, key: 'billboard3', websiteUrl: 'https://space-portfolio-one-mu.vercel.app/' },
-        { row: 17, key: 'billboard4', websiteUrl: 'https://your-demo-site.com' }
+        { row: 17, key: 'billboard4', websiteUrl: 'https://....com' }
       ].map(billboard => {
         const billboardX = -2.5 * spacing + spacing * 0.5 - 0.7;
         const billboardZ = platform18x3StartZ + (billboard.row - 1) * spacing;

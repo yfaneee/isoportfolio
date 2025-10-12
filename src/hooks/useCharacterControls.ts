@@ -225,8 +225,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     }
 
     // Movement with collision detection using collision coordinates
-    const baseSpeed = 3;
-    const speedMultiplier = keysRef.current.shift ? 2 : 1; 
+    const baseSpeed = 4;
+    const speedMultiplier = keysRef.current.shift ? 1.5 : 1; 
     const speed = baseSpeed * speedMultiplier;
     const newX = currentX + dx * speed * delta;
     const newZ = currentZ + dz * speed * delta;
@@ -261,6 +261,13 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       
       // Always add visual offset to final position
       positionRef.current = [constrained.x, finalCollisionY + VISUAL_OFFSET, constrained.z];
+      
+      if (constrained.slideX !== undefined || constrained.slideZ !== undefined) {
+        const slideFriction = 0.8;
+        const adjustedX = currentX + (constrained.x - currentX) * slideFriction;
+        const adjustedZ = currentZ + (constrained.z - currentZ) * slideFriction;
+        positionRef.current = [adjustedX, finalCollisionY + VISUAL_OFFSET, adjustedZ];
+      }
     } else {
       isMovingRef.current = false;
       return;

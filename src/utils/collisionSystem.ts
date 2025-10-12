@@ -149,19 +149,21 @@ export const platforms: Platform[] = [
   
   // DOWNWARD STAIRS - Three sets of 3 stairs each (fixed collision boundaries)
   // First set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 2.80 - 0.75, maxZ: 2.70 + 0.75, y: -0.2, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.1 - 0.75, maxZ: 3.1 + 0.75, y: -0.47, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.55 - 0.75, maxZ: 3.55 + 0.75, y: -0.8, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 2.80 - 0.75, maxZ: 2.75 + 0.75, y: -0.2, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.9 - 0.75, maxZ: 3.15 + 0.75, y: -0.47, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.35 - 0.75, maxZ: 3.6 + 0.75, y: -0.8, type: 'stair', stairDirection: 'south' },
   
   // Second set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4 - 0.75, maxZ: 4 + 0.75, y: -1.1, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.45 - 0.75, maxZ: 4.45 + 0.75, y: -1.4, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.90 - 0.75, maxZ: 4.90 + 0.75, y: -1.7, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.8 - 0.75, maxZ: 4.05 + 0.75, y: -1.1, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.25 - 0.75, maxZ: 4.5 + 0.75, y: -1.4, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.7 - 0.75, maxZ: 4.95 + 0.75, y: -1.7, type: 'stair', stairDirection: 'south' },
   
   // Third set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.35 - 0.75, maxZ: 5.35 + 0.75, y: -2.0, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.80 - 0.75, maxZ: 5.80 + 0.75, y: -2.3, type: 'floor' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.25 - 0.75, maxZ: 6.25 + 0.75, y: -2.6, type: 'floor' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.15 - 0.75, maxZ: 5.4 + 0.75, y: -2.0, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.60 - 0.75, maxZ: 5.85 + 0.75, y: -2.3, type: 'stair', stairDirection: 'south' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 7.05 - 0.75, maxZ: 6.3 + 0.75, y: -2.6, type: 'stair', stairDirection: 'south' },
+  
+
   
   // PROJECT SLABS on 18x3 platform (4 interactive slabs) - MUST BE BEFORE 18x3 PLATFORM for priority
   { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 2 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 2 * 1.5 - 1.5 + 0.45, y: -2.47, type: 'floor' },  
@@ -306,9 +308,9 @@ function cleanupCache() {
   
   if (positionCache.size < CLEANUP_THRESHOLD) return;
   
-  // LRU-style cleanup - remove least recently used entries
+  // LRU-style cleanup =
   const entries = Array.from(positionCache.entries());
-  // Sort by access count and timestamp (prioritize frequently used, recent entries)
+  // Sort by access count and timestamp
   entries.sort((a, b) => {
     const scoreA = a[1].accessCount * 0.7 + (now - a[1].timestamp) * 0.3;
     const scoreB = b[1].accessCount * 0.7 + (now - b[1].timestamp) * 0.3;
@@ -393,8 +395,14 @@ export function constrainToPlatform(
   currentY: number,
   currentX: number,
   currentZ: number
-): { x: number; y: number; z: number; onPlatform: boolean } {
+): { x: number; y: number; z: number; onPlatform: boolean; slideX?: number; slideZ?: number } {
   
+  const currentHeight = getHeightAtPosition(currentX, currentZ);
+  if (currentHeight === null) {
+    console.warn('Character in invalid position, blocking movement', { currentX, currentZ });
+    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+  }
+
   // First check if trying to move onto the elevator
   if (isOnElevator(newX, newZ)) {
     const elevatorY = getElevatorHeight();
@@ -438,19 +446,80 @@ export function constrainToPlatform(
         (targetPlatform.stairDirection === 'west' && Math.abs(movementX) > Math.abs(movementZ) * 2);   
       
       if (!validDirection) {
-        return { x: currentX, y: currentY, z: currentZ, onPlatform: false };
+        return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
       }
     }
     
     const heightDiff = Math.abs(targetPlatform.y - currentY);
     
-    if (heightDiff <= 1.5) {
+    // Allow reasonable height changes for stairs (including downward stairs)
+    if (heightDiff <= 2.0) {
       return { x: newX, y: targetPlatform.y, z: newZ, onPlatform: true };
+    } else {
+      return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
     }
   }
   
-  // If not on a platform or height change too large, don't allow movement
-  return { x: newX, y: currentY, z: newZ, onPlatform: false };
+  const currentPlatforms = getPlatformsNear(currentX, currentZ);
+  const currentPlatform = currentPlatforms.find(platform => {
+    if (currentX >= platform.minX && currentX <= platform.maxX &&
+        currentZ >= platform.minZ && currentZ <= platform.maxZ) {
+      
+      // For triangles, check precise collision
+      if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
+        return isPointInTriangle(currentX, currentZ, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2]);
+      }
+      return true;
+    }
+    return false;
+  });
+  
+  if (currentPlatform) {
+    const moveX = newX - currentX;
+    const moveZ = newZ - currentZ;
+    
+    // Try sliding along X axis 
+    const slideX = currentX + moveX;
+    const slideZ = currentZ;
+    
+    // Check if sliding along X is valid and stays on current platform
+    if (slideX >= currentPlatform.minX && slideX <= currentPlatform.maxX &&
+        slideZ >= currentPlatform.minZ && slideZ <= currentPlatform.maxZ) {
+      
+      // For triangles, check precise collision
+      if (currentPlatform.type === 'triangle' && currentPlatform.triangleVertices && currentPlatform.triangleVertices.length === 3) {
+        if (isPointInTriangle(slideX, slideZ, currentPlatform.triangleVertices[0], currentPlatform.triangleVertices[1], currentPlatform.triangleVertices[2])) {
+          return { x: slideX, y: currentY, z: slideZ, onPlatform: true, slideX: moveX, slideZ: 0 };
+        }
+      } else {
+        return { x: slideX, y: currentY, z: slideZ, onPlatform: true, slideX: moveX, slideZ: 0 };
+      }
+    }
+    
+    // Try sliding along Z axis (keep Z movement, zero X movement)
+    const slideX2 = currentX;
+    const slideZ2 = currentZ + moveZ;
+    
+    // Check if sliding along Z is valid and stays on current platform
+    if (slideX2 >= currentPlatform.minX && slideX2 <= currentPlatform.maxX &&
+        slideZ2 >= currentPlatform.minZ && slideZ2 <= currentPlatform.maxZ) {
+      
+      // For triangles, check precise collision
+      if (currentPlatform.type === 'triangle' && currentPlatform.triangleVertices && currentPlatform.triangleVertices.length === 3) {
+        if (isPointInTriangle(slideX2, slideZ2, currentPlatform.triangleVertices[0], currentPlatform.triangleVertices[1], currentPlatform.triangleVertices[2])) {
+          return { x: slideX2, y: currentY, z: slideZ2, onPlatform: true, slideX: 0, slideZ: moveZ };
+        }
+      } else {
+        return { x: slideX2, y: currentY, z: slideZ2, onPlatform: true, slideX: 0, slideZ: moveZ };
+      }
+    }
+    
+    // If neither sliding direction works, just don't move (invisible wall effect)
+    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+  }
+  
+  // If we're not on any platform, don't allow any movement
+  return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
 }
 
 export function smoothHeightTransition(currentY: number, targetY: number, delta: number): number {
