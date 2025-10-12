@@ -242,6 +242,9 @@ function App() {
           setInteractionText('Open GitHub');
           console.log('🎯 Setting interaction text for Space GitHub');
           break;
+        case 'github-spotify':
+          setInteractionText('Open GitHub');
+          break;
         case 'elevator':
           setInteractionText('Use Elevator');
           break;
@@ -281,7 +284,8 @@ function App() {
       const githubProjectSlabs = [
         { x: -1, z: 9.15, url: 'https://github.com/yfaneee/holleman' },
         { x: -1, z: 16.65, url: 'https://git.fhict.nl/I503826/castleportfolio' },
-        { x: -1, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' }
+        { x: -1, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
+        { x: -1, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
       ];
       
       const currentGithubSlab = githubProjectSlabs.find(slab => 
@@ -658,7 +662,8 @@ function App() {
       const githubProjectSlabs = [
         { x: -1, z: 9.15 },
         { x: -1, z: 16.65 },
-        { x: -1, z: 24.15 }
+        { x: -1, z: 24.15 },
+        { x: -1, z: 31.65 }
       ];
       
       const isOnGithubSlab = githubProjectSlabs.some(slab => 

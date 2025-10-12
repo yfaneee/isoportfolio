@@ -116,11 +116,12 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[0] >= 10.05 && newPos[0] <= 10.95 && 
             newPos[2] >= -0.46 && newPos[2] <= 0.44;
 
-          // Check GitHub project slabs on 18x3 platform (first 3 slabs)
+          // Check GitHub project slabs on 18x3 platform (all 4 slabs)
           const githubProjectSlabs = [
             { x: -1, z: 9.15, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
             { x: -1, z: 16.65, id: 'github-castle', url: 'https://github.com/yfaneee/castle-portfolio' },
-            { x: -1, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' }
+            { x: -1, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
+            { x: -1, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
           ];
           
           const currentGithubSlab = githubProjectSlabs.find(slab => 
@@ -131,25 +132,20 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
           // Check if on elevator
           const isOnElevatorPressurePlate = isOnElevator(newPos[0], newPos[2]);
           
-          // Debug logging for GitHub slabs
-          if (currentGithubSlab) {
-            console.log('🎯 On GitHub slab:', currentGithubSlab.id, 'at position:', newPos);
-          }
-          
           if (isOnMainSlab) {
-            onSlabInteraction(true, 'main');
+            onSlabInteraction?.(true, 'main');
           } else if (currentLOSlab) {
-            onSlabInteraction(true, currentLOSlab.id);
+            onSlabInteraction?.(true, currentLOSlab.id);
           } else if (currentProjectStudioSlab) {
-            onSlabInteraction(true, currentProjectStudioSlab.id);
+            onSlabInteraction?.(true, currentProjectStudioSlab.id);
           } else if (isOnArtworkSlab) {
-            onSlabInteraction(true, 'artwork');
+            onSlabInteraction?.(true, 'artwork');
           } else if (currentGithubSlab) {
-            onSlabInteraction(true, currentGithubSlab.id, currentGithubSlab.url);
+            onSlabInteraction?.(true, currentGithubSlab.id, currentGithubSlab.url);
           } else if (isOnElevatorPressurePlate) {
-            onSlabInteraction(true, 'elevator');
+            onSlabInteraction?.(true, 'elevator');
           } else {
-            onSlabInteraction(false);
+            onSlabInteraction?.(false);
           }
         }
       }

@@ -59,6 +59,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       imagePath = '/images/hollemanproj.png';
     } else if (billboardKey === 'billboard3') {
       imagePath = '/images/spaceportfolio.png';
+    } else if (billboardKey === 'billboard4') {
+      imagePath = '/images/spotifyfolio.png';
     } else {
       return; 
     }
@@ -225,7 +227,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
             setIsHovered(false);
           }}
         >
-          {(billboardKey === 'billboard1' || billboardKey === 'billboard2' || billboardKey === 'billboard3') && textureLoaded ? (
+          {(billboardKey === 'billboard1' || billboardKey === 'billboard2' || billboardKey === 'billboard3' || billboardKey === 'billboard4') && textureLoaded ? (
             <meshStandardMaterial 
               key="textured-material"
               map={websiteTexture.current}

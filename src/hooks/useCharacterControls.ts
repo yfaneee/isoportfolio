@@ -99,6 +99,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
           const [x, , z] = positionRef.current;
           if (isOnElevator(x, z)) {
             triggerElevator();
+            // Immediately update character position to new elevator height
+            const newElevatorY = getElevatorHeight();
+            positionRef.current = [x, newElevatorY + VISUAL_OFFSET, z];
           } else {
             // Check if on smaller-block-slab 
             const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
@@ -121,14 +124,15 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             const isOnGithubSlab1 = x >= -1.45 && x <= -0.55 && z >= 8.7 && z <= 9.6;   
             const isOnGithubSlab2 = x >= -1.45 && x <= -0.55 && z >= 16.2 && z <= 17.1; 
             const isOnGithubSlab3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
+            const isOnGithubSlab4 = x >= -1.45 && x <= -0.55 && z >= 31.2 && z <= 32.1; 
             
             if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
-                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3) && onSpacePress) {
+                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) && onSpacePress) {
               centerOnSlab();
               onSpacePress();
-              if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3) {
+              if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) {
                 keysRef.current.space = false;
               }
             }
@@ -190,11 +194,13 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     const onElevator = isOnElevator(currentX, currentZ);
     if (onElevator) {
       const elevatorY = getElevatorHeight();
-      if (Math.abs(collisionY - elevatorY) > 0.05) {
+      // Always update position if on elevator to ensure immediate teleportation
+      if (Math.abs(collisionY - elevatorY) > 0.01) {
         positionRef.current = [currentX, elevatorY + VISUAL_OFFSET, currentZ];
       }
       shiftElevator.wasOnElevator = true;
       
+      // Allow movement while on elevator - don't return early
       if (!hasInput) {
         isMovingRef.current = false;
         return;
