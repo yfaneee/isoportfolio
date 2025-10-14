@@ -23,6 +23,7 @@ interface IsometricSceneProps {
   selectedCharacterModel: string;
   onPositionUpdate?: (position: { x: number; z: number }) => void;
   onSlabInteraction?: (isOnSlab: boolean, slabType?: string) => void;
+  onBillboardInteraction?: (isHovering: boolean, billboardKey?: string) => void;
   onBillboardFullscreenStart?: () => void;
   onBillboardFullscreenEnd?: () => void;
   onShowWebsite?: (websiteUrl: string, billboardKey: string) => void;
@@ -51,6 +52,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   selectedCharacterModel,
   onPositionUpdate,
   onSlabInteraction,
+  onBillboardInteraction,
   onBillboardFullscreenStart,
   onBillboardFullscreenEnd,
   onShowWebsite,
@@ -105,6 +107,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
       
       {/* The isometric world */}
       <IsometricWorld 
+        onBillboardInteraction={onBillboardInteraction}
         onBillboardFullscreenStart={onBillboardFullscreenStart}
         onBillboardFullscreenEnd={onBillboardFullscreenEnd}
         onShowWebsite={onShowWebsite}

@@ -804,6 +804,7 @@ const ArtworkPlatform = React.memo(() => {
     });
     
 interface ProjectPlatformsProps {
+  onBillboardInteraction?: (isHovering: boolean, billboardKey?: string) => void;
   onBillboardFullscreenStart?: () => void;
   onBillboardFullscreenEnd?: () => void;
   onShowWebsite?: (websiteUrl: string, billboardKey: string) => void;
@@ -813,6 +814,7 @@ interface ProjectPlatformsProps {
 }
 
 const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({ 
+  onBillboardInteraction,
   onBillboardFullscreenStart, 
   onBillboardFullscreenEnd,
   onShowWebsite,
@@ -963,6 +965,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         rotation={[0, Math.PI / 4, 0]} 
             billboardKey={billboard.key}
             websiteUrl={billboard.websiteUrl}
+            onBillboardInteraction={onBillboardInteraction}
             onCameraAnimationStart={onBillboardFullscreenStart}
             onCameraAnimationEnd={onBillboardFullscreenEnd}
             onShowWebsite={onShowWebsite}
@@ -977,6 +980,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
     });
 
 interface IsometricWorldProps {
+  onBillboardInteraction?: (isHovering: boolean, billboardKey?: string) => void;
   onBillboardFullscreenStart?: () => void;
   onBillboardFullscreenEnd?: () => void;
   onShowWebsite?: (websiteUrl: string, billboardKey: string) => void;
@@ -986,6 +990,7 @@ interface IsometricWorldProps {
 }
 
 const IsometricWorld: React.FC<IsometricWorldProps> = ({ 
+  onBillboardInteraction,
   onBillboardFullscreenStart, 
   onBillboardFullscreenEnd,
   onShowWebsite,
@@ -1003,6 +1008,7 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
       <LearningOutcomesPlatform />
       <ArtworkPlatform />
       <ProjectPlatforms 
+        onBillboardInteraction={onBillboardInteraction}
         onBillboardFullscreenStart={onBillboardFullscreenStart}
         onBillboardFullscreenEnd={onBillboardFullscreenEnd}
         onShowWebsite={onShowWebsite}

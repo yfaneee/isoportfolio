@@ -37,6 +37,9 @@ function App() {
   const [showInteractionOverlay, setShowInteractionOverlay] = useState(false);
   const [interactionText, setInteractionText] = useState('Menu');
   const [overlayPosition, setOverlayPosition] = useState({ x: 0, y: 0 });
+  const [interactionKeyText, setInteractionKeyText] = useState('SPACE');
+  const [isHoveringBillboard, setIsHoveringBillboard] = useState(false);
+  const [currentBillboardHover, setCurrentBillboardHover] = useState<string | null>(null);
   const [isBillboardFullscreen, setIsBillboardFullscreen] = useState(false);
   const [showWebsiteOverlay, setShowWebsiteOverlay] = useState(false);
   const [currentWebsiteUrl, setCurrentWebsiteUrl] = useState('');
@@ -252,11 +255,53 @@ function App() {
           setInteractionText('Interact');
       }
       
+      setInteractionKeyText('SPACE');
       setShowInteractionOverlay(true);
     } else {
       setShowInteractionOverlay(false);
     }
   }, []);
+
+  // Handle billboard interaction overlay
+  const handleBillboardInteraction = useCallback((isHovering: boolean, billboardKey?: string) => {
+    if (isHovering && billboardKey) {
+      // Calculate overlay position 
+      const centerX = window.innerWidth / 2;
+      const bottomY = window.innerHeight - 250; 
+      
+      setOverlayPosition({ x: centerX, y: bottomY });
+      
+      // Set interaction text based on billboard type
+      switch (billboardKey) {
+        case 'billboard1':
+          setInteractionText('View Castle Portfolio');
+          break;
+        case 'billboard2':
+          setInteractionText('View Holleman Project');
+          break;
+        case 'billboard3':
+          setInteractionText('View Space Portfolio');
+          break;
+        case 'billboard4':
+          setInteractionText('View Spotify Portfolio');
+          break;
+        default:
+          setInteractionText('View Portfolio');
+      }
+      
+      setInteractionKeyText('CLICK');
+      setIsHoveringBillboard(true);
+      setCurrentBillboardHover(billboardKey);
+      setShowInteractionOverlay(true);
+    } else {
+      setIsHoveringBillboard(false);
+      setCurrentBillboardHover(null);
+      // Only hide overlay if not on a slab
+      if (!canInteract) {
+        setShowInteractionOverlay(false);
+      }
+    }
+  }, [canInteract]);
 
   const handleMovementStart = useCallback(() => {
     if (showMenu) {
@@ -746,6 +791,7 @@ function App() {
                   selectedCharacterModel={selectedCharacter.modelPath}
                   onPositionUpdate={handlePositionUpdate}
                   onSlabInteraction={handleSlabInteraction}
+                  onBillboardInteraction={handleBillboardInteraction}
                   onBillboardFullscreenStart={handleBillboardFullscreenStart}
                   onBillboardFullscreenEnd={handleBillboardFullscreenEnd}
                   onShowWebsite={handleShowWebsite}
@@ -840,9 +886,10 @@ function App() {
 
         {/* Interaction Overlay */}
         <InteractionOverlay
-          isVisible={showInteractionOverlay && !showMenu && !showContent && canInteract}
+          isVisible={showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)}
           interactionText={interactionText}
           position={overlayPosition}
+          keyText={interactionKeyText}
         />
 
         {/* Website Overlay */}

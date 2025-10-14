@@ -24,11 +24,12 @@
 }
 
 .character-selection-title {
-  font-family: 'Coolvetica', Arial, sans-serif;
+  font-family: 'Coolvetica Rg', Arial, sans-serif;
   font-size: 2.5rem;
   color: #ffffff;
   margin-bottom: 30px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
 }
 
 .character-grid {
@@ -57,18 +58,17 @@
 
 .character-card.selected {
   border-color: #ffffff;
-  background: rgba(255, 255, 255, 0.4);
+  background: transparent;
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(100, 30, 104, 0.3);
 }
 
 .character-image-container {
-  width: 80px;
-  height: 80px;
+  width: 62px;
+  height: 62px;
   margin: 0 auto 10px;
   border-radius: 8px;
   overflow: hidden;
-  background: #f8f9fa81;
   display: flex;
   align-items: center;
   justify-content: center;

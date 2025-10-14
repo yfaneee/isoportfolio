@@ -5,12 +5,14 @@ interface InteractionOverlayProps {
   isVisible: boolean;
   interactionText: string;
   position: { x: number; y: number };
+  keyText?: string;
 }
 
 const InteractionOverlay: React.FC<InteractionOverlayProps> = ({
   isVisible,
   interactionText,
-  position
+  position,
+  keyText = 'SPACE'
 }) => {
   if (!isVisible) return null;
 
@@ -24,7 +26,7 @@ const InteractionOverlay: React.FC<InteractionOverlayProps> = ({
     >
       <div className="interaction-content">
         <div className="interaction-key">
-          <span className="key-icon">SPACE</span>
+          <span className="key-icon">{keyText}</span>
         </div>
         <div className="interaction-text">{interactionText}</div>
       </div>

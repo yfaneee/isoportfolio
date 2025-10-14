@@ -8,6 +8,7 @@ interface InteractiveBillboardProps {
   rotation: [number, number, number];
   billboardKey: string;
   websiteUrl?: string;
+  onBillboardInteraction?: (isHovering: boolean, billboardKey?: string) => void;
   onCameraAnimationStart?: () => void;
   onCameraAnimationEnd?: () => void;
   onShowWebsite?: (websiteUrl: string, billboardKey: string) => void;
@@ -21,6 +22,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   rotation,
   billboardKey,
   websiteUrl = "https://your-website.com", 
+  onBillboardInteraction,
   onCameraAnimationStart,
   onCameraAnimationEnd,
   onShowWebsite,
@@ -220,11 +222,13 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
             e.stopPropagation();
             document.body.style.cursor = 'pointer';
             setIsHovered(true);
+            onBillboardInteraction?.(true, billboardKey);
           }}
           onPointerOut={(e) => {
             e.stopPropagation();
             document.body.style.cursor = 'default';
             setIsHovered(false);
+            onBillboardInteraction?.(false, billboardKey);
           }}
         >
           {(billboardKey === 'billboard1' || billboardKey === 'billboard2' || billboardKey === 'billboard3' || billboardKey === 'billboard4') && textureLoaded ? (

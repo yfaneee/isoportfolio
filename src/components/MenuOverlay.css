@@ -39,13 +39,40 @@
   overflow: hidden;
 }
 
+/* Section title with dividers */
+.section-title-with-dividers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(0.6rem, 0.5vh, 0.9rem);
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+.section-title-with-dividers .divider-left,
+.section-title-with-dividers .divider-right {
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.section-title-with-dividers .divider-left img,
+.section-title-with-dividers .divider-right img {
+  height: clamp(13px, 2vw, 21px);
+  width: auto;
+  filter: brightness(1.2) contrast(1.1);
+}
+
+.section-title-with-dividers .divider-right img {
+  transform: scaleX(-1);
+}
+
 .menu-section h3 {
-  margin: 0 0 0.2rem 0;
+  margin: 0;
   font-size: clamp(1.3rem, 2.8vw, 1.9rem);
   font-family: 'Coolvetica Rg', sans-serif;
   font-weight: normal;
   color: rgba(255, 255, 255, 1);
-  padding-bottom: clamp(0.2rem, 0.5vh, 0.5rem);
   text-align: center;
 }
 
@@ -65,12 +92,14 @@
   display: flex;
   max-width: min(500px, 100%);
   width: 100%;
+  justify-content: space-evenly;
 }
 
 .work-links {
   display: flex;
   max-width: min(500px, 100%);
   width: 100%;
+  justify-content: space-evenly;
 }
 
 .work-links a {
@@ -158,6 +187,15 @@
     font-size: clamp(1.2rem, 2.5vw + 0.3vh, 1.8rem);
   }
   
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(14px, 1.8vw, 20px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.4rem, 0.8vw, 0.8rem);
+  }
+  
   .work-links a,
   .learning-outcomes-links a,
   .project-links a {
@@ -175,6 +213,15 @@
   
   .menu-section h3 {
     font-size: clamp(1.4rem, 2.3vw + 0.25vh, 1.8rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(12px, 1.6vw, 18px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.3rem, 0.6vw, 0.6rem);
   }
   
   .work-links a,
@@ -200,6 +247,15 @@
     font-size: clamp(1rem, 2.2vw + 0.2vh, 1.5rem);
   }
   
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(10px, 1.4vw, 16px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.25rem, 0.5vw, 0.5rem);
+  }
+  
   .work-links a,
   .learning-outcomes-links a,
   .project-links a {
@@ -221,6 +277,15 @@
   
   .menu-section h3 {
     font-size: clamp(0.9rem, 2vw + 0.15vh, 1.3rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(8px, 1.2vw, 14px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.2rem, 0.4vw, 0.4rem);
   }
   
   .work-links a,
@@ -250,6 +315,15 @@
     font-size: clamp(0.9rem, 2vw, 1.2rem);
   }
   
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(8px, 1vw, 12px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.15rem, 0.3vw, 0.3rem);
+  }
+  
   .work-links a,
   .learning-outcomes-links a,
   .project-links a {
@@ -271,6 +345,15 @@
   
   .menu-section h3 {
     font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(12px, 1.5vw, 18px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.3rem, 0.6vw, 0.6rem);
   }
   
   .work-links a,
@@ -296,6 +379,15 @@
     font-size: clamp(1.3rem, 2vw, 1.6rem);
   }
   
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(14px, 1.6vw, 20px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.4rem, 0.7vw, 0.7rem);
+  }
+  
   .work-links a,
   .learning-outcomes-links a,
   .project-links a {
@@ -317,6 +409,15 @@
   
   .menu-section h3 {
     font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(10px, 1.2vw, 16px);
+  }
+  
+  .section-title-with-dividers {
+    gap: clamp(0.25rem, 0.5vw, 0.5rem);
   }
   
   .work-links a,

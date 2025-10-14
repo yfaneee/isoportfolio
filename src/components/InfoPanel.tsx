@@ -10,7 +10,15 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
     <div className={`info-panel ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
       <div className="info-content">
         <div className="info-section">
-          <h3>Menu</h3>
+          <div className="section-title-with-dividers">
+            <div className="divider-left">
+              <img src="/images/divider-003.png" alt="" />
+            </div>
+            <h3>Menu</h3>
+            <div className="divider-right">
+              <img src="/images/divider-003.png" alt="" />
+            </div>
+          </div>
           <p>
             Welcome to my interactive 3D portfolio! Navigate through my work and projects 
             using the menu to quickly jump to different sections, or explore by walking 
@@ -19,7 +27,15 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
         </div>
 
          <div className="info-section">
-           <h3>Controls</h3>
+           <div className="section-title-with-dividers">
+             <div className="divider-left">
+               <img src="/images/divider-003.png" alt="" />
+             </div>
+             <h3>Controls</h3>
+             <div className="divider-right">
+               <img src="/images/divider-003.png" alt="" />
+             </div>
+           </div>
            <div className="controls-list">
              <div className="control-row">
                <span className="key">W A S D</span>
