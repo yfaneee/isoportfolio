@@ -12,6 +12,7 @@ import CharacterSelection, { CharacterOption } from './components/CharacterSelec
 import LocationDiscovery from './components/LocationDiscovery';
 import InteractionOverlay from './components/InteractionOverlay';
 import WebsiteOverlay from './components/WebsiteOverlay';
+import ClickSpark from './components/ClickSpark';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { shiftElevator, isOnElevator } from './utils/elevatorSystem';
@@ -740,8 +741,17 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {/* Three.js Canvas for the isometric world - always visible */}
-        <Canvas
+        {/* ClickSpark overlay for the entire app */}
+        <ClickSpark
+          sparkColor='#fff'
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
+          <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+            {/* Three.js Canvas for the isometric world - always visible */}
+            <Canvas
           camera={{
             position: [10, 10, 10],
             fov: 50
@@ -750,7 +760,8 @@ function App() {
             width: '100vw', 
             height: '100vh',
             background: 'linear-gradient(135deg, #E5D3FF 0%, #C5A3FF 50%, #A580FF 100%)',
-            touchAction: 'none'
+            touchAction: 'none',
+            pointerEvents: 'auto'
           }}
           onTouchStart={(e) => {
             // Only handle touch on the canvas, not UI elements
@@ -800,106 +811,108 @@ function App() {
                   triggerBillboardExit={triggerBillboardExit}
                   onBillboardExitComplete={() => setTriggerBillboardExit(false)}
                 />
-        </Canvas>
+            </Canvas>
+            
+            {/* Controls UI Overlay - hidden when loading screen is visible or website overlay is open */}
+            {!showLoadingScreen && !showWebsiteOverlay && <ControlsUI introComplete={introComplete} />}
         
-        {/* Controls UI Overlay - hidden when loading screen is visible or website overlay is open */}
-        {!showLoadingScreen && !showWebsiteOverlay && <ControlsUI introComplete={introComplete} />}
+            {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay, hidden when website overlay is open */}
+            <UI 
+              visible={introComplete && !showMenu && menuDelayOver && !showWebsiteOverlay} 
+              canInteract={canInteract}
+              showContent={showContent}
+            />
+
+            {/* Menu Overlay - hidden when loading screen is visible */}
+            {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
+
+            {/* Info Panel - hidden when loading screen is visible */}
+            {!showLoadingScreen && <InfoPanel isVisible={showMenu} />}
+
+            {/* Content Box - hidden when loading screen is visible */}
+            {!showLoadingScreen && (
+              <Content 
+                isVisible={showContent} 
+                content={currentContent}
+                onNavigatePrev={handleNavigatePrev}
+                onNavigateNext={handleNavigateNext}
+                canNavigatePrev={!!currentSlabKey}
+                canNavigateNext={!!currentSlabKey}
+              />
+            )}
+
+            {/* Menu Icon - visible when intro is complete and website overlay is not open */}
+            {!showLoadingScreen && introComplete && !showWebsiteOverlay && (
+              <MenuIcon onClick={handleMenuIconClick} isVisible={true} isMenuOpen={showMenu} />
+            )}
+
+            {/* Character Selection Screen */}
+            <CharacterSelection
+              isVisible={showCharacterSelection}
+              onCharacterSelect={handleCharacterSelect}
+              onStart={handleCharacterSelectionStart}
+            />
+
+            {/* Location Discovery Notification */}
+            <LocationDiscovery
+              isVisible={showLocationDiscovery}
+              onComplete={handleLocationDiscoveryComplete}
+            />
+
+            {/* Project & Studio Discovery Notification */}
+            <LocationDiscovery
+              isVisible={showProjectStudioDiscovery}
+              onComplete={handleProjectStudioDiscoveryComplete}
+              locationName="Project & Studio"
+            />
+
+            {/* Learning Outcomes Discovery Notification */}
+            <LocationDiscovery
+              isVisible={showLearningOutcomesDiscovery}
+              onComplete={handleLearningOutcomesDiscoveryComplete}
+              locationName="Learning Outcomes"
+            />
+
+            {/* Artwork Discovery Notification */}
+            <LocationDiscovery
+              isVisible={showArtworkDiscovery}
+              onComplete={handleArtworkDiscoveryComplete}
+              locationName="Artwork"
+            />
+
+            {/* Work Discovery Notification */}
+            <LocationDiscovery
+              isVisible={showWorkDiscovery}
+              onComplete={handleWorkDiscoveryComplete}
+              locationName="Work"
+            />
+
+            {/* All Locations Discovered Notification */}
+            <LocationDiscovery
+              isVisible={showAllLocationsDiscovered}
+              onComplete={handleAllLocationsDiscoveredComplete}
+              locationName="Congratulations!|All Locations Discovered"
+              isCongratulatoryMessage={true}
+            />
+
+            {/* Interaction Overlay */}
+            <InteractionOverlay
+              isVisible={showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)}
+              interactionText={interactionText}
+              position={overlayPosition}
+              keyText={interactionKeyText}
+            />
+
+            {/* Website Overlay */}
+            <WebsiteOverlay
+              isVisible={showWebsiteOverlay}
+              websiteUrl={currentWebsiteUrl}
+              billboardKey={currentBillboardKey}
+              onClose={handleHideWebsite}
+            />
         
-        {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay, hidden when website overlay is open */}
-        <UI 
-          visible={introComplete && !showMenu && menuDelayOver && !showWebsiteOverlay} 
-          canInteract={canInteract}
-          showContent={showContent}
-        />
-
-        {/* Menu Overlay - hidden when loading screen is visible */}
-        {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
-
-        {/* Info Panel - hidden when loading screen is visible */}
-        {!showLoadingScreen && <InfoPanel isVisible={showMenu} />}
-
-        {/* Content Box - hidden when loading screen is visible */}
-        {!showLoadingScreen && (
-          <Content 
-            isVisible={showContent} 
-            content={currentContent}
-            onNavigatePrev={handleNavigatePrev}
-            onNavigateNext={handleNavigateNext}
-            canNavigatePrev={!!currentSlabKey}
-            canNavigateNext={!!currentSlabKey}
-          />
-        )}
-
-        {/* Menu Icon - visible when intro is complete and website overlay is not open */}
-        {!showLoadingScreen && introComplete && !showWebsiteOverlay && (
-          <MenuIcon onClick={handleMenuIconClick} isVisible={true} isMenuOpen={showMenu} />
-        )}
-
-        {/* Character Selection Screen */}
-        <CharacterSelection
-          isVisible={showCharacterSelection}
-          onCharacterSelect={handleCharacterSelect}
-          onStart={handleCharacterSelectionStart}
-        />
-
-        {/* Location Discovery Notification */}
-        <LocationDiscovery
-          isVisible={showLocationDiscovery}
-          onComplete={handleLocationDiscoveryComplete}
-        />
-
-        {/* Project & Studio Discovery Notification */}
-        <LocationDiscovery
-          isVisible={showProjectStudioDiscovery}
-          onComplete={handleProjectStudioDiscoveryComplete}
-          locationName="Project & Studio"
-        />
-
-        {/* Learning Outcomes Discovery Notification */}
-        <LocationDiscovery
-          isVisible={showLearningOutcomesDiscovery}
-          onComplete={handleLearningOutcomesDiscoveryComplete}
-          locationName="Learning Outcomes"
-        />
-
-        {/* Artwork Discovery Notification */}
-        <LocationDiscovery
-          isVisible={showArtworkDiscovery}
-          onComplete={handleArtworkDiscoveryComplete}
-          locationName="Artwork"
-        />
-
-        {/* Work Discovery Notification */}
-        <LocationDiscovery
-          isVisible={showWorkDiscovery}
-          onComplete={handleWorkDiscoveryComplete}
-          locationName="Work"
-        />
-
-        {/* All Locations Discovered Notification */}
-        <LocationDiscovery
-          isVisible={showAllLocationsDiscovered}
-          onComplete={handleAllLocationsDiscoveredComplete}
-          locationName="Congratulations!|All Locations Discovered"
-          isCongratulatoryMessage={true}
-        />
-
-        {/* Interaction Overlay */}
-        <InteractionOverlay
-          isVisible={showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)}
-          interactionText={interactionText}
-          position={overlayPosition}
-          keyText={interactionKeyText}
-        />
-
-        {/* Website Overlay */}
-        <WebsiteOverlay
-          isVisible={showWebsiteOverlay}
-          websiteUrl={currentWebsiteUrl}
-          billboardKey={currentBillboardKey}
-          onClose={handleHideWebsite}
-        />
-        
+          </div>
+        </ClickSpark>
       </div>
     </Router>
   );

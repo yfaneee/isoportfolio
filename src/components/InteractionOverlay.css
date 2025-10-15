@@ -11,7 +11,8 @@
   align-items: center;
   gap: 13px;
   padding: 8px 12px;
-  font-family: 'Coolvetica Rg', 'Coolvetica', Arial, sans-serif;
+  font-family: 'Satoshi-Medium', Arial, sans-serif;
+  letter-spacing: 0.2px;
 }
 
 .interaction-key {

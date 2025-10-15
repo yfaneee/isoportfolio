@@ -23,13 +23,21 @@
   animation: slideUp 0.6s ease-out;
 }
 
-.character-selection-title {
-  font-family: 'Coolvetica Rg', Arial, sans-serif;
-  font-size: 2.5rem;
-  color: #ffffff;
+.character-selection-title-container {
+  height: 4rem; 
   margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-selection-title {
+  font-family: 'Satoshi-Medium', Arial, sans-serif;
+  font-size: 2.1rem;
+  color: #ffffff;
+  margin: 0; 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 2px;
+  letter-spacing: 0.3px;
 }
 
 .character-grid {
@@ -86,7 +94,7 @@
 }
 
 .character-name {
-  font-family: 'Coolvetica', Arial, sans-serif;
+  font-family: 'Satoshi-Medium', Arial, sans-serif;
   font-size: 1.2rem;
   color: #641E68;
   font-weight: 600;

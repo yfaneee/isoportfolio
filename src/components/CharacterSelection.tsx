@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './CharacterSelection.css';
+import SplitText from './SplitText';
 
 export interface CharacterOption {
   id: string;
@@ -71,6 +72,19 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
   onStart
 }) => {
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterOption>(characterOptions[0]);
+  const [isReadyToAnimate, setIsReadyToAnimate] = useState(false);
+  const hasAnimatedRef = useRef(false);
+
+  // Delay animation until after initial loading
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        setIsReadyToAnimate(true);
+      }, 800); // Wait 800ms for initial loading to complete
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
 
   const handleCharacterClick = (character: CharacterOption) => {
     setSelectedCharacter(character);
@@ -87,7 +101,32 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     <div className="character-selection-overlay">
       <div className="character-selection-container">
         {/* Title */}
-        <h1 className="character-selection-title">Select a character</h1>
+        <div className="character-selection-title-container">
+          {isReadyToAnimate ? (
+            <SplitText
+              text="Select a character"
+              className="character-selection-title"
+              delay={50}
+              duration={0.4}
+              ease="power2.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 20 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="center"
+              tag="h1"
+              animate={!hasAnimatedRef.current}
+              onLetterAnimationComplete={() => {
+                hasAnimatedRef.current = true;
+              }}
+            />
+          ) : (
+            <h1 className="character-selection-title" style={{ opacity: 0, visibility: 'hidden' }}>
+              Select a character
+            </h1>
+          )}
+        </div>
         
         {/* Character Grid */}
         <div className="character-grid">

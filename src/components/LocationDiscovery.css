@@ -86,7 +86,7 @@
   margin: 0 20px;
   text-align: center;
   color: white;
-  font-family: 'Coolvetica Rg', 'Coolvetica', Arial, sans-serif;
+  font-family: 'Satoshi-Medium', Arial, sans-serif;
 }
 
 .location-discovered-text {
@@ -100,7 +100,7 @@
 }
 
 .location-name {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: 0.5px;
   color: #ffffff;

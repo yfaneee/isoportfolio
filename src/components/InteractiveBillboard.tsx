@@ -242,10 +242,10 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
             />
           ) : (
             <meshStandardMaterial 
-              key="red-material"
-              color={isHovered ? "#ff6666" : "#ff0000"}
+              key="loading-material"
+              color="#2a2a2a"
               emissive={isHovered ? "#a580ff" : "#000000"}
-              emissiveIntensity={isHovered ? 0.8 : 0}
+              emissiveIntensity={isHovered ? 0.3 : 0}
               transparent={false}
             />
           )}
