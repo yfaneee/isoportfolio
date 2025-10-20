@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Box, Plane, Edges } from '@react-three/drei';
+import React from 'react';
+import { Box, Plane } from '@react-three/drei';
 import * as THREE from 'three';
 import InteractiveBillboard from './InteractiveBillboard';
 
@@ -521,7 +521,6 @@ const LearningOutcomesPlatform = React.memo(() => {
   const floorSize = 1.5;
   const floorHeight = 0.3;
   const spacing = 1.5;
-  const wallHeight = 3.2;
   const platformLevel = floorHeight * 9 + floorHeight * 1;
   const platformCenterX = -1 * spacing - spacing * 0.4 - spacing * 0.28 * 9 - spacing * 3.18;
     const platformCenterZ = 0;
@@ -830,19 +829,12 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   const platform18x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9;
   
   // Billboard/Screen structure dimensions
-  const billboardHeight = 2.7;
-  const billboardWidth = 5;
-  const billboardDepth = 0.3;
-  const screenRecess = 0.1;
   const billboardPillarHeight = 2;
-  const pillarRadius = 0.2;
   
   return (
     <>
       {/* Downward stairs - Three sets of 3 stairs each */}
       {Array.from({ length: 9 }, (_, step) => {
-        const setNumber = Math.floor(step / 3);
-        const stepInSet = step % 3;
         const y = -floorHeight * (step + 1);
         const z = 1 * spacing + spacing * 0.4 + spacing * 0.3 * (step + 1);
         

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useFrame, useThree, useLoader } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -30,11 +30,10 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   triggerBillboardExit = false,
   onBillboardExitComplete
 }) => {
-  const { camera, gl } = useThree();
+  const { camera } = useThree();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showWebsite, setShowWebsite] = useState(false);
-  const [iframeError, setIframeError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
   // Store original camera position and target
@@ -68,6 +67,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     }
     
     const loader = new THREE.TextureLoader();
+    const textureRef = websiteTexture; // Capture the ref value
+    
     loader.load(
       imagePath,
       (texture) => {
@@ -79,7 +80,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
         texture.magFilter = THREE.LinearFilter;
         texture.needsUpdate = true;
         
-        websiteTexture.current = texture;
+        textureRef.current = texture;
         setTextureLoaded(true);
       },
       undefined, // progress callback removed
@@ -87,6 +88,13 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
         console.error('Failed to load texture:', error);
       }
     );
+    
+    // Cleanup function
+    return () => {
+      if (textureRef.current) {
+        textureRef.current.dispose();
+      }
+    };
   }, [billboardKey]);
 
   // Target camera position 

@@ -40,7 +40,6 @@ function App() {
   const [overlayPosition, setOverlayPosition] = useState({ x: 0, y: 0 });
   const [interactionKeyText, setInteractionKeyText] = useState('SPACE');
   const [isHoveringBillboard, setIsHoveringBillboard] = useState(false);
-  const [currentBillboardHover, setCurrentBillboardHover] = useState<string | null>(null);
   const [isBillboardFullscreen, setIsBillboardFullscreen] = useState(false);
   const [showWebsiteOverlay, setShowWebsiteOverlay] = useState(false);
   const [currentWebsiteUrl, setCurrentWebsiteUrl] = useState('');
@@ -292,11 +291,9 @@ function App() {
       
       setInteractionKeyText('CLICK');
       setIsHoveringBillboard(true);
-      setCurrentBillboardHover(billboardKey);
       setShowInteractionOverlay(true);
     } else {
       setIsHoveringBillboard(false);
-      setCurrentBillboardHover(null);
       // Only hide overlay if not on a slab
       if (!canInteract) {
         setShowInteractionOverlay(false);
