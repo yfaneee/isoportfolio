@@ -218,10 +218,10 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     let dz = 0;
 
     // Calculate movement direction
-    if (keysRef.current.forward) dz -= 1;
-    if (keysRef.current.backward) dz += 1;
-    if (keysRef.current.left) dx -= 1;
-    if (keysRef.current.right) dx += 1;
+    if (keysRef.current.forward) dx -= 1;
+    if (keysRef.current.backward) dx += 1;
+    if (keysRef.current.left) dz += 1;
+    if (keysRef.current.right) dz -= 1;
 
     // Normalize diagonal movement
     if (dx !== 0 && dz !== 0) {

@@ -15,6 +15,25 @@
   will-change: transform;
 }
 
+.menu-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(45deg, #E6E0FF, #9B5DE5, #E6E0FF, #9B5DE5, #E6E0FF);
+  background-size: 400% 400%;
+  animation: border-glow 6s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: exclude;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 .menu-overlay.visible {
   transform: translateX(0);
 }
@@ -37,7 +56,7 @@
   align-items: center;
   text-align: center;
   overflow: hidden;
-  margin-top: 4rem;
+  margin-top: 1rem;
 }
 
 /* Section title with dividers */
@@ -427,6 +446,20 @@
   }
 }
 
-
-
-
+@keyframes border-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

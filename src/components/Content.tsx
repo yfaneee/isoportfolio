@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentItem } from '../data/ContentData';
+import { ContentItem, ExampleItem } from '../data/ContentData';
 import './Content.css';
 
 interface ContentProps {
@@ -21,10 +21,38 @@ const Content: React.FC<ContentProps> = ({
 }) => {
   if (!content) return null;
 
+  const handlePdfOpen = (pdfUrl: string, page?: number) => {
+    const fullUrl = page ? `${pdfUrl}#page=${page}` : pdfUrl;
+    window.open(fullUrl, '_blank');
+  };
+
+  const renderExample = (example: ExampleItem) => (
+    <div key={example.id} className="example-card">
+      <div className="example-image-container">
+        <img 
+          src={example.image} 
+          alt={example.title}
+          className="example-image"
+        />
+      </div>
+      <div className="example-content">
+        <h3 className="example-title">{example.title}</h3>
+        <p className="example-description">{example.description}</p>
+        <button 
+          className="pdf-link-button"
+          onClick={() => handlePdfOpen(example.pdfUrl, example.pdfPage)}
+        >
+          View More →
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={`content-box ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
       <div className="content-box-content">
         <div className="content-box-header">
+          {canNavigatePrev && <span className="nav-key nav-key-left">Q</span>}
           {canNavigatePrev && (
             <button 
               className="nav-arrow nav-arrow-left" 
@@ -44,14 +72,23 @@ const Content: React.FC<ContentProps> = ({
               ►
             </button>
           )}
+          {canNavigateNext && <span className="nav-key nav-key-right">E</span>}
         </div>
         <div className="content-box-body">
-          <p className="description">{content.description}</p>
-          <ul className="details-list">
-            {content.details.map((detail, index) => (
-              <li key={index}>{detail}</li>
-            ))}
-          </ul>
+          {content.examples && content.examples.length > 0 ? (
+            <div className="examples-container">
+              {content.examples.map(renderExample)}
+            </div>
+          ) : (
+            <>
+              {content.description && <p className="description">{content.description}</p>}
+              <ul className="details-list">
+                {content.details.map((detail, index) => (
+                  <li key={index}>{detail}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,17 @@
+export interface ExampleItem {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  pdfUrl: string;
+  pdfPage?: number; 
+}
+
 export interface ContentItem {
   title: string;
   description: string;
   details: string[];
+  examples?: ExampleItem[]; // New field for examples
   color: string;
 }
 
@@ -24,9 +34,35 @@ export const contentData: Record<string, ContentItem> = {
   },
   'staircase-slab-1': {
     title: 'Conceptualize & Design',
-    description: '...',
+    description: '',
     details: [
-      '...'
+      ''
+    ],
+    examples: [
+      {
+        id: 'concept-example-1',
+        title: 'Logo Design Process',
+        description: 'After naming our studio, I created logo ideas inspired by Sea Monkeys and Razvan’s sketch. My first versions were too illustrative, but feedback led me to simplify. The new minimal, Mailchimp-inspired logo captures our playful identity and shows the value of iteration and teamwork.',
+        image: '/images/examples/lo1ex1.png',
+        pdfUrl: '/pdfs/lo1/LO1new.pdf',
+        pdfPage: 1
+      },
+      {
+        id: 'concept-example-2',
+        title: 'Portfolio Development',
+        description: 'I designed a gamified isometric portfolio inspired by Pinterest. Early versions looked good but had poor UX. After feedback and user testing, I simplified navigation and redesigned the layout for smoother use, learning to value usability and iteration over visuals.',
+        image: '/images/examples/lo1ex2.png',
+        pdfUrl: '/pdfs/lo1/LO1new.pdf',
+        pdfPage: 5
+      },
+      {
+        id: 'concept-example-3',
+        title: 'Poster Design Process',
+        description: 'I designed an infographic poster for our technical project, focusing on clarity over visuals. Early drafts lacked impact, so I restarted with real materials and expressive design. User testing confirmed clarity, teaching me that strong design balances function and storytelling.',
+        image: '/images/examples/lo1ex3.png',
+        pdfUrl: '/pdfs/lo1/LO1new.pdf',
+        pdfPage: 11
+      }
     ],
     color: '#F5F5DC'
   },
@@ -40,9 +76,43 @@ export const contentData: Record<string, ContentItem> = {
   },
   'staircase-slab-3': {
     title: 'Creative Iterations',
-    description: '...',
+    description: '',
     details: [
-      '...'
+      ''
+    ],
+    examples: [
+      {
+        id: 'creative-example-1',
+        title: 'Business Card Design',
+        description: 'I designed our studio’s business cards, experimenting with a 50/50 balance between visuals and text. Feedback led me to add the logo, refine colors, and dedicate one side to artwork. Iterating taught me to stay flexible, improving balance, clarity, and our playful identity.',
+        image: '/images/examples/lo3ex1.png',
+        pdfUrl: '/pdfs/lo3/LO3.pdf',
+        pdfPage: 1
+      },
+      {
+        id: 'creative-example-2',
+        title: 'Logo Development',
+        description: 'I designed our studio logo inspired by Sea Monkeys, starting from a sketch of a monkey with a snorkel mask. Early colorful versions felt too illustrative, so I simplified them into a minimal, Mailchimp-inspired logo. Iterating with feedback taught me to balance creativity with function.',
+        image: '/images/examples/lo3ex2.png',
+        pdfUrl: '/pdfs/lo3/LO3.pdf',
+        pdfPage: 5
+      },
+      {
+        id: 'creative-example-3',
+        title: '3D Portfolio Development',
+        description: 'I built a 3D gamified portfolio using React Three Fiber. Early layouts were inefficient, so I generated modular grids and replaced a tricky octagon platform with a ramp for smoother navigation. User testing and iteration taught me to prioritize usability and smart, reusable design solutions.',
+        image: '/images/examples/lo3ex3.png',
+        pdfUrl: '/pdfs/lo3/LO3.pdf',
+        pdfPage: 9
+      },
+      {
+        id: 'creative-example-4',
+        title: 'Poster iteration',
+        description: 'After earlier poster versions failed, I researched new inspiration and sketched a fresh mock-up. Iterating with team feedback and applying the golden ratio improved alignment, balance, and visual flow. This process reinforced the value of iteration, collaboration, and clear communication in design.',
+        image: '/images/examples/lo3ex4.png',
+        pdfUrl: '/pdfs/lo3/LO3.pdf',
+        pdfPage: 13
+      }
     ],
     color: '#F5F5DC'
   },
@@ -56,9 +126,35 @@ export const contentData: Record<string, ContentItem> = {
   },
   'staircase-slab-5': {
     title: 'Personal Leadership',
-    description: '..',
+    description: '',
     details: [
-      '...'
+      ''
+    ],
+    examples: [
+      {
+        id: 'personal-example-1',
+        title: '',
+        description: '',
+        image: '/images/examples/',
+        pdfUrl: '/pdfs/lo1/',
+        pdfPage: 1
+      },
+      {
+        id: 'personal-example-2',
+        title: '',
+        description: '',
+        image: '/images/examples/',
+        pdfUrl: '/pdfs/lo1/',
+        pdfPage: 5
+      },
+      {
+        id: 'personal-example-3',
+        title: '',
+        description: '',
+        image: '/images/examples/',
+        pdfUrl: '/pdfs/lo1/',
+        pdfPage: 11
+      }
     ],
     color: '#F5F5DC'
   },

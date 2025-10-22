@@ -15,6 +15,25 @@
   backdrop-filter: blur(10px);
 }
 
+.info-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(45deg, #E6E0FF, #9B5DE5, #E6E0FF, #9B5DE5, #E6E0FF);
+  background-size: 400% 400%;
+  animation: border-glow 6s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: exclude;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 .info-panel.visible {
   transform: translateX(0);
 }
@@ -99,6 +118,16 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   color: white;
   font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+}
+
+.key-group {
+  display: flex;
+  gap: clamp(4px, 1vw, 8px);
+  align-items: center;
+}
+
+.key-group .key {
+  min-width: clamp(25px, 6vw, 35px);
 }
 
 .control-desc {
@@ -441,4 +470,22 @@
     font-size: clamp(0.55rem, 0.85vw, 0.7rem);
   }
 
+}
+
+@keyframes border-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
