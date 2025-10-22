@@ -133,27 +133,27 @@ export const contentData: Record<string, ContentItem> = {
     examples: [
       {
         id: 'personal-example-1',
-        title: '',
-        description: '',
-        image: '/images/examples/',
-        pdfUrl: '/pdfs/lo1/',
+        title: 'Client Project: Holleman',
+        description: 'Over the summer, I redesigned Holleman’s outdated website from brand guide to deployment. I built it in React with Strapi as a CMS, improving scalability and usability. Managing the full process taught me technical skills, client communication, and confident project leadership.',
+        image: '/images/examples/lo5ex1.png',
+        pdfUrl: '/pdfs/lo5/LO5.pdf',
         pdfPage: 1
       },
       {
         id: 'personal-example-2',
-        title: '',
-        description: '',
-        image: '/images/examples/',
-        pdfUrl: '/pdfs/lo1/',
+        title: 'Gamified Portfolio',
+        description: 'I built an interactive 3D portfolio in React Three Fiber to showcase my work for internship applications. Using a Kanban board and daily feedback, I refined it efficiently. This project strengthened my skills in organization, UX, and creative self-leadership.',
+        image: '/images/examples/lo5ex3.png',
+        pdfUrl: '/pdfs/lo5/LO5.pdf',
         pdfPage: 5
       },
       {
         id: 'personal-example-3',
-        title: '',
-        description: '',
-        image: '/images/examples/',
-        pdfUrl: '/pdfs/lo1/',
-        pdfPage: 11
+        title: 'Guest Presentation for Semester-One Students',
+        description: 'I presented my past projects to first-year students, improving my clarity, pacing, and confidence with each session. The experience strengthened my communication skills and made me appreciate the value of my work and process more deeply.',
+        image: '/images/examples/lo5ex2.png',
+        pdfUrl: '/pdfs/lo5/LO5.pdf',
+        pdfPage: 9
       }
     ],
     color: '#F5F5DC'
