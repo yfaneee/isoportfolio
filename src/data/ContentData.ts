@@ -68,9 +68,35 @@ export const contentData: Record<string, ContentItem> = {
   },
   'staircase-slab-2': {
     title: 'Transferable Production',
-    description: '...',
+    description: '',
     details: [
-      '...'
+      ''
+    ],
+    examples: [
+      {
+        id: 'transferable-example-1',
+        title: 'Figma collaboration',
+        description: 'I created our shared Figma workspace to develop the brand guide, color palette, and logo. Constant feedback refined our designs and teamwork. Using comments and version history improved communication, reflection, and creative iteration.',
+        image: '/images/examples/lo2ex1.png',
+        pdfUrl: '/pdfs/lo2/LO2.pdf',
+        pdfPage: 1
+      },
+      {
+        id: 'transferable-example-2',
+        title: 'Version Control and Deployment',
+        description: 'I used GitHub and Vercel to host my portfolio, enabling fast feedback and version tracking. With 44 commits in under three weeks, I refined the project efficiently. This process strengthened my organization, workflow, and professional development habits.',
+        image: '/images/examples/lo2ex2.png',
+        pdfUrl: '/pdfs/lo2/LO2.pdf',
+        pdfPage: 5
+      },
+      {
+        id: 'transferable-example-3',
+        title: 'Brand Guide Development',
+        description: 'I led the creation of our studio’s brand guide, defining our visual identity through multiple iterations. Feedback shaped each version until it reflected our playful, creative values. This process taught me how branding can embody a team’s true character.',
+        image: '/images/examples/lo2ex3.png',
+        pdfUrl: '/pdfs/lo2/LO2.pdf',
+        pdfPage: 8
+      }
     ],
     color: '#F5F5DC'
   },
@@ -118,9 +144,35 @@ export const contentData: Record<string, ContentItem> = {
   },
   'staircase-slab-4': {
     title: 'Professional Standards',
-    description: '...',
+    description: '',
     details: [
-      '...'
+      ''
+    ],
+    examples: [
+      {
+        id: 'professional-example-1',
+        title: 'Holleman Website Redesign',
+        description: 'I redesigned Holleman’s outdated website, creating a modern prototype and building it with React and Strapi for scalability. Regular feedback and communication ensured the client’s vision was met. I learned to balance technical decisions with clear client guidance.',
+        image: '/images/examples/lo4ex1.png',
+        pdfUrl: '/pdfs/lo4/LO4.pdf',
+        pdfPage: 1
+      },
+      {
+        id: 'professional-example-2',
+        title: 'Poster Showcase Day',
+        description: 'During the showcase, I reviewed other teams’ posters and exchanged feedback. Observing different visual approaches helped me understand what makes a design clear and engaging. Feedback on our own poster confirmed big visual improvements and better balance.',
+        image: '/images/examples/lo4ex2.png',
+        pdfUrl: '/pdfs/lo4/LO4.pdf',
+        pdfPage: 6
+      },
+      {
+        id: 'professional-example-3',
+        title: 'Trello Planning & Workflow',
+        description: 'After the poster showcase, we created a Trello board to organize our next five weeks of work. Dividing tasks and reflecting on past issues improved our communication and structure. The plan kept the team aligned, productive, and goal-focused.',
+        image: '/images/examples/lo4ex3.png',
+        pdfUrl: '/pdfs/lo4/LO4.pdf',
+        pdfPage: 9
+      }
     ],
     color: '#F5F5DC'
   },
