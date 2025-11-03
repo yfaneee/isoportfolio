@@ -9,6 +9,7 @@ interface ContentProps {
   onNavigateNext?: () => void;
   canNavigatePrev?: boolean;
   canNavigateNext?: boolean;
+  onClose?: () => void;
 }
 
 const Content: React.FC<ContentProps> = ({ 
@@ -17,9 +18,20 @@ const Content: React.FC<ContentProps> = ({
   onNavigatePrev, 
   onNavigateNext,
   canNavigatePrev = true,
-  canNavigateNext = true
+  canNavigateNext = true,
+  onClose
 }) => {
   if (!content) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
+  const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
 
   const handlePdfOpen = (pdfUrl: string, page?: number) => {
     const fullUrl = page ? `${pdfUrl}#page=${page}` : pdfUrl;
@@ -49,8 +61,21 @@ const Content: React.FC<ContentProps> = ({
   );
 
   return (
-    <div className={`content-box ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
-      <div className="content-box-content">
+    <>
+      {/* Backdrop overlay */}
+      {isVisible && (
+        <div 
+          className="content-backdrop" 
+          onClick={handleBackdropClick}
+          style={{ visibility: isVisible ? 'visible' : 'hidden' }}
+        />
+      )}
+      <div 
+        className={`content-box ${isVisible ? 'visible' : ''}`} 
+        style={{ visibility: isVisible ? 'visible' : 'hidden' }}
+        onClick={handleContentClick}
+      >
+        <div className="content-box-content">
         <div className="content-box-header">
           {canNavigatePrev && <span className="nav-key nav-key-left">Q</span>}
           {canNavigatePrev && (
@@ -90,8 +115,9 @@ const Content: React.FC<ContentProps> = ({
             </>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

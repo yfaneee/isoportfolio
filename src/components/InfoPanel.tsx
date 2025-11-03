@@ -1,6 +1,5 @@
 import React from 'react';
 import './InfoPanel.css';
-import StarBorder from './StarBorder';
 
 interface InfoPanelProps {
   isVisible: boolean;

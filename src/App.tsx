@@ -8,6 +8,7 @@ import MenuOverlay from './components/MenuOverlay';
 import InfoPanel from './components/InfoPanel';
 import MenuIcon from './components/MenuIcon';
 import Content from './components/Content';
+import TopHUD from './components/TopHUD';
 import CharacterSelection, { CharacterOption } from './components/CharacterSelection';
 import LocationDiscovery from './components/LocationDiscovery';
 import InteractionOverlay from './components/InteractionOverlay';
@@ -63,6 +64,7 @@ function App() {
   const [currentSlabKey, setCurrentSlabKey] = useState<string | null>(null);
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [canInteract, setCanInteract] = useState(false);
+  const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
 
@@ -362,6 +364,13 @@ function App() {
       }
     }
   }, [showMenu, showContent]);
+
+  const handleCloseContent = useCallback(() => {
+    setShowContent(false);
+    setCurrentContent(null);
+    setCurrentSlabKey(null);
+  }, []);
+
 
   const handleMenuIconClick = useCallback(() => {
     if (showContent && !isTransitioning) {
@@ -687,7 +696,7 @@ function App() {
     preloadCharacterModels();
   }, []);
 
-  // Check if character is on an interactable slab
+  // Check if character is on an interactable slab and update position
   useEffect(() => {
     if (!introComplete || showMenu || showContent || isBillboardFullscreen || showWebsiteOverlay) {
       setCanInteract(false);
@@ -696,6 +705,7 @@ function App() {
 
     const checkInterval = setInterval(() => {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      setCurrentCharacterPosition(characterPos);
       const content = getContentForSlab(characterPos[0], characterPos[2]);
       const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
@@ -835,6 +845,7 @@ function App() {
                 onNavigateNext={handleNavigateNext}
                 canNavigatePrev={!!currentSlabKey}
                 canNavigateNext={!!currentSlabKey}
+                onClose={handleCloseContent}
               />
             )}
 
@@ -907,6 +918,17 @@ function App() {
               billboardKey={currentBillboardKey}
               onClose={handleHideWebsite}
             />
+
+            {/* Top HUD Navigation */}
+            {!showLoadingScreen && introComplete && !showWebsiteOverlay && (
+              <TopHUD
+                characterPosition={currentCharacterPosition}
+                isVisible={true}
+                showMenu={showMenu}
+                showContent={showContent}
+                currentContent={currentContent}
+              />
+            )}
         
           </div>
         </ClickSpark>

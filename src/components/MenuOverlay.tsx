@@ -1,6 +1,5 @@
 import React from 'react';
 import './MenuOverlay.css';
-import StarBorder from './StarBorder';
 
 interface MenuOverlayProps {
   isVisible: boolean;
