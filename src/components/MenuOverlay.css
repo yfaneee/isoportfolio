@@ -171,6 +171,15 @@
   color: #ffffff;
 }
 
+.cv-title-clickable {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.cv-title-clickable:hover {
+  color: #ffffff;
+}
+
 .menu-footer {
   margin-top: auto;
   padding-top: 2rem;
