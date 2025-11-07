@@ -4,12 +4,45 @@ import './MenuOverlay.css';
 interface MenuOverlayProps {
   isVisible: boolean;
   onNavigateToLocation?: (location: string) => void;
+  onClose?: () => void;
 }
 
-const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocation }) => {
+const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocation, onClose }) => {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
+  const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className={`menu-overlay ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
-      <div className="menu-content">
+    <>
+      {/* Full-screen backdrop for click-outside detection */}
+      {isVisible && (
+        <div 
+          className="menu-backdrop"
+          onClick={handleBackdropClick}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999,
+            background: 'transparent'
+          }}
+        />
+      )}
+      
+      {/* Actual menu */}
+      <div 
+        className={`menu-overlay ${isVisible ? 'visible' : ''}`} 
+        style={{ visibility: isVisible ? 'visible' : 'hidden' }}
+      >
+        <div className="menu-content" onClick={handleContentClick}>
         <div className="menu-sections">
           <div className="menu-section">
             <div className="section-title-with-dividers">
@@ -76,6 +109,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocati
         </div>
       </div>
     </div>
+    </>
   );
 };
 

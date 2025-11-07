@@ -151,7 +151,7 @@ const TopHUD: React.FC<TopHUDProps> = ({
       
       setNextSuggestion(direction ? `Center ${direction}` : '');
     }
-  }, [characterPosition, visitedAreas]);
+  }, [characterPosition]);
 
   if (!isVisible || showMenu) {
     return null;

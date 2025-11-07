@@ -82,13 +82,13 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       }
       
       // Normal movement controls 
-      if (key === 'w') {
+      if (key === 'w' || key === 'arrowup') {
         keysRef.current.forward = true;
-      } else if (key === 's') {
+      } else if (key === 's' || key === 'arrowdown') {
         keysRef.current.backward = true;
-      } else if (key === 'a') {
+      } else if (key === 'a' || key === 'arrowleft') {
         keysRef.current.left = true;
-      } else if (key === 'd') {
+      } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = true;
       } else if (key === 'shift') {
         keysRef.current.shift = true;
@@ -145,13 +145,13 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       const key = e.key.toLowerCase();
       
       // Always allow movement key releases to prevent stuck keys
-      if (key === 'w') {
+      if (key === 'w' || key === 'arrowup') {
         keysRef.current.forward = false;
-      } else if (key === 's') {
+      } else if (key === 's' || key === 'arrowdown') {
         keysRef.current.backward = false;
-      } else if (key === 'a') {
+      } else if (key === 'a' || key === 'arrowleft') {
         keysRef.current.left = false;
-      } else if (key === 'd') {
+      } else if (key === 'd' || key === 'arrowright') {
         keysRef.current.right = false;
       } else if (key === 'shift') {
         keysRef.current.shift = false;

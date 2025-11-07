@@ -13,11 +13,46 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   font-family: 'Satoshi-Regular', sans-serif;
   gap: 1rem;
   border-radius: 50px;
-  border: 2px solid #ffffff;
+  position: relative;
+  
+  /* Background blur effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hud-content::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 52px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,      
+    rgba(255, 255, 255, 1) 15%,     
+    rgba(255, 255, 255, 0.8) 25%,   
+    rgba(255, 255, 255, 0.5) 35%,   
+    rgba(255, 255, 255, 0.2) 45%,  
+    rgba(255, 255, 255, 0.2) 50%,   
+    rgba(255, 255, 255, 0.2) 55%,  
+    rgba(255, 255, 255, 0.5) 65%,   
+    rgba(255, 255, 255, 0.8) 75%,   
+    rgba(255, 255, 255, 1) 85%,     
+    rgba(255, 255, 255, 1) 100%     
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 2px;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .current-location,

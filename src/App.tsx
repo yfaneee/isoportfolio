@@ -371,6 +371,14 @@ function App() {
     setCurrentSlabKey(null);
   }, []);
 
+  const handleCloseMenu = useCallback(() => {
+    setShowMenu(false);
+    if (menuTimerRef.current) {
+      clearTimeout(menuTimerRef.current);
+      menuTimerRef.current = null;
+    }
+  }, []);
+
 
   const handleMenuIconClick = useCallback(() => {
     if (showContent && !isTransitioning) {
@@ -428,7 +436,7 @@ function App() {
 
   // Navigate to next slab with magic transition
   const handleNavigateNext = useCallback(() => {
-    if (!currentSlabKey || !characterControllerRef.current) return;
+    if (!currentSlabKey || !characterControllerRef.current || isNavigatingSlabs) return;
     
     const currentIndex = slabNavigationOrder.indexOf(currentSlabKey);
     const nextIndex = (currentIndex + 1) % slabNavigationOrder.length;
@@ -547,11 +555,11 @@ function App() {
     };
     
     magicalFadeOut();
-  }, [currentSlabKey]);
+  }, [currentSlabKey, isNavigatingSlabs]);
 
   // Navigate to previous slab with magic transition
   const handleNavigatePrev = useCallback(() => {
-    if (!currentSlabKey || !characterControllerRef.current) return;
+    if (!currentSlabKey || !characterControllerRef.current || isNavigatingSlabs) return;
     
     const currentIndex = slabNavigationOrder.indexOf(currentSlabKey);
     const prevIndex = (currentIndex - 1 + slabNavigationOrder.length) % slabNavigationOrder.length;
@@ -669,7 +677,7 @@ function App() {
     };
     
     magicalFadeOut();
-  }, [currentSlabKey]);
+  }, [currentSlabKey, isNavigatingSlabs]);
 
   // Cleanup timer on unmount
   React.useEffect(() => {
@@ -831,7 +839,7 @@ function App() {
             />
 
             {/* Menu Overlay - hidden when loading screen is visible */}
-            {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} />}
+            {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} onClose={handleCloseMenu} />}
 
             {/* Info Panel - hidden when loading screen is visible */}
             {!showLoadingScreen && <InfoPanel isVisible={showMenu} />}

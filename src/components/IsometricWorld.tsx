@@ -582,7 +582,7 @@ const LearningOutcomesPlatform = React.memo(() => {
       {/* Connecting blocks between stairs and tall wall */}
       <Box
         key="connecting-block-1"
-        position={[-2 * spacing, 2.4 / 1.8, -1 * spacing - spacing * 3 - 3.4 * spacing]}
+        position={[-2 * spacing, 2.4 / 1.7, -1 * spacing - spacing * 3 - 3.4 * spacing]}
         args={[floorSize, 2.4, floorSize]}
       >
         <meshStandardMaterial color={'#C5A3FF'} />
