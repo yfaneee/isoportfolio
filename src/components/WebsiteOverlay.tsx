@@ -39,18 +39,19 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
     // Add to document.body as well
     document.body.addEventListener('keydown', handleKeyDown, true);
     
+    // Capture the current ref value for cleanup
+    const currentOverlay = overlayRef.current;
+    
     // Focus the overlay and make it stay focused
-    if (overlayRef.current) {
-      overlayRef.current.focus();
+    let focusInterval: NodeJS.Timeout | undefined;
+    if (currentOverlay) {
+      currentOverlay.focus();
       // Keep refocusing the overlay periodically when iframe might steal focus
-      const focusInterval = setInterval(() => {
+      focusInterval = setInterval(() => {
         if (overlayRef.current && document.activeElement?.tagName === 'IFRAME') {
           overlayRef.current.focus();
         }
       }, 500);
-      
-      // Store interval ID for cleanup
-      (overlayRef.current as any).focusInterval = focusInterval;
     }
 
     return () => {
@@ -59,9 +60,9 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
       window.removeEventListener('keydown', handleKeyDown, true);
       document.body.removeEventListener('keydown', handleKeyDown, true);
       
-      // Clean up focus interval
-      if (overlayRef.current && (overlayRef.current as any).focusInterval) {
-        clearInterval((overlayRef.current as any).focusInterval);
+      // Clean up focus interval using the captured value
+      if (focusInterval) {
+        clearInterval(focusInterval);
       }
     };
   }, [isVisible, onClose]);
