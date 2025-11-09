@@ -48,6 +48,11 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const prevNavigatingRef = useRef(isNavigatingSlabs);
   const currentLookAtRef = useRef(new THREE.Vector3(0, 0.22, 0));
   
+  // Cache responsive camera settings to avoid recalculating every frame
+  const cameraSettingsRef = useRef({ distance: 8, height: 7 });
+  const lastWindowWidthRef = useRef(window.innerWidth);
+  const frameSkipCounterRef = useRef(0);
+  
   useEffect(() => {
     if (introComplete) {
       const wasNavigating = prevNavigatingRef.current;
@@ -69,6 +74,30 @@ const CameraController: React.FC<CameraControllerProps> = ({
   }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
 
   useFrame((state, delta) => {
+    // Update camera settings periodically (not every frame to save CPU)
+    frameSkipCounterRef.current++;
+    if (frameSkipCounterRef.current % 30 === 0) { // Check every 30 frames (~0.5 seconds)
+      const currentWidth = window.innerWidth;
+      if (Math.abs(currentWidth - lastWindowWidthRef.current) > 50) {
+        let cameraDistance = 8;
+        let cameraHeight = 7;
+        
+        if (currentWidth <= 1024) { 
+          cameraDistance = 11.5;
+          cameraHeight = 8.5;
+        } else if (currentWidth <= 1366) { 
+          cameraDistance = 10;
+          cameraHeight = 8;
+        } else if (currentWidth >= 1600) { 
+          cameraDistance = 9;
+          cameraHeight = 7.5;
+        }
+        
+        cameraSettingsRef.current = { distance: cameraDistance, height: cameraHeight };
+        lastWindowWidthRef.current = currentWidth;
+      }
+    }
+    
     if (showLoadingScreen) {
       // Loading screen state - show preview from far away
       camera.position.set(0, 40, 40);
@@ -76,6 +105,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
       currentLookAtRef.current.set(0, 0.22, 0);
       // Reset intro time when in loading screen
       introTimeRef.current = 0;
+      return; // Early return - no need to process further
     } else if (!introComplete) {
       // Intro animation
       introTimeRef.current += delta;
@@ -90,20 +120,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
              const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
              const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
       
-      // Responsive camera positioning 
-      const width = window.innerWidth;
-      let cameraDistance = 8;
-      let cameraHeight = 7;
-      if (width <= 1024) { 
-        cameraDistance = 11.5;
-        cameraHeight = 8.5;
-      } else if (width <= 1366) { 
-        cameraDistance = 10;
-        cameraHeight = 8;
-      } else if (width >= 1600) { 
-        cameraDistance = 9;
-        cameraHeight = 7.5;
-      }
+      // Use cached responsive camera positioning
+      let cameraDistance = cameraSettingsRef.current.distance;
+      let cameraHeight = cameraSettingsRef.current.height;
       
       // Zoom in when content box is open (but not during transition)
       if (showContent && !isTransitioning) {
@@ -162,20 +181,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
              const contentOffsetZ = showContent && !isTransitioning ? -2 : 0;
              const contentOffsetY = showContent && !isTransitioning ? 2 : 0;
       
-      // Responsive camera positioning 
-      const width = window.innerWidth;
-      let cameraDistance = 8;
-      let cameraHeight = 7;
-      if (width <= 1024) { 
-        cameraDistance = 11.5;
-        cameraHeight = 8.5;
-      } else if (width <= 1366) { 
-        cameraDistance = 10;
-        cameraHeight = 8;
-      } else if (width >= 1600) { 
-        cameraDistance = 9;
-        cameraHeight = 7.5;
-      }
+      // Use cached responsive camera positioning
+      let cameraDistance = cameraSettingsRef.current.distance;
+      let cameraHeight = cameraSettingsRef.current.height;
       
       // Zoom in when content box is open (but not during transition)
       if (showContent && !isTransitioning) {

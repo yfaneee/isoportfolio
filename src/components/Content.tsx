@@ -12,7 +12,7 @@ interface ContentProps {
   onClose?: () => void;
 }
 
-const Content: React.FC<ContentProps> = ({ 
+const Content: React.FC<ContentProps> = React.memo(({ 
   isVisible, 
   content, 
   onNavigatePrev, 
@@ -119,6 +119,6 @@ const Content: React.FC<ContentProps> = ({
       </div>
     </>
   );
-};
+});
 
 export default Content;

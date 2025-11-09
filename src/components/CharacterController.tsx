@@ -35,12 +35,12 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   onSlabInteraction,
   disableMovement = false
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, centerOnSlab, teleportToLocation, handleTouch, stopMovement, resetMovementState } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, teleportToLocation, handleTouch, stopMovement, resetMovementState } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
   const introCompletedRef = useRef(false);
   const [position, setPosition] = React.useState<[number, number, number]>(positionRef.current);
   const [isMoving, setIsMoving] = React.useState(false);
-  const [animationResetCounter, setAnimationResetCounter] = React.useState(0);
+  const [animationResetCounter] = React.useState(0);
   const lastResetRef = useRef(0);
 
   // Expose direct position access method
@@ -62,9 +62,11 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   }));
 
   useFrame((state, delta) => {
-    if (introComplete && !disableMovement) {
-      // No need to add visual offset
-      introCompletedRef.current = true;
+    // Early return if not ready
+    if (!introComplete || disableMovement) return;
+    
+    // No need to add visual offset
+    introCompletedRef.current = true;
       
       const oldPos = position;
       const oldMoving = isMoving;
@@ -159,7 +161,6 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
         onMovementChange(isMovingRef.current);
         lastMoving.current = isMovingRef.current;
       }
-    }
   });
 
   return (

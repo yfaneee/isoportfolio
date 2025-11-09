@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import IsometricWorld from '../components/IsometricWorld';
+import IsometricWorld from '../components/IsometricWorldOptimized';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
 import PlatformDebugger from '../components/PlatformDebugger';

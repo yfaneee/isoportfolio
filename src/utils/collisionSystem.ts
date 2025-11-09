@@ -1,8 +1,7 @@
 // Collision and boundary system for the isometric world
-import { isOnElevator, getElevatorHeight, triggerElevator } from './elevatorSystem';
+import { isOnElevator, getElevatorHeight } from './elevatorSystem';
 
-// Performance optimization: Spatial grid for fast platform lookups
-const GRID_SIZE = 1.5; // Smaller grid cells for more precise lookups
+const GRID_SIZE = 1.5; 
 const spatialGrid: Map<string, Platform[]> = new Map();
 let gridInitialized = false;
 
@@ -292,33 +291,34 @@ function getPlatformsNear(x: number, z: number): Platform[] {
   return platforms;
 }
 
-// Optimized cache for recent position lookups
+// Optimized cache for recent position lookups with improved performance
 const positionCache = new Map<string, { height: number | null, timestamp: number, accessCount: number }>();
-const CACHE_DURATION = 200;
-const MAX_CACHE_SIZE = 1000;
-const CLEANUP_THRESHOLD = 800; 
+const CACHE_DURATION = 300; 
+const CLEANUP_THRESHOLD = 1200; 
 
 let lastCacheCleanup = 0;
 function cleanupCache() {
   const now = Date.now();
-  // Reduced cleanup frequency from 30s to 60s
-  if (now - lastCacheCleanup < 60000) return; 
+  // Only cleanup every 90 seconds (reduced frequency)
+  if (now - lastCacheCleanup < 90000) return; 
   
   lastCacheCleanup = now;
   
   if (positionCache.size < CLEANUP_THRESHOLD) return;
   
-  // LRU-style cleanup =
+  // Improved LRU-style cleanup with better scoring
   const entries = Array.from(positionCache.entries());
-  // Sort by access count and timestamp
+  // Prioritize recently accessed and frequently accessed entries
   entries.sort((a, b) => {
-    const scoreA = a[1].accessCount * 0.7 + (now - a[1].timestamp) * 0.3;
-    const scoreB = b[1].accessCount * 0.7 + (now - b[1].timestamp) * 0.3;
+    const ageA = now - a[1].timestamp;
+    const ageB = now - b[1].timestamp;
+    const scoreA = a[1].accessCount / (ageA / 1000 + 1); 
+    const scoreB = b[1].accessCount / (ageB / 1000 + 1);
     return scoreA - scoreB; 
   });
   
-  // Remove bottom 30% of entries
-  const toRemove = Math.floor(entries.length * 0.3);
+  // Remove bottom 25% of entries (less aggressive)
+  const toRemove = Math.floor(entries.length * 0.25);
   
   for (let i = 0; i < toRemove; i++) {
     positionCache.delete(entries[i][0]);
@@ -326,7 +326,7 @@ function cleanupCache() {
   
   // Reset access counts for remaining entries to prevent overflow
   positionCache.forEach((value) => {
-    value.accessCount = Math.max(1, Math.floor(value.accessCount * 0.8));
+    value.accessCount = Math.max(1, Math.floor(value.accessCount * 0.85));
   });
 }
 
@@ -340,19 +340,22 @@ function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v
 
 // Check if a position is on any platform and return the platform height
 export function getHeightAtPosition(x: number, z: number): number | null {
-  // Use cache for better performance
-  const cacheKey = `${Math.round(x * 20) / 20},${Math.round(z * 20) / 20}`;
+  // Use cache with reduced precision for better hit rate 
+  const cacheKey = `${Math.round(x * 10) / 10},${Math.round(z * 10) / 10}`;
   const now = Date.now();
   const cached = positionCache.get(cacheKey);
   
   if (cached && (now - cached.timestamp) < CACHE_DURATION) {
-    cached.accessCount = (cached.accessCount || 0) + 1;
-    cached.timestamp = now; 
+    cached.accessCount++;
+    // Don't update timestamp on every hit to reduce write operations
+    if (now - cached.timestamp > CACHE_DURATION * 0.5) {
+      cached.timestamp = now;
+    }
     return cached.height;
   }
   
-  // Cleanup cache only when needed
-  if (positionCache.size > CLEANUP_THRESHOLD) {
+  // Cleanup cache only when significantly over threshold
+  if (positionCache.size > CLEANUP_THRESHOLD + 200) {
     cleanupCache();
   }
   
@@ -364,6 +367,12 @@ export function getHeightAtPosition(x: number, z: number): number | null {
   }
   
   const nearbyPlatforms = getPlatformsNear(x, z);
+  
+  // Early exit if no nearby platforms
+  if (nearbyPlatforms.length === 0) {
+    positionCache.set(cacheKey, { height: null, timestamp: now, accessCount: 1 });
+    return null;
+  }
   
   for (const platform of nearbyPlatforms) {
     // First check bounding box

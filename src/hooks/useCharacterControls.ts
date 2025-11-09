@@ -25,7 +25,7 @@ interface CharacterControlsReturn {
 
 const VISUAL_OFFSET = 0.11; 
 
-export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void, onNavigatePrev?: () => void, onNavigateNext?: () => void) => {
+export const useCharacterControls = (initialPosition: [number, number, number] = [0, 0, 0], onSpacePress?: () => void, onNavigatePrev?: () => void, onNavigateNext?: () => void): CharacterControlsReturn => {
   let adjustedPosition: [number, number, number];
   if (initialPosition[1] !== 0) {
     adjustedPosition = initialPosition;
@@ -49,7 +49,10 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     shift: false,
   });
 
-  // Simple collision system
+  // Store callback refs to avoid recreating event listeners
+  const onSpacePressRef = useRef(onSpacePress);
+
+  // Optimized collision system with better throttling
   const lastCollisionCheck = useRef(0);
   const targetHeight = useRef<number | null>(null);
 
@@ -129,9 +132,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
-                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) && onSpacePress) {
+                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) && onSpacePressRef.current) {
               centerOnSlab();
-              onSpacePress();
+              onSpacePressRef.current();
               if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) {
                 keysRef.current.space = false;
               }
@@ -179,6 +182,10 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
   useEffect(() => {
     onNavigateNextRef.current = onNavigateNext;
   }, [onNavigateNext]);
+  
+  useEffect(() => {
+    onSpacePressRef.current = onSpacePress;
+  }, [onSpacePress]);
 
   // Fixed update character - consistent collision vs visual separation
   const updateCharacter = (delta: number) => {
@@ -242,7 +249,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     
     if (constrained.onPlatform) {
       const now = performance.now();
-      const shouldUpdateHeight = now - lastCollisionCheck.current > 50; 
+      const shouldUpdateHeight = now - lastCollisionCheck.current > 80; // Increased from 50ms to 80ms
       
       let finalCollisionY = collisionY;
       
@@ -345,9 +352,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
 
   const teleportToLocation = (location: string) => {
     let targetPosition: [number, number, number] = [0, 0, 0];
-    
-    // Store current animation state before teleportation
-    const wasMoving = isMovingRef.current;
     
     switch (location) {
       case 'transferable':

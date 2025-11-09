@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
+import { getBillboardTextureShared } from '../utils/texturePreloader';
 
 interface InteractiveBillboardProps {
   position: [number, number, number];
@@ -47,54 +48,32 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   const billboardDepth = 0.3;
   const screenRecess = 0.1;
   
-  // Load the website screenshot texture directly with useRef
+  // Use preloaded texture
   const websiteTexture = useRef<THREE.Texture | null>(null);
   const [textureLoaded, setTextureLoaded] = useState(false);
   
   useEffect(() => {
-    // Load different textures for different billboards
-    let imagePath = '';
-    if (billboardKey === 'billboard1') {
-      imagePath = '/images/castleportfolio.png';
-    } else if (billboardKey === 'billboard2') {
-      imagePath = '/images/hollemanproj.png';
-    } else if (billboardKey === 'billboard3') {
-      imagePath = '/images/spaceportfolio.png';
-    } else if (billboardKey === 'billboard4') {
-      imagePath = '/images/spotifyfolio.png';
+    // Get preloaded texture from cache
+    const texture = getBillboardTextureShared(billboardKey);
+    
+    if (texture) {
+      websiteTexture.current = texture;
+      setTextureLoaded(true);
     } else {
-      return; 
+      console.warn(`Texture not found for ${billboardKey}, may need to wait for preload`);
+      // Fallback: retry after a delay if preloading hasn't finished yet
+      const retryTimer = setTimeout(() => {
+        const retryTexture = getBillboardTextureShared(billboardKey);
+        if (retryTexture) {
+          websiteTexture.current = retryTexture;
+          setTextureLoaded(true);
+        }
+      }, 500);
+      
+      return () => clearTimeout(retryTimer);
     }
     
-    const loader = new THREE.TextureLoader();
-    const textureRef = websiteTexture; // Capture the ref value
-    
-    loader.load(
-      imagePath,
-      (texture) => {
-        // Configure the texture properly
-        texture.flipY = true;
-        texture.wrapS = THREE.ClampToEdgeWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.needsUpdate = true;
-        
-        textureRef.current = texture;
-        setTextureLoaded(true);
-      },
-      undefined, // progress callback removed
-      (error) => {
-        console.error('Failed to load texture:', error);
-      }
-    );
-    
-    // Cleanup function
-    return () => {
-      if (textureRef.current) {
-        textureRef.current.dispose();
-      }
-    };
+    // No cleanup needed - texture is managed by the preloader
   }, [billboardKey]);
 
   // Target camera position 

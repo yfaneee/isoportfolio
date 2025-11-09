@@ -45,7 +45,7 @@ const areas: AreaInfo[] = [
   }
 ];
 
-const TopHUD: React.FC<TopHUDProps> = ({ 
+const TopHUD: React.FC<TopHUDProps> = React.memo(({ 
   characterPosition, 
   isVisible, 
   showMenu, 
@@ -151,7 +151,7 @@ const TopHUD: React.FC<TopHUDProps> = ({
       
       setNextSuggestion(direction ? `Center ${direction}` : '');
     }
-  }, [characterPosition]);
+  }, [characterPosition, visitedAreas]);
 
   if (!isVisible || showMenu) {
     return null;
@@ -181,6 +181,6 @@ const TopHUD: React.FC<TopHUDProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default TopHUD;

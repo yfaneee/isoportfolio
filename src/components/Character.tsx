@@ -28,10 +28,13 @@ const Character: React.FC<CharacterProps> = ({
   const { scene, animations } = useGLTF(modelPath);
   
   const clonedSceneRef = useRef<THREE.Object3D>(null);
+  const materialsRef = useRef<THREE.Material[]>([]);
+  const lastOpacityRef = useRef<number>(opacity);
   
-  // Clone the scene to avoid sharing between instances
+  // Clone the scene to avoid sharing between instances 
   const clonedScene = useMemo(() => {
     const cloned = scene.clone();
+    const materials: THREE.Material[] = [];
     
     // Create a name-to-object mapping for animation tracks
     const objectMap = new Map<string, THREE.Object3D>();
@@ -43,21 +46,24 @@ const Character: React.FC<CharacterProps> = ({
       
       if (child instanceof THREE.Mesh) {
         if (child.material) {
-          // Clone material to avoid sharing
+          // Clone material to avoid sharing and cache it
           if (Array.isArray(child.material)) {
             child.material = child.material.map(mat => {
               const clonedMat = mat.clone();
               clonedMat.transparent = true;
+              materials.push(clonedMat);
               return clonedMat;
             });
           } else {
             child.material = child.material.clone();
             child.material.transparent = true;
+            materials.push(child.material);
           }
         }
       }
     });
     
+    materialsRef.current = materials;
     (cloned as any).__animationObjectMap = objectMap;
     
     return cloned;
@@ -155,122 +161,127 @@ const Character: React.FC<CharacterProps> = ({
         }
       }, 100);
     }
-  }, [forceAnimationReset, mixer, actions]);
+  }, [forceAnimationReset, mixer, actions, isMoving]);
 
   useEffect(() => {
     clonedSceneRef.current = clonedScene;
   }, [clonedScene]);
 
-  // Update material opacity when it changes
+  // Optimized: Update material opacity only when it actually changes
   useEffect(() => {
-    if (clonedScene) {
-      clonedScene.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach(mat => {
-              mat.opacity = opacity;
-              mat.needsUpdate = true;
-            });
-          } else {
-            child.material.opacity = opacity;
-            child.material.needsUpdate = true;
-          }
-        }
-      });
+    if (Math.abs(opacity - lastOpacityRef.current) < 0.01) {
+      return;
     }
-  }, [opacity, clonedScene]);
+    
+    lastOpacityRef.current = opacity;
+    
+    // Use cached materials instead of traversing the entire scene
+    materialsRef.current.forEach(mat => {
+      mat.opacity = opacity;
+      mat.needsUpdate = true;
+    });
+  }, [opacity]);
 
-  // Handle animations
-  useEffect(() => {
-    if (!actions || !mixer) return;
-
-    // Find available animations
+  // Optimized animation handling with memoized action names
+  const animationNames = useMemo(() => {
+    if (!actions) return { walkAction: '', idleAction: '' };
+    
     const availableActions = Object.keys(actions);
     
-    let walkAction = '';
-    let idleAction = '';
-
-    // Try to find walk/run animation
-    walkAction = availableActions.find(name => 
+    const walkAction = availableActions.find(name => 
       name.toLowerCase().includes('walk') || 
       name.toLowerCase().includes('run') ||
       name.toLowerCase().includes('move') ||
       name.toLowerCase().includes('walking')
     ) || '';
 
-    // Try to find idle animation 
-    idleAction = availableActions.find(name => 
+    const idleAction = availableActions.find(name => 
       name.toLowerCase().includes('static')
     ) || availableActions.find(name => 
       name.toLowerCase().includes('idle') || 
       name.toLowerCase().includes('stand') ||
       name.toLowerCase().includes('default') ||
       name.toLowerCase().includes('rest')
-    ) || '';
+    ) || availableActions[0] || '';
+    
+    return { walkAction, idleAction };
+  }, [actions]);
 
-    if (!idleAction && availableActions.length > 0) {
-      idleAction = availableActions[0];
-    }
+  // Handle animations
+  useEffect(() => {
+    if (!actions || !mixer) return;
 
-    // Play appropriate animation
+    const { walkAction, idleAction } = animationNames;
     const targetAction = isMoving ? walkAction : idleAction;
     
+    // Only update if animation needs to change
     if (targetAction && targetAction !== currentActionRef.current) {
-      // Stop all current animations
-      Object.values(actions).forEach(action => {
-        if (action && action.isRunning()) {
-          action.stop();
-        }
-      });
+      // Stop current animation only if running
+      const currentAction = currentActionRef.current ? actions[currentActionRef.current] : null;
+      if (currentAction && currentAction.isRunning()) {
+        currentAction.stop();
+      }
       
-      // Reset mixer to clear any corrupted state
-      mixer.stopAllAction();
-      mixer.update(0);
-      
-      // Start new animation with proper setup
-      if (actions[targetAction]) {
-        const action = actions[targetAction];
-        if (action) {
-          action.reset();
-          action.setLoop(THREE.LoopRepeat, Infinity);
-          action.clampWhenFinished = false;
-          action.enabled = true;
-          action.weight = 1;
-          action.timeScale = 1;
-          action.play();
-          currentActionRef.current = targetAction;
-          
-          mixer.update(0);
-        }
-      } else if (targetAction && actions[targetAction]) {
-        // Try to force start again
-        const action = actions[targetAction] as THREE.AnimationAction;
-        if (action) {
-          action.play();
-          mixer.update(0);
-        }
+      // Start new animation with optimized setup
+      const newAction = actions[targetAction];
+      if (newAction) {
+        newAction.reset();
+        newAction.setLoop(THREE.LoopRepeat, Infinity);
+        newAction.clampWhenFinished = false;
+        newAction.enabled = true;
+        newAction.weight = 1;
+        newAction.timeScale = 1;
+        newAction.play();
+        currentActionRef.current = targetAction;
       }
     }
 
-    // Special handling for idle state 
-    if (!isMoving && !idleAction) {
-      Object.values(actions).forEach(action => {
-        if (action && action.isRunning()) {
-          action.stop();
-        }
-      });
-      mixer.stopAllAction();
-      currentActionRef.current = '';
-    }
-
     return () => {
-      // Cleanup animations
-      Object.values(actions).forEach(action => action?.stop());
+      // Cleanup only current action
+      if (currentActionRef.current && actions[currentActionRef.current]) {
+        actions[currentActionRef.current]?.stop();
+      }
     };
-  }, [actions, isMoving, mixer, animations]);
+  }, [actions, isMoving, mixer, animationNames]);
 
-  // Animation frame updates
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Dispose of cloned materials
+      materialsRef.current.forEach(mat => {
+        mat.dispose();
+      });
+      materialsRef.current = [];
+      
+      // Dispose of mixer if it exists
+      if (mixer) {
+        mixer.stopAllAction();
+      }
+      
+      // Dispose of geometries in cloned scene
+      if (clonedSceneRef.current) {
+        clonedSceneRef.current.traverse((child: any) => {
+          if (child.geometry) {
+            child.geometry.dispose();
+          }
+          // Dispose materials too (in case we missed any)
+          if (child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat: THREE.Material) => mat.dispose());
+            } else {
+              child.material.dispose();
+            }
+          }
+        });
+      }
+    };
+  }, [mixer]);
+
+  // Optimized animation frame updates
   useFrame((state, delta) => {
+    // Early return if no updates needed
+    if (!groupRef.current && !mixer) return;
+    
     // Update position and rotation
     if (groupRef.current) {
       groupRef.current.position.set(position[0], position[1], position[2]);
@@ -285,8 +296,8 @@ const Character: React.FC<CharacterProps> = ({
       }
     }
     
-    // Update animation mixer
-    if (mixer) {
+    // Update animation mixer only if it exists and has an action
+    if (mixer && currentActionRef.current) {
       mixer.update(delta);
     }
 
@@ -298,10 +309,8 @@ const Character: React.FC<CharacterProps> = ({
       } else {
         idleTimeRef.current += delta;
         // Only apply idle scale animation when not in magical transition
-        if (scale === 1) {
-          if (groupRef.current.scale) {
-            groupRef.current.scale.y = 1 + Math.sin(idleTimeRef.current * 2) * 0.01;
-          }
+        if (scale === 1 && groupRef.current.scale) {
+          groupRef.current.scale.y = 1 + Math.sin(idleTimeRef.current * 2) * 0.01;
         }
       }
     }
