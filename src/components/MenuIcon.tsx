@@ -15,6 +15,7 @@ const MenuIcon: React.FC<MenuIconProps> = ({ onClick, isVisible, isMenuOpen = fa
       style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       <span className="menu-line top"></span>
+      <span className="menu-line middle"></span>
       <span className="menu-line bottom"></span>
     </div>
   );

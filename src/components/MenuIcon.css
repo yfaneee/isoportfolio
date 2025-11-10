@@ -1,9 +1,9 @@
 .menu-icon {
   position: fixed;
-  top: 3rem;
+  top: 2.8rem;
   right: 5rem;
   width: 100px;
-  height: 30px;
+  height: 50px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -22,16 +22,22 @@
   width: 100%;
   height: 6px;
   background-color: #ffffff;
-  border-radius: 2px;
+  border-radius: 20px;
   transition: all 0.3s ease-in-out;
 }
 
 .menu-line.top {
   width: 100%;
+  align-self: flex-end;
+}
+
+.menu-line.middle {
+  width: 60%;
+  align-self: flex-end;
 }
 
 .menu-line.bottom {
-  width: 70%; 
+  width: 80%;
   align-self: flex-end;
 }
 
@@ -44,6 +50,10 @@
   transform: translateX(-5px);
 }
 
+.menu-icon:hover .menu-line.middle {
+  transform: scaleX(0.8);
+}
+
 .menu-icon:hover .menu-line.bottom {
   transform: translateX(5px);
 }
@@ -52,6 +62,11 @@
 .menu-icon.menu-open .menu-line.top {
   transform: rotate(45deg) translate(6px, 6px);
   width: 100%;
+}
+
+.menu-icon.menu-open .menu-line.middle {
+  opacity: 0;
+  transform: scaleX(0);
 }
 
 .menu-icon.menu-open .menu-line.bottom {
@@ -68,6 +83,11 @@
   transform: rotate(45deg) translate(6px, 6px) scale(1.1);
 }
 
+.menu-icon.menu-open:hover .menu-line.middle {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
 .menu-icon.menu-open:hover .menu-line.bottom {
   transform: rotate(-45deg) translate(6px, -6px) scale(1.1);
 }
@@ -78,7 +98,7 @@
     top: 4rem;
     right: 1.2rem;
     width: 90px;
-    height: 26px;
+    height: 36px;
   }
   
   .menu-line {
@@ -91,7 +111,7 @@
     top: 3.5rem;
     right: 1.2rem;
     width: 85px;
-    height: 25px;
+    height: 34px;
   }
   
   .menu-line {
@@ -104,7 +124,7 @@
     top: 3rem;
     right: 1.2rem;
     width: 80px;
-    height: 24px;
+    height: 32px;
   }
   
   .menu-line {
@@ -117,7 +137,7 @@
     top: 2rem;
     right: 2rem;
     width: 60px;
-    height: 20px;
+    height: 26px;
   }
   
   .menu-line {
@@ -126,6 +146,11 @@
   
   .menu-icon.menu-open .menu-line.top {
     transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .menu-icon.menu-open .menu-line.middle {
+    opacity: 0;
+    transform: scaleX(0);
   }
   
   .menu-icon.menu-open .menu-line.bottom {
@@ -138,7 +163,7 @@
     top: 2.2rem;
     right: 2.5rem;
     width: 50px;
-    height: 18px;
+    height: 24px;
   }
   
   .menu-line {
@@ -147,6 +172,11 @@
   
   .menu-icon.menu-open .menu-line.top {
     transform: rotate(45deg) translate(4px, 4px);
+  }
+  
+  .menu-icon.menu-open .menu-line.middle {
+    opacity: 0;
+    transform: scaleX(0);
   }
   
   .menu-icon.menu-open .menu-line.bottom {
