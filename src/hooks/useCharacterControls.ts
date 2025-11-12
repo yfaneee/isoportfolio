@@ -123,16 +123,23 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Check artwork platform slab
             const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
             
-            // Check GitHub project slabs on 18x3 platform
-            const isOnGithubSlab1 = x >= -1.45 && x <= -0.55 && z >= 8.7 && z <= 9.6;   
-            const isOnGithubSlab2 = x >= -1.45 && x <= -0.55 && z >= 16.2 && z <= 17.1; 
-            const isOnGithubSlab3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
-            const isOnGithubSlab4 = x >= -1.45 && x <= -0.55 && z >= 31.2 && z <= 32.1; 
+            // Check GitHub project slabs on 18x3 platform (MOVED SOUTH)
+            const isOnGithubSlab1 = x >= 0.75 && x <= 1.65 && z >= 8.7 && z <= 9.6;   
+            const isOnGithubSlab2 = x >= 0.75 && x <= 1.65 && z >= 16.2 && z <= 17.1; 
+            const isOnGithubSlab3 = x >= 0.75 && x <= 1.65 && z >= 23.7 && z <= 24.6; 
+            const isOnGithubSlab4 = x >= 0.75 && x <= 1.65 && z >= 31.2 && z <= 32.1; 
+            
+            // Check NEW OUTLINE BUTTON SLABS for website interaction
+            const isOnWebsiteButton1 = x >= -1.45 && x <= -0.55 && z >= 8.7 && z <= 9.6;   
+            const isOnWebsiteButton2 = x >= -1.45 && x <= -0.55 && z >= 16.2 && z <= 17.1; 
+            const isOnWebsiteButton3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
+            const isOnWebsiteButton4 = x >= -1.45 && x <= -0.55 && z >= 31.2 && z <= 32.1; 
             
             if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
-                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) && onSpacePressRef.current) {
+                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4 ||
+                 isOnWebsiteButton1 || isOnWebsiteButton2 || isOnWebsiteButton3 || isOnWebsiteButton4) && onSpacePressRef.current) {
               centerOnSlab();
               onSpacePressRef.current();
               if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) {

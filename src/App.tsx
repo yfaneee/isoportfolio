@@ -68,6 +68,22 @@ function App() {
   const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
+  
+  // Billboard refs for programmatic triggering
+  const billboardRefs = useRef<{[key: string]: any}>({});
+  
+  // Function to trigger billboard click programmatically
+  const triggerBillboardClick = useCallback((billboardKey: string) => {
+    const billboard = billboardRefs.current[billboardKey];
+    if (billboard && billboard.handleBillboardClick) {
+      billboard.handleBillboardClick();
+    }
+  }, []);
+  
+  // Handle billboard ref registration
+  const handleBillboardRef = useCallback((key: string, ref: any) => {
+    billboardRefs.current[key] = ref;
+  }, []);
 
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true);
@@ -205,7 +221,12 @@ function App() {
       const centerX = window.innerWidth / 2;
       const bottomY = window.innerHeight - 250; 
       
-      setOverlayPosition({ x: centerX, y: bottomY });
+      setOverlayPosition(prev => {
+        if (prev.x !== centerX || prev.y !== bottomY) {
+          return { x: centerX, y: bottomY };
+        }
+        return prev;
+      });
       
       // Set interaction text based on slab type
       switch (slabType) {
@@ -238,18 +259,27 @@ function App() {
           break;
         case 'github-holleman':
           setInteractionText('Open GitHub');
-          console.log('🎯 Setting interaction text for Holleman GitHub');
           break;
         case 'github-castle':
           setInteractionText('Open GitHub');
-          console.log('🎯 Setting interaction text for Castle GitHub');
           break;
         case 'github-space':
           setInteractionText('Open GitHub');
-          console.log('🎯 Setting interaction text for Space GitHub');
           break;
         case 'github-spotify':
           setInteractionText('Open GitHub');
+          break;
+        case 'website-holleman':
+          setInteractionText('View Holleman Project');
+          break;
+        case 'website-castle':
+          setInteractionText('View Castle Portfolio');
+          break;
+        case 'website-space':
+          setInteractionText('View Space Portfolio');
+          break;
+        case 'website-spotify':
+          setInteractionText('View Spotify Portfolio');
           break;
         case 'elevator':
           setInteractionText('Use Elevator');
@@ -321,35 +351,74 @@ function App() {
   }, [showMenu, showContent]);
 
   const handleSpacePress = useCallback(() => {
-    console.log('handleSpacePress called, showMenu:', showMenu, 'showContent:', showContent);
     if (!showMenu && !showContent) {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
-      console.log('Character position:', characterPos);
       
-      // Check if on GitHub project slabs first
-      const githubProjectSlabs = [
-        { x: -1, z: 9.15, url: 'https://github.com/yfaneee/holleman' },
-        { x: -1, z: 16.65, url: 'https://git.fhict.nl/I503826/castleportfolio' },
-        { x: -1, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
-        { x: -1, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
+      // Check interaction conditions directly here (don't rely on canInteract state)
+      const contentCheck = getContentForSlab(characterPos[0], characterPos[2]);
+      const isOnMiddleSlabCheck = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
+                                 characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
+      const isOnElevatorPressurePlateCheck = isOnElevator(characterPos[0], characterPos[2]);
+      
+      // Check GitHub slabs directly
+      const githubSlabsCheck = [
+        { x: 1.2, z: 9.15, url: 'https://github.com/yfaneee/holleman' },
+        { x: 1.2, z: 16.65, url: 'https://git.fhict.nl/I503826/castleportfolio' },
+        { x: 1.2, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
+        { x: 1.2, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
       ];
       
-      const currentGithubSlab = githubProjectSlabs.find(slab => 
+      const isOnGithubSlabCheck = githubSlabsCheck.some(slab => 
+        characterPos[0] >= slab.x - 0.45 && characterPos[0] <= slab.x + 0.45 && 
+        characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
+      );
+      
+      // Check website button slabs directly
+      const websiteSlabsCheck = [
+        { x: -1, z: 9.15, url: 'https://i503826.hera.fontysict.net/castle/', key: 'billboard1' },
+        { x: -1, z: 16.65, url: 'https://holleman.vercel.app/', key: 'billboard2' },
+        { x: -1, z: 24.15, url: 'https://space-portfolio-one-mu.vercel.app/', key: 'billboard3' },
+        { x: -1, z: 31.65, url: 'https://spotify-folio.vercel.app/', key: 'billboard4' }
+      ];
+      
+      const isOnWebsiteSlabCheck = websiteSlabsCheck.some(slab => 
+        characterPos[0] >= slab.x - 0.45 && characterPos[0] <= slab.x + 0.45 && 
+        characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
+      );
+      
+      const canInteractNow = !!(contentCheck || isOnMiddleSlabCheck || isOnElevatorPressurePlateCheck || isOnGithubSlabCheck || isOnWebsiteSlabCheck);
+      
+      if (!canInteractNow) {
+        return;
+      }
+      
+      // Use the direct checks we already did above
+      const currentGithubSlab = githubSlabsCheck.find(slab => 
+        characterPos[0] >= slab.x - 0.45 && characterPos[0] <= slab.x + 0.45 && 
+        characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
+      );
+      
+      const currentWebsiteButtonSlab = websiteSlabsCheck.find(slab => 
         characterPos[0] >= slab.x - 0.45 && characterPos[0] <= slab.x + 0.45 && 
         characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
       );
       
       if (currentGithubSlab) {
         // Open GitHub link in new tab
-        console.log('🚀 Opening GitHub URL:', currentGithubSlab.url);
         window.open(currentGithubSlab.url, '_blank');
+        return;
+      }
+      
+      
+      if (currentWebsiteButtonSlab) {
+        // Trigger billboard animation (same as clicking billboard)
+        triggerBillboardClick(currentWebsiteButtonSlab.key);
         return;
       }
       
       // Get content for the current slab
       const content = getContentForSlab(characterPos[0], characterPos[2]);
       const slabKey = getSlabKeyFromPosition(characterPos[0], characterPos[2]);
-      console.log('Content found:', content, 'SlabKey:', slabKey);
       
       const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
@@ -451,7 +520,7 @@ function App() {
     setIsNavigatingSlabs(true);
     
     // Quick fade out effect 
-    const fadeOutDuration = 300; 
+    const fadeOutDuration = 600; 
     const startTime = Date.now();
     
     const magicalFadeOut = () => {
@@ -467,8 +536,9 @@ function App() {
       // Minimal scale effect 
       setCharacterScale(1 - eased * 0.2); 
       
-      // Spin rotation effect - accelerating spin (reduced speed)
-      const spinSpeed = progress * progress * 2; 
+      // Spin rotation effect 
+      const spinEased = 1 - Math.pow(1 - progress, 3);
+      const spinSpeed = spinEased * 2; 
       setCharacterRotationY(spinSpeed * Math.PI);
       
       const floatHeight = eased * 0.5; 
@@ -503,6 +573,8 @@ function App() {
           
           // Wait for camera to arrive, then reappear at slab
           setTimeout(() => {
+            setIsNavigatingSlabs(false);
+            
             const fadeInStartTime = Date.now();
             const fadeInDuration = 400; 
             
@@ -533,7 +605,6 @@ function App() {
                 setCharacterScale(1);
                 setCharacterRotationY(0);
                 setCharacterPositionOffset([0, 0, 0]);
-                setIsNavigatingSlabs(false);
                 // Reset movement state to fix animation bug after navigation
                 if (characterControllerRef.current && characterControllerRef.current.resetMovementState) {
                   characterControllerRef.current.resetMovementState();
@@ -566,7 +637,7 @@ function App() {
     setIsNavigatingSlabs(true);
     
     // Quick fade out effect 
-    const fadeOutDuration = 300; 
+    const fadeOutDuration = 600; 
     const startTime = Date.now();
     
     const magicalFadeOut = () => {
@@ -582,8 +653,8 @@ function App() {
       // Minimal scale effect 
       setCharacterScale(1 - eased * 0.2); 
       
-      // Spin rotation effect 
-      const spinSpeed = progress * progress * -2; 
+      const spinEased = 1 - Math.pow(1 - progress, 3);
+      const spinSpeed = spinEased * -2; 
       setCharacterRotationY(spinSpeed * Math.PI);
       
       // Minimal vertical float, no wobble
@@ -619,6 +690,8 @@ function App() {
           
           // Wait for camera to arrive, then reappear at slab
           setTimeout(() => {
+            setIsNavigatingSlabs(false);
+            
             const fadeInStartTime = Date.now();
             const fadeInDuration = 400; 
             
@@ -649,7 +722,6 @@ function App() {
                 setCharacterScale(1);
                 setCharacterRotationY(0);
                 setCharacterPositionOffset([0, 0, 0]);
-                setIsNavigatingSlabs(false);
                 // Reset movement state to fix animation bug after navigation
                 if (characterControllerRef.current && characterControllerRef.current.resetMovementState) {
                   characterControllerRef.current.resetMovementState();
@@ -714,8 +786,16 @@ function App() {
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
       const isOnElevatorPressurePlate = isOnElevator(characterPos[0], characterPos[2]);
       
-      // Check if on GitHub project slabs
+      // Check if on GitHub project slabs (MOVED SOUTH)
       const githubProjectSlabs = [
+        { x: 1.2, z: 9.15 },
+        { x: 1.2, z: 16.65 },
+        { x: 1.2, z: 24.15 },
+        { x: 1.2, z: 31.65 }
+      ];
+      
+      // Check if on NEW WEBSITE BUTTON SLABS
+      const websiteButtonSlabs = [
         { x: -1, z: 9.15 },
         { x: -1, z: 16.65 },
         { x: -1, z: 24.15 },
@@ -727,17 +807,26 @@ function App() {
         characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
       );
       
-      setCanInteract(!!(content || isOnMiddleSlab || isOnElevatorPressurePlate || isOnGithubSlab));
+      const isOnWebsiteButtonSlab = websiteButtonSlabs.some(slab => 
+        characterPos[0] >= slab.x - 0.45 && characterPos[0] <= slab.x + 0.45 && 
+        characterPos[2] >= slab.z - 0.45 && characterPos[2] <= slab.z + 0.45
+      );
+      
+      setCanInteract(!!(content || isOnMiddleSlab || isOnElevatorPressurePlate || isOnGithubSlab || isOnWebsiteButtonSlab));
     }, 150); // Increased from 100ms to 150ms for better performance
 
     return () => clearInterval(checkInterval);
   }, [introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay]);
 
-  // Handle ESC key to close menu
+  // Handle ESC key to close menu or content
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showMenu && !isTransitioning) {
-        handleMenuIconClick();
+      if (event.key === 'Escape' && !isTransitioning) {
+        if (showContent) {
+          handleCloseContent();
+        } else if (showMenu) {
+          handleMenuIconClick();
+        }
       }
     };
 
@@ -745,7 +834,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [showMenu, isTransitioning, handleMenuIconClick]);
+  }, [showMenu, showContent, isTransitioning, handleMenuIconClick, handleCloseContent]);
 
 
   return (
@@ -820,6 +909,8 @@ function App() {
                   showWebsiteOverlay={showWebsiteOverlay}
                   triggerBillboardExit={triggerBillboardExit}
                   onBillboardExitComplete={() => setTriggerBillboardExit(false)}
+                  currentCharacterPosition={currentCharacterPosition}
+                  onBillboardRef={handleBillboardRef}
                 />
             </Canvas>
             

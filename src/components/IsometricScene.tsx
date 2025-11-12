@@ -31,6 +31,8 @@ interface IsometricSceneProps {
   showWebsiteOverlay?: boolean;
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
+  currentCharacterPosition?: [number, number, number];
+  onBillboardRef?: (key: string, ref: any) => void;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -59,7 +61,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   onHideWebsite,
   showWebsiteOverlay = false,
   triggerBillboardExit = false,
-  onBillboardExitComplete
+  onBillboardExitComplete,
+  currentCharacterPosition = [0, 0, 0],
+  onBillboardRef
 }) => {
   const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
@@ -114,6 +118,8 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onHideWebsite={onHideWebsite}
         triggerBillboardExit={triggerBillboardExit}
         onBillboardExitComplete={onBillboardExitComplete}
+        characterPosition={currentCharacterPosition}
+        onBillboardRef={onBillboardRef}
       />
       
       {/* Debug platform boundaries (red lines) */}

@@ -914,6 +914,8 @@ interface ProjectPlatformsProps {
   onHideWebsite?: () => void;
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
+  characterPosition?: [number, number, number];
+  onBillboardRef?: (key: string, ref: any) => void;
 }
 
 const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({ 
@@ -923,7 +925,9 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   onShowWebsite,
   onHideWebsite,
   triggerBillboardExit,
-  onBillboardExitComplete
+  onBillboardExitComplete,
+  characterPosition = [0, 0, 0],
+  onBillboardRef
 }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
@@ -973,7 +977,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         color={floorColor}
       />
       
-      {/* Project slabs on 18x3 platform - KEEP SEPARATE (user specifically mentioned these) */}
+      {/* Project slabs on 18x3 platform  */}
       {[
         { index: 2, key: 'project-slab-1' },
         { index: 7, key: 'project-slab-2' },
@@ -982,12 +986,65 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
       ].map((slab) => (
         <Box
           key={slab.key}
-          position={[-1, platform18x3Y + floorHeight/2 + 0.07, platform18x3StartZ + slab.index * spacing - 1.5]}
+          position={[1.2, platform18x3Y + floorHeight/2 + 0.07, platform18x3StartZ + slab.index * spacing - 1.5]}
           args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
         >
           <meshStandardMaterial color={'#F5F5DC'} />
       </Box>
       ))}
+
+      {/* NEW OUTLINE BUTTON SLABS for website interaction */}
+      {[
+        { index: 2, key: 'outline-button-1', z: 9.15 },
+        { index: 7, key: 'outline-button-2', z: 16.65 },
+        { index: 12, key: 'outline-button-3', z: 24.15 },
+        { index: 17, key: 'outline-button-4', z: 31.65 }
+      ].map((button) => {
+        // Check if character is on this button
+        const isCharacterOnButton = 
+          characterPosition[0] >= -1 - 0.45 && characterPosition[0] <= -1 + 0.45 && 
+          characterPosition[2] >= button.z - 0.45 && characterPosition[2] <= button.z + 0.45;
+        
+        // Extrude height when character is on button 
+        const extrudeHeight = isCharacterOnButton ? 0.10 : 0.04;
+        const extrudeY = platform18x3Y + floorHeight/2 + extrudeHeight;
+        
+        const buttonSize = floorSize * 0.75; 
+        const outlineThickness = 0.06; 
+        
+        return (
+          <group key={button.key}>
+            {/* Top edge */}
+            <Box
+              position={[-1, extrudeY, platform18x3StartZ + button.index * spacing - 1.5 + buttonSize / 2 - outlineThickness/2]}
+              args={[buttonSize, extrudeHeight, outlineThickness]}
+            >
+              <meshStandardMaterial color={'#F5F5DC'} />
+            </Box>
+            {/* Bottom edge */}
+            <Box
+              position={[-1, extrudeY, platform18x3StartZ + button.index * spacing - 1.5 - buttonSize / 2 + outlineThickness/2]}
+              args={[buttonSize, extrudeHeight, outlineThickness]}
+            >
+              <meshStandardMaterial color={'#F5F5DC'} />
+            </Box>
+            {/* Left edge */}
+            <Box
+              position={[-1 - buttonSize / 2 + outlineThickness/2, extrudeY, platform18x3StartZ + button.index * spacing - 1.5]}
+              args={[outlineThickness, extrudeHeight, buttonSize - outlineThickness * 2]}
+            >
+              <meshStandardMaterial color={'#F5F5DC'} />
+            </Box>
+            {/* Right edge */}
+            <Box
+              position={[-1 + buttonSize / 2 - outlineThickness/2, extrudeY, platform18x3StartZ + button.index * spacing - 1.5]}
+              args={[outlineThickness, extrudeHeight, buttonSize - outlineThickness * 2]}
+            >
+              <meshStandardMaterial color={'#F5F5DC'} />
+            </Box>
+          </group>
+        );
+      })}
 
       {/* Extensions for billboard */}
       {[
@@ -1047,7 +1104,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         });
       })()}
 
-      {/* Interactive Billboard/Screen structures - EXACT ORIGINAL FORMULA */}
+      {/* Interactive Billboard/Screen structures */}
       {[
         { row: 2, key: 'billboard1', websiteUrl: 'https://i503826.hera.fontysict.net/castle/' },
         { row: 7, key: 'billboard2', websiteUrl: 'https://holleman.vercel.app/' },
@@ -1056,7 +1113,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
       ].map(billboard => {
         const billboardX = -2.5 * spacing + spacing * 0.5 - 0.7;
         const billboardZ = platform18x3StartZ + (billboard.row - 1) * spacing;
-        // EXACT ORIGINAL FORMULA - DO NOT CHANGE
+        // EXACT ORIGINAL FORMULA 
         const billboardY = platform18x3Y + billboardPillarHeight/2;
         
         return (
@@ -1073,6 +1130,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
             onHideWebsite={onHideWebsite}
             triggerBillboardExit={triggerBillboardExit}
             onBillboardExitComplete={onBillboardExitComplete}
+            onRef={(ref) => onBillboardRef?.(billboard.key, ref)}
           />
         );
       })}
@@ -1091,6 +1149,8 @@ interface IsometricWorldProps {
   onHideWebsite?: () => void;
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
+  characterPosition?: [number, number, number];
+  onBillboardRef?: (key: string, ref: any) => void;
 }
 
 const IsometricWorld: React.FC<IsometricWorldProps> = ({ 
@@ -1100,7 +1160,9 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
   onShowWebsite,
   onHideWebsite,
   triggerBillboardExit,
-  onBillboardExitComplete
+  onBillboardExitComplete,
+  characterPosition = [0, 0, 0],
+  onBillboardRef
 }) => {
   return (
     <group>
@@ -1119,6 +1181,8 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
         onHideWebsite={onHideWebsite}
         triggerBillboardExit={triggerBillboardExit}
         onBillboardExitComplete={onBillboardExitComplete}
+        characterPosition={characterPosition}
+        onBillboardRef={onBillboardRef}
       />
     </group>
   );

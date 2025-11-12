@@ -32,12 +32,12 @@
 }
 
 .menu-line.middle {
-  width: 60%;
+  width: 50%;
   align-self: flex-end;
 }
 
 .menu-line.bottom {
-  width: 80%;
+  width: 75%;
   align-self: flex-end;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .menu-icon:hover .menu-line.top {
-  transform: translateX(-5px);
+  transform: translateX(5px);
 }
 
 .menu-icon:hover .menu-line.middle {

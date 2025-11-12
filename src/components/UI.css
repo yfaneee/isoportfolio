@@ -10,17 +10,17 @@
 
 .controls-hint {
   position: absolute;
-  left: 16px;
-  bottom: 16px;
+  left: 25px;
+  bottom: 25px;
   display: inline-flex;
   flex-direction: column;
   gap: 6px;
   padding: 8px 10px;
-  background: rgba(19, 23, 32, 0.55);
   backdrop-filter: blur(4px);
-  color: #fff;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 1);
   font-size: 20px;
   line-height: 1;
   pointer-events: none; 
@@ -41,9 +41,9 @@
   height: 22px;
   padding: 0 6px;
   margin-right: 4px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(19, 23, 32, 0.55);
+  color: #ffffff;
+  border: 1px solid #444;
   border-bottom-width: 2px;
   border-radius: 4px;
   font-size: 14px;
@@ -66,9 +66,9 @@
 }
 
 .controls-hint .label {
-  opacity: 0.9;
   font-weight: 600;
   letter-spacing: 0.2px;
+  font-size: 15px;
 }
 
 /* Responsive tweaks */

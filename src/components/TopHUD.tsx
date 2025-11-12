@@ -21,7 +21,7 @@ interface AreaInfo {
   discovered: boolean;
 }
 
-// Define areas with their boundaries - large areas including stairs/ramps
+// Define areas with their boundaries 
 const areas: AreaInfo[] = [
   {
     name: 'Learning Outcomes',
@@ -60,9 +60,6 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
   useEffect(() => {
     const [charX, , charZ] = characterPosition;
     
-    // Debug logging
-    console.log('TopHUD - Character position:', charX, charZ);
-    
     let foundArea = 'Center';
     
     // Check which area the character is in
@@ -74,14 +71,17 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
       }
     }
 
-    setCurrentArea(foundArea);
+    setCurrentArea(prev => prev !== foundArea ? foundArea : prev);
 
     // Track visited areas
     if (foundArea !== 'Center') {
       setVisitedAreas(prev => {
-        const newSet = new Set(prev);
-        newSet.add(foundArea);
-        return newSet;
+        if (!prev.has(foundArea)) {
+          const newSet = new Set(prev);
+          newSet.add(foundArea);
+          return newSet;
+        }
+        return prev;
       });
     }
 

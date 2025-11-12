@@ -118,15 +118,28 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[0] >= 10.05 && newPos[0] <= 10.95 && 
             newPos[2] >= -0.46 && newPos[2] <= 0.44;
 
-          // Check GitHub project slabs on 18x3 platform (all 4 slabs)
+          // Check GitHub project slabs on 18x3 platform 
           const githubProjectSlabs = [
-            { x: -1, z: 9.15, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
-            { x: -1, z: 16.65, id: 'github-castle', url: 'https://github.com/yfaneee/castle-portfolio' },
-            { x: -1, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
-            { x: -1, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
+            { x: 1.2, z: 9.15, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
+            { x: 1.2, z: 16.65, id: 'github-castle', url: 'https://git.fhict.nl/I503826/castleportfolio' },
+            { x: 1.2, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
+            { x: 1.2, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
+          ];
+          
+          // Check NEW OUTLINE BUTTON SLABS 
+          const websiteButtonSlabs = [
+            { x: -1, z: 9.15, id: 'website-castle', url: 'https://i503826.hera.fontysict.net/castle/' },
+            { x: -1, z: 16.65, id: 'website-holleman', url: 'https://holleman.vercel.app/' },
+            { x: -1, z: 24.15, id: 'website-space', url: 'https://space-portfolio-one-mu.vercel.app/' },
+            { x: -1, z: 31.65, id: 'website-spotify', url: 'https://spotify-folio.vercel.app/' }
           ];
           
           const currentGithubSlab = githubProjectSlabs.find(slab => 
+            newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
+            newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
+          );
+          
+          const currentWebsiteButtonSlab = websiteButtonSlabs.find(slab => 
             newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
             newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
           );
@@ -144,6 +157,8 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             onSlabInteraction?.(true, 'artwork');
           } else if (currentGithubSlab) {
             onSlabInteraction?.(true, currentGithubSlab.id, currentGithubSlab.url);
+          } else if (currentWebsiteButtonSlab) {
+            onSlabInteraction?.(true, currentWebsiteButtonSlab.id, currentWebsiteButtonSlab.url);
           } else if (isOnElevatorPressurePlate) {
             onSlabInteraction?.(true, 'elevator');
           } else {

@@ -16,6 +16,7 @@ interface InteractiveBillboardProps {
   onHideWebsite?: () => void;
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
+  onRef?: (ref: any) => void;
 }
 
 const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
@@ -29,7 +30,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   onShowWebsite,
   onHideWebsite,
   triggerBillboardExit = false,
-  onBillboardExitComplete
+  onBillboardExitComplete,
+  onRef
 }) => {
   const { camera } = useThree();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -177,6 +179,15 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       onBillboardExitComplete?.();
     }
   }, [triggerBillboardExit, isFullscreen, onCameraAnimationEnd, onBillboardExitComplete]);
+
+  // Expose handleBillboardClick function through ref
+  useEffect(() => {
+    if (onRef) {
+      onRef({
+        handleBillboardClick: () => handleBillboardClick({ stopPropagation: () => {} })
+      });
+    }
+  }, [onRef]);
 
   return (
     <group>
