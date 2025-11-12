@@ -120,8 +120,8 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
           // Check GitHub project slabs on 18x3 platform 
           const githubProjectSlabs = [
-            { x: 1.2, z: 9.15, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
-            { x: 1.2, z: 16.65, id: 'github-castle', url: 'https://git.fhict.nl/I503826/castleportfolio' },
+            { x: 1.2, z: 9.15, id: 'github-castle', url: 'https://git.fhict.nl/I503826/castleportfolio' },
+            { x: 1.2, z: 16.65, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
             { x: 1.2, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
             { x: 1.2, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
           ];

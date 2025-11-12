@@ -158,7 +158,7 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
   }
 
   return (
-    <div className="top-hud">
+    <div className={`top-hud ${showContent ? 'shifted-left' : ''}`}>
       <div className="hud-content">
         <div className="current-location">
           <span className="location-label">Current:</span>

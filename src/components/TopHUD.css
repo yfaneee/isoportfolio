@@ -6,6 +6,12 @@
   z-index: 800;
   max-width: 1000px;
   pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-hud.shifted-left {
+  left: 21.25%;
+  transform: translateX(-50%);
 }
 
 .hud-content {
@@ -88,7 +94,7 @@
 .content-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #FFE066;
+  color: #9006ac;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -119,6 +125,11 @@
     flex: 1;
     min-width: 150px;
   }
+  
+  /* Adjust shift amount for tablets */
+  .top-hud.shifted-left {
+    left: 15%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -137,6 +148,12 @@
   .suggestion-label,
   .content-label {
     font-size: 0.75rem;
+  }
+  
+  /* Keep centered on mobile since content box might overlap anyway */
+  .top-hud.shifted-left {
+    left: 50%;
+    top: 1rem;
   }
 }
 

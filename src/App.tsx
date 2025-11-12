@@ -362,8 +362,8 @@ function App() {
       
       // Check GitHub slabs directly
       const githubSlabsCheck = [
-        { x: 1.2, z: 9.15, url: 'https://github.com/yfaneee/holleman' },
-        { x: 1.2, z: 16.65, url: 'https://git.fhict.nl/I503826/castleportfolio' },
+        { x: 1.2, z: 9.15, url: 'https://git.fhict.nl/I503826/castleportfolio' },
+        { x: 1.2, z: 16.65, url: 'https://github.com/yfaneee/holleman' },
         { x: 1.2, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
         { x: 1.2, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
       ];

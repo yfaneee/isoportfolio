@@ -59,7 +59,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
             </div>
             <div className="control-row">
               <span className="key">ESC</span>
-              <span className="control-desc">Open/Close menu</span>
+              <span className="control-desc">Open / Close menu</span>
             </div>
           </div>
         </div>

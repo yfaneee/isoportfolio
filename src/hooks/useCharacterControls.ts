@@ -271,11 +271,14 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       
       if (targetHeight.current !== null) {
         const heightDiff = Math.abs(collisionY - targetHeight.current);
+        const isClimbingUp = targetHeight.current > collisionY;
         
         if (heightDiff > 0.1) {
           finalCollisionY = smoothHeightTransition(collisionY, targetHeight.current, delta);
         } else if (heightDiff > 0.02) {
-          finalCollisionY = collisionY + (targetHeight.current - collisionY) * 0.08;
+          // Faster lerp when climbing up to prevent sinking
+          const lerpSpeed = isClimbingUp ? 0.12 : 0.08;
+          finalCollisionY = collisionY + (targetHeight.current - collisionY) * lerpSpeed;
         }
       }
       

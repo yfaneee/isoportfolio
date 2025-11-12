@@ -546,10 +546,10 @@ export function smoothHeightTransition(currentY: number, targetY: number, delta:
     return targetY;
   }
   
-  // Consistent smooth transition speed - no sudden changes
-  const transitionSpeed = 8; // Gentle, consistent speed
+  const isClimbingUp = diff > 0;
+  const transitionSpeed = isClimbingUp ? 12 : 8; 
   
-  // Simple lerp with consistent speed
+  // Simple lerp with adjusted speed
   const lerpFactor = Math.min(1.0, delta * transitionSpeed);
   return currentY + diff * lerpFactor;
 }
