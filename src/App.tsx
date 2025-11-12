@@ -433,7 +433,7 @@ function App() {
         setShowMenu(true);
       }
     }
-  }, [showMenu, showContent]);
+  }, [showMenu, showContent, triggerBillboardClick]);
 
   const handleCloseContent = useCallback(() => {
     setShowContent(false);

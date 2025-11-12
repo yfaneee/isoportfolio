@@ -90,7 +90,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     position[2]
   );
 
-  const handleBillboardClick = (event: any) => {
+  const handleBillboardClick = React.useCallback((event: any) => {
     event.stopPropagation();
     
     if (isAnimating) return;
@@ -111,7 +111,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       setIsFullscreen(false);
       onCameraAnimationEnd?.();
     }
-  };
+  }, [isAnimating, isFullscreen, camera, position, onCameraAnimationStart, onHideWebsite, onCameraAnimationEnd]);
 
   useFrame((state, delta) => {
     if (isAnimating) {
@@ -187,7 +187,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
         handleBillboardClick: () => handleBillboardClick({ stopPropagation: () => {} })
       });
     }
-  }, [onRef]);
+  }, [onRef, handleBillboardClick]);
 
   return (
     <group>
