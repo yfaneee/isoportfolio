@@ -111,7 +111,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       setIsFullscreen(false);
       onCameraAnimationEnd?.();
     }
-  }, [isAnimating, isFullscreen, camera, position, onCameraAnimationStart, onHideWebsite, onCameraAnimationEnd]);
+  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart, onHideWebsite, onCameraAnimationEnd]);
 
   useFrame((state, delta) => {
     if (isAnimating) {
