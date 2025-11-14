@@ -35,6 +35,17 @@ const CameraController: React.FC<CameraControllerProps> = ({
     startPos: new THREE.Vector3(),
     startLookAt: new THREE.Vector3()
   });
+  
+  const zoomFactorRef = useRef(1.0);
+  const targetZoomRef = useRef(1.0); 
+  const minZoom = 1.0; 
+  const maxZoom = 3.5; 
+  const wasMovingRef = useRef(false);
+  
+  // Pan/drag state
+  const isDraggingRef = useRef(false);
+  const lastMousePosRef = useRef({ x: 0, y: 0 });
+  const cameraPanOffsetRef = useRef(new THREE.Vector3(0, 0, 0));
 
 
   // Reset intro time when loading screen changes
@@ -43,6 +54,111 @@ const CameraController: React.FC<CameraControllerProps> = ({
       introTimeRef.current = 0;
     }
   }, [showLoadingScreen]);
+
+  // Reset zoom and pan 
+  useEffect(() => {
+    if (isCharacterMoving && !wasMovingRef.current) {
+      targetZoomRef.current = 1.0;
+      cameraPanOffsetRef.current.set(0, 0, 0); 
+    }
+    wasMovingRef.current = isCharacterMoving;
+  }, [isCharacterMoving]);
+
+  // Mouse wheel zoom handler
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      // Check if the wheel event is over a scrollable UI element
+      const target = event.target as HTMLElement;
+      
+      // Allow scrolling in content areas, menus, or any scrollable container
+      if (target) {
+        let element: HTMLElement | null = target;
+        while (element) {
+          // Check if element is scrollable or is a UI component that needs scrolling
+          const hasScroll = element.scrollHeight > element.clientHeight;
+          const isScrollable = window.getComputedStyle(element).overflowY !== 'visible';
+          const isContentArea = element.classList.contains('content-box') || 
+                                element.classList.contains('content-box-body') ||
+                                element.classList.contains('examples-container') ||
+                                element.classList.contains('info-panel') ||
+                                element.classList.contains('info-content') ||
+                                element.classList.contains('menu-overlay') ||
+                                element.classList.contains('menu-content') ||
+                                element.classList.contains('menu') ||
+                                element.classList.contains('panel');
+          
+          if ((hasScroll && isScrollable) || isContentArea) {
+            // Let the default scroll behavior happen
+            return;
+          }
+          element = element.parentElement;
+        }
+      }
+      
+      // If not over UI, zoom the camera
+      event.preventDefault();
+      
+      // Adjust zoom based on wheel delta
+      const zoomSpeed = 0.001;
+      const delta = event.deltaY * zoomSpeed;
+      
+      targetZoomRef.current = Math.max(minZoom, Math.min(maxZoom, targetZoomRef.current + delta));
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [minZoom, maxZoom]);
+
+  // Mouse drag pan handler
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.button === 0) {
+        isDraggingRef.current = true;
+        lastMousePosRef.current = { x: event.clientX, y: event.clientY };
+        document.body.style.cursor = 'grabbing';
+      }
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      
+      const deltaX = event.clientX - lastMousePosRef.current.x;
+      const deltaY = event.clientY - lastMousePosRef.current.y;
+      
+      // Adjust pan speed based on zoom level (more zoomed out = faster pan)
+      const panSpeed = 0.02 * zoomFactorRef.current;
+      
+      const angle = Math.PI / 4; 
+      const cos45 = Math.cos(angle);
+      const sin45 = Math.sin(angle);
+      
+      // Rotate the input to match isometric orientation
+      cameraPanOffsetRef.current.x -= (deltaX * cos45 + deltaY * sin45) * panSpeed;
+      cameraPanOffsetRef.current.z -= (-deltaX * sin45 + deltaY * cos45) * panSpeed;
+      
+      lastMousePosRef.current = { x: event.clientX, y: event.clientY };
+    };
+
+    const handleMouseUp = (event: MouseEvent) => {
+      if (event.button === 0) {
+        isDraggingRef.current = false;
+        document.body.style.cursor = '';
+      }
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   // Handle camera animation 
   const prevNavigatingRef = useRef(isNavigatingSlabs);
@@ -74,9 +190,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
   }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
 
   useFrame((state, delta) => {
-    // Update camera settings periodically (not every frame to save CPU)
+    const zoomLerpSpeed = 0.1; 
+    zoomFactorRef.current += (targetZoomRef.current - zoomFactorRef.current) * zoomLerpSpeed;
+    
+    // Update camera settings periodically 
     frameSkipCounterRef.current++;
-    if (frameSkipCounterRef.current % 30 === 0) { // Check every 30 frames (~0.5 seconds)
+    if (frameSkipCounterRef.current % 30 === 0) { 
       const currentWidth = window.innerWidth;
       if (Math.abs(currentWidth - lastWindowWidthRef.current) > 50) {
         let cameraDistance = 8;
@@ -115,8 +234,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
         ? 4 * t * t * t 
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
       
-      // Animate camera from far to close - use fixed collision height during intro
-             const characterPosition = [0, 0.22, 0]; // Fixed position during intro to prevent camera jump
+      // Animate camera from far to close 
+             const characterPosition = [0, 0.22, 0]; 
              const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
              const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
       
@@ -124,16 +243,20 @@ const CameraController: React.FC<CameraControllerProps> = ({
       let cameraDistance = cameraSettingsRef.current.distance;
       let cameraHeight = cameraSettingsRef.current.height;
       
-      // Zoom in when content box is open (but not during transition)
+      // Zoom in when content box is open
       if (showContent && !isTransitioning) {
         cameraDistance *= 0.7; 
         cameraHeight *= 0.8; 
       }
       
+      // Apply zoom factor
+      cameraDistance *= zoomFactorRef.current;
+      cameraHeight *= zoomFactorRef.current;
+      
              const targetCameraPos = [
-               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX,
+               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
                characterPosition[1] + cameraHeight,
-               characterPosition[2] + cameraDistance
+               characterPosition[2] + cameraDistance + cameraPanOffsetRef.current.z
              ];
 
       camera.position.set(
@@ -141,9 +264,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
         40 - eased * (40 - targetCameraPos[1]),
         40 - eased * (40 - targetCameraPos[2])
       );
-             const introLookAtX = characterPosition[0] + menuOffsetX + contentOffsetX;
+             const introLookAtX = characterPosition[0] + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x;
              const introLookAtY = characterPosition[1];
-             const introLookAtZ = characterPosition[2];
+             const introLookAtZ = characterPosition[2] + cameraPanOffsetRef.current.z;
              camera.lookAt(introLookAtX, introLookAtY, introLookAtZ);
              currentLookAtRef.current.set(introLookAtX, introLookAtY, introLookAtZ);
       
@@ -191,15 +314,19 @@ const CameraController: React.FC<CameraControllerProps> = ({
         cameraHeight *= 0.5; 
       }
       
+      // Apply zoom factor
+      cameraDistance *= zoomFactorRef.current;
+      cameraHeight *= zoomFactorRef.current;
+      
              const targetPos = new THREE.Vector3(
-               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX,
+               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
                characterPosition[1] + cameraHeight + menuOffsetY + contentOffsetY,
-               characterPosition[2] + cameraDistance + menuOffsetZ + contentOffsetZ
+               characterPosition[2] + cameraDistance + menuOffsetZ + contentOffsetZ + cameraPanOffsetRef.current.z
              );
              const targetLookAt = new THREE.Vector3(
-              characterPosition[0] + menuOffsetX + contentOffsetX,
+              characterPosition[0] + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
               characterPosition[1] + menuOffsetY + contentOffsetY,
-              characterPosition[2] + menuOffsetZ + contentOffsetZ
+              characterPosition[2] + menuOffsetZ + contentOffsetZ + cameraPanOffsetRef.current.z
             );
 
       // Handle smooth camera animation
