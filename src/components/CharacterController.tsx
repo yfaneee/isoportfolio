@@ -35,7 +35,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   onSlabInteraction,
   disableMovement = false
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, teleportToLocation, handleTouch, stopMovement, resetMovementState } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+  const { updateCharacter, positionRef, rotationRef, isMovingRef, teleportToLocation, handleTouch, stopMovement, resetMovementState, handleMobileInput } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
   const introCompletedRef = useRef(false);
   const [position, setPosition] = React.useState<[number, number, number]>(positionRef.current);
@@ -58,7 +58,8 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
     },
     handleTouch: (touch: Touch) => handleTouch(touch),
     stopMovement: () => stopMovement(),
-    resetMovementState: () => resetMovementState()
+    resetMovementState: () => resetMovementState(),
+    handleMobileInput: (direction: { x: number; y: number } | null, isRunning: boolean) => handleMobileInput(direction, isRunning)
   }));
 
   useFrame((state, delta) => {

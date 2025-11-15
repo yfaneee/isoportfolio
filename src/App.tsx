@@ -92,9 +92,14 @@ function App() {
 
   // Mobile D-pad handlers
   const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
+    console.log('App handleMobileDpadDirection:', direction);
+    console.log('characterControllerRef.current:', characterControllerRef.current);
     setMobileDpadDirection(direction);
     if (characterControllerRef.current && characterControllerRef.current.handleMobileInput) {
+      console.log('Calling handleMobileInput...');
       characterControllerRef.current.handleMobileInput(direction, false);
+    } else {
+      console.log('characterControllerRef or handleMobileInput not available!');
     }
   }, []);
 

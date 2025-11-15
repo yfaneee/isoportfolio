@@ -13,6 +13,7 @@
   right: 16rem;
   width: 845px;
   height: calc(100vh - 7rem);
+  height: calc(100dvh - 7rem); 
   background: rgba(155, 93, 229, 0.9);
   color: white;
   padding: 2rem;
@@ -288,6 +289,7 @@
     right: 2rem;
     width: 500px;
     height: calc(100vh - 6rem);
+    height: calc(100dvh - 6rem);
     top: 3rem;
   }
   .content-box-header h2 {
@@ -317,6 +319,7 @@
     right: 8rem;
     width: 550px;
     height: calc(100vh - 6rem);
+    height: calc(100dvh - 6rem);
     top: 3rem;
   }
   .content-box-header h2 {
@@ -332,6 +335,7 @@
     right: 9rem;
     width: 600px;
     height: calc(100vh - 7rem);
+    height: calc(100dvh - 7rem);
     top: 3.5rem;
   }
   .content-box-header h2 {
@@ -361,6 +365,7 @@
     right: auto;
     width: calc(100vw - 20rem);
     height: calc(100vh - 4rem);
+    height: calc(100dvh - 4rem);
     padding: 1rem;
     transform: translateX(50%);
   }

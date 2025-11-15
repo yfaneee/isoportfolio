@@ -4,6 +4,7 @@
   left: clamp(2rem, 12vw, 16rem);
   width: clamp(280px, 35vw, 700px);
   height: clamp(300px, 80vh, calc(100vh - 8rem));
+  height: clamp(300px, 80dvh, calc(100dvh - 8rem));
   background: rgba(155, 93, 229, 0.9);
   color: white;
   padding: clamp(1rem, 2.5vw, 2rem);
@@ -261,8 +262,10 @@
 @media (max-height: 600px) {
   .menu-overlay {
     height: calc(100vh - 2rem);
+    height: calc(100dvh - 2rem);
     bottom: 1rem;
     max-height: 85vh;
+    max-height: 85dvh;
   }
   
   .menu-sections {
@@ -294,7 +297,9 @@
 @media (min-width: 769px) and (max-height: 800px) {
   .menu-overlay {
     height: clamp(400px, 85vh, calc(100vh - 2rem));
+    height: clamp(400px, 85dvh, calc(100dvh - 2rem));
     max-height: 85vh;
+    max-height: 85dvh;
   }
   
   .menu-sections {
@@ -326,7 +331,9 @@
 @media (min-width: 769px) and (max-height: 720px) {
   .menu-overlay {
     height: clamp(350px, 80vh, calc(100vh - 2rem));
+    height: clamp(350px, 80dvh, calc(100dvh - 2rem));
     max-height: 80vh;
+    max-height: 80dvh;
   }
   
   .menu-sections {
@@ -358,6 +365,7 @@
 @media (min-width: 769px) and (max-height: 650px) {
   .menu-overlay {
     height: clamp(300px, 75vh, calc(100vh - 2rem));
+    height: clamp(300px, 75dvh, calc(100dvh - 2rem));
   }
   
   .menu-sections {

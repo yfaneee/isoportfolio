@@ -13,22 +13,15 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
 
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      if (!dpadRef.current || !visible) return;
+      if (!visible) return;
       
       const touch = e.touches[0];
-      const rect = dpadRef.current.getBoundingClientRect();
       
-      // Check if touch is within dpad bounds
-      if (
-        touch.clientX >= rect.left &&
-        touch.clientX <= rect.right &&
-        touch.clientY >= rect.top &&
-        touch.clientY <= rect.bottom
-      ) {
-        e.preventDefault();
-        touchIdRef.current = touch.identifier;
-        handleTouchMove(e);
-      }
+      console.log('D-pad touch start detected!');
+      e.preventDefault();
+      e.stopPropagation();
+      touchIdRef.current = touch.identifier;
+      handleTouchMove(e);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -90,6 +83,7 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
           directionVector = { x: 1, y: -1 };
         }
 
+        console.log('Direction changed:', direction, directionVector);
         setActiveDirection(direction);
         onDirectionChange(directionVector);
       } else {
@@ -110,16 +104,19 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
       }
     };
 
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
-    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+    const dpadElement = dpadRef.current;
+    if (!dpadElement) return;
+
+    dpadElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+    dpadElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+    dpadElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+    dpadElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-      document.removeEventListener('touchcancel', handleTouchEnd);
+      dpadElement.removeEventListener('touchstart', handleTouchStart);
+      dpadElement.removeEventListener('touchmove', handleTouchMove);
+      dpadElement.removeEventListener('touchend', handleTouchEnd);
+      dpadElement.removeEventListener('touchcancel', handleTouchEnd);
     };
   }, [onDirectionChange, visible]);
 

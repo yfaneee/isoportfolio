@@ -5,7 +5,7 @@
   width: 50%;
   height: 30vh;
   pointer-events: none;
-  z-index: 1200;
+  z-index: 9999;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -16,10 +16,11 @@
   position: relative;
   width: clamp(100px, 21vw, 150px);
   height: clamp(100px, 21vw, 150px);
-  pointer-events: all;
+  pointer-events: all !important;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none;
+  touch-action: manipulation;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
