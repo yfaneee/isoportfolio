@@ -46,13 +46,6 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const cameraPanOffsetRef = useRef(new THREE.Vector3(0, 0, 0));
-  
-  // Camera pan boundaries
-  const panBoundaries = {
-    x: { min: -25, max: 25 },
-    z: { min: -25, max: 25 }
-  };
-
 
   // Reset intro time when loading screen changes
   useEffect(() => {
@@ -120,6 +113,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
 
   // Mouse drag pan handler
   useEffect(() => {
+    // Camera pan boundaries
+    const panBoundaries = {
+      x: { min: -25, max: 25 },
+      z: { min: -25, max: 25 }
+    };
+
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button === 0) {
         isDraggingRef.current = true;

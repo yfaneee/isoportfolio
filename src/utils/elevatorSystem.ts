@@ -25,6 +25,8 @@ export const shiftElevator: Elevator = {
   wasOnElevator: false,
 };
 
+let lastTriggerTime = 0;
+
 // Check if a position is on the elevator
 export function isOnElevator(x: number, z: number): boolean {
   const onElevator = (
@@ -39,11 +41,24 @@ export function isOnElevator(x: number, z: number): boolean {
 
 // Trigger elevator movement - toggles between top and bottom
 export function triggerElevator(): void {
+  const now = Date.now();
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (isMobile && now - lastTriggerTime < 1000) {
+    return;
+  }
+  
   if (!shiftElevator.isMoving) {
-    // Toggle between top and bottom instantly
+    shiftElevator.isMoving = true;
+    lastTriggerTime = now;
+    
     shiftElevator.currentY = shiftElevator.currentY === shiftElevator.topY 
       ? shiftElevator.bottomY 
       : shiftElevator.topY;
+    
+    setTimeout(() => {
+      shiftElevator.isMoving = false;
+    }, isMobile ? 500 : 100); 
   }
 }
 

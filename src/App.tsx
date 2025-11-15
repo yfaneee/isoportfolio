@@ -70,8 +70,6 @@ function App() {
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [canInteract, setCanInteract] = useState(false);
   const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
-  const [mobileDpadDirection, setMobileDpadDirection] = useState<{ x: number; y: number } | null>(null);
-  const [mobileInteractPressed, setMobileInteractPressed] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
   
@@ -93,7 +91,6 @@ function App() {
 
   // Mobile D-pad handlers
   const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
-    setMobileDpadDirection(direction);
     if (characterControllerRef.current && characterControllerRef.current.handleMobileInput) {
       characterControllerRef.current.handleMobileInput(direction, false);
     }
@@ -418,8 +415,12 @@ function App() {
       );
       
       if (currentGithubSlab) {
-        // Open GitHub link in new tab
-        window.open(currentGithubSlab.url, '_blank');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = currentGithubSlab.url;
+        } else {
+          window.open(currentGithubSlab.url, '_blank');
+        }
         return;
       }
       
@@ -457,8 +458,6 @@ function App() {
 
   // Mobile interact button handler (must be after handleSpacePress)
   const handleMobileInteract = useCallback((isPressed: boolean) => {
-    setMobileInteractPressed(isPressed);
-    // Trigger space press when button is pressed
     if (isPressed) {
       handleSpacePress();
     }
