@@ -95,7 +95,20 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
       
       const touch = Array.from(e.changedTouches).find(t => t.identifier === touchIdRef.current);
       if (touch) {
-        e.preventDefault();
+        if (e.type === 'touchend') {
+          e.preventDefault();
+        }
+        touchIdRef.current = null;
+        setActiveDirection(null);
+        onDirectionChange(null);
+      }
+    };
+
+    const handleTouchCancel = (e: TouchEvent) => {
+      if (touchIdRef.current === null) return;
+      
+      const touch = Array.from(e.changedTouches).find(t => t.identifier === touchIdRef.current);
+      if (touch) {
         touchIdRef.current = null;
         setActiveDirection(null);
         onDirectionChange(null);
@@ -108,13 +121,13 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
     dpadElement.addEventListener('touchstart', handleTouchStart, { passive: false });
     dpadElement.addEventListener('touchmove', handleTouchMove, { passive: false });
     dpadElement.addEventListener('touchend', handleTouchEnd, { passive: false });
-    dpadElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+    dpadElement.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       dpadElement.removeEventListener('touchstart', handleTouchStart);
       dpadElement.removeEventListener('touchmove', handleTouchMove);
       dpadElement.removeEventListener('touchend', handleTouchEnd);
-      dpadElement.removeEventListener('touchcancel', handleTouchEnd);
+      dpadElement.removeEventListener('touchcancel', handleTouchCancel);
     };
   }, [onDirectionChange, visible]);
 

@@ -37,7 +37,20 @@ const MobileInteractButton: React.FC<MobileInteractButtonProps> = ({ onInteract,
       
       const touch = Array.from(e.changedTouches).find(t => t.identifier === touchIdRef.current);
       if (touch) {
-        e.preventDefault();
+        if (e.type === 'touchend') {
+          e.preventDefault();
+        }
+        touchIdRef.current = null;
+        setIsPressed(false);
+        onInteract(false);
+      }
+    };
+
+    const handleTouchCancel = (e: TouchEvent) => {
+      if (touchIdRef.current === null) return;
+      
+      const touch = Array.from(e.changedTouches).find(t => t.identifier === touchIdRef.current);
+      if (touch) {
         touchIdRef.current = null;
         setIsPressed(false);
         onInteract(false);
@@ -46,12 +59,12 @@ const MobileInteractButton: React.FC<MobileInteractButtonProps> = ({ onInteract,
 
     document.addEventListener('touchstart', handleTouchStart, { passive: false });
     document.addEventListener('touchend', handleTouchEnd, { passive: false });
-    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+    document.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchend', handleTouchEnd);
-      document.removeEventListener('touchcancel', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchCancel);
     };
   }, [onInteract, visible]);
 

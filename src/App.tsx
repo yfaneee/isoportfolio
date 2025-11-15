@@ -20,7 +20,7 @@ import MobileInteractButton from './components/MobileInteractButton';
 import AddToHomeScreenPrompt from './components/AddToHomeScreenPrompt';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
-import { shiftElevator, isOnElevator } from './utils/elevatorSystem';
+import { shiftElevator, isOnElevator, triggerElevator } from './utils/elevatorSystem';
 import { preloadCharacterModels } from './components/Character';
 import { preloadBillboardTextures, disposeBillboardTextures } from './utils/texturePreloader';
 import './App.css';
@@ -427,6 +427,12 @@ function App() {
       if (currentWebsiteButtonSlab) {
         // Trigger billboard animation (same as clicking billboard)
         triggerBillboardClick(currentWebsiteButtonSlab.key);
+        return;
+      }
+      
+      // Check if on elevator and trigger it
+      if (isOnElevatorPressurePlateCheck) {
+        triggerElevator();
         return;
       }
       
