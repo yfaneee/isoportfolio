@@ -21,13 +21,11 @@ const AddToHomeScreenPrompt: React.FC = () => {
 
     // Show prompt only if on mobile and not in standalone mode
     if ((iOS || android) && !isInStandaloneMode) {
-      // Check if user has dismissed the prompt before
       const hasSeenPrompt = localStorage.getItem('a2hs-prompt-dismissed');
       if (!hasSeenPrompt) {
-        // Show prompt after 3 seconds
         setTimeout(() => {
           setShowPrompt(true);
-        }, 3000);
+        }, 1000);
       }
     }
   }, []);
@@ -43,7 +41,6 @@ const AddToHomeScreenPrompt: React.FC = () => {
     <div className="a2hs-prompt-overlay">
       <div className="a2hs-prompt">
         <button className="a2hs-close" onClick={handleDismiss}>×</button>
-        <div className="a2hs-icon">📱</div>
         <h2>For the Best Experience</h2>
         <p>Add this app to your home screen for fullscreen mode without browser bars!</p>
         
