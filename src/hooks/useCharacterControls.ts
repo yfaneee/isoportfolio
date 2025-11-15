@@ -485,7 +485,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
 
   // Handle mobile D-pad input
   const handleMobileInput = (direction: { x: number; y: number } | null, isRunning: boolean) => {
-    console.log('handleMobileInput called:', direction, isRunning);
     if (!direction) {
       // Stop all movement
       keysRef.current.forward = false;
@@ -493,7 +492,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       keysRef.current.left = false;
       keysRef.current.right = false;
       keysRef.current.shift = false;
-      console.log('Keys reset to false');
       return;
     }
     
@@ -502,14 +500,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     keysRef.current.forward = direction.y < 0;
     keysRef.current.backward = direction.y > 0;
     keysRef.current.shift = isRunning;
-    
-    console.log('Keys set:', {
-      left: keysRef.current.left,
-      right: keysRef.current.right,
-      forward: keysRef.current.forward,
-      backward: keysRef.current.backward,
-      shift: keysRef.current.shift
-    });
   };
 
   // Monitor content visibility and reset movement state when content opens

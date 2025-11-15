@@ -17,7 +17,6 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
       
       const touch = e.touches[0];
       
-      console.log('D-pad touch start detected!');
       e.preventDefault();
       e.stopPropagation();
       touchIdRef.current = touch.identifier;
@@ -83,7 +82,6 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
           directionVector = { x: 1, y: -1 };
         }
 
-        console.log('Direction changed:', direction, directionVector);
         setActiveDirection(direction);
         onDirectionChange(directionVector);
       } else {
