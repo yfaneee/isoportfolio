@@ -1,0 +1,95 @@
+.rotate-phone-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #641E68 0%, #9006ac 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.rotate-phone-content {
+  text-align: center;
+  color: white;
+  padding: 5%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.phone-icon {
+  position: relative;
+  width: 25vw;
+  height: 25vw;
+  margin: 0 auto 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-icon svg {
+  width: 100%;
+  height: 100%;
+  animation: rotatePhone 2s ease-in-out infinite;
+}
+
+.rotate-arrow {
+  position: absolute;
+  font-size: 15vw;
+  color: white;
+  animation: spin 2s linear infinite;
+  opacity: 0.8;
+}
+
+.rotate-phone-content h2 {
+  font-family: 'Satoshi-Medium', Arial, sans-serif;
+  font-size: 6vw;
+  margin: 5% 0 3%;
+  font-weight: 600;
+}
+
+.rotate-phone-content p {
+  font-family: 'Satoshi-Regular', Arial, sans-serif;
+  font-size: 4vw;
+  opacity: 0.9;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes rotatePhone {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

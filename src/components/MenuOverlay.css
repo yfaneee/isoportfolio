@@ -194,75 +194,6 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
-  .menu-overlay {
-    top: 1rem;
-    bottom: auto;
-    left: 1rem;
-    right: 1rem;
-    width: calc(100vw - 2rem);
-    height: 60vh;
-    max-width: none;
-    max-height: 60vh;
-  }
-  
-  .menu-sections {
-    gap: clamp(0.2rem, 0.8vh, 0.8rem);
-  }
-  
-  .menu-section h3 {
-    font-size: clamp(1.2rem, 2.5vw + 0.3vh, 1.8rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(14px, 1.8vw, 20px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.4rem, 0.8vw, 0.8rem);
-  }
-  
-  .work-links a,
-  .learning-outcomes-links a,
-  .project-links a {
-    font-size: clamp(1rem, 2.2vw + 0.2vh, 1.5rem);
-    padding: clamp(0.2rem, 0.8vw + 0.1vh, 0.6rem);
-  }
-}
-
-/* Extra small phones */
-@media (max-width: 480px) {
-  .menu-overlay {
-    height: 58vh;
-    max-height: 58vh;
-  }
-  
-  .menu-section h3 {
-    font-size: clamp(1.4rem, 2.3vw + 0.25vh, 1.8rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(12px, 1.6vw, 18px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.3rem, 0.6vw, 0.6rem);
-  }
-  
-  .work-links a,
-  .learning-outcomes-links a,
-  .project-links a {
-    font-size: clamp(1.2rem, 2vw + 0.15vh, 1.6rem);
-    padding: clamp(0.15rem, 0.6vw + 0.08vh, 0.5rem);
-  }
-  
-  .menu-sections {
-    gap: clamp(0.15rem, 0.6vh, 0.6rem);
-  }
-}
-
 /* Short screens - reduce everything further */
 @media (max-height: 700px) and (max-width: 768px) {
   .menu-overlay {
@@ -427,7 +358,6 @@
 @media (min-width: 769px) and (max-height: 650px) {
   .menu-overlay {
     height: clamp(300px, 75vh, calc(100vh - 2rem));
-    max-height: 75vh;
   }
   
   .menu-sections {
@@ -452,6 +382,22 @@
   .project-links a {
     font-size: clamp(0.9rem, 1.4vw, 1.2rem);
     padding: clamp(0.1rem, 0.4vw, 0.3rem);
+  }
+}
+
+@media (max-width: 960px) and (max-height: 500px) {
+  .menu-overlay {
+    height: 360px;
+    max-height: none;
+    bottom: 1rem;
+  }
+
+  .menu-content {
+    height: max-content;
+  }
+
+  .menu-sections {
+    margin-top: 0;
   }
 }
 

@@ -1,0 +1,86 @@
+.mobile-interact-controls {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  height: 30vh;
+  pointer-events: none;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0 5% 3%;
+}
+
+.interact-button-container {
+  position: relative;
+  width: clamp(100px, 21vw, 150px);
+  height: clamp(100px, 21vw, 150px);
+  pointer-events: all;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.interact-button-image {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.interact-button-container.active .interact-button-image {
+  opacity: 1;
+  transform: scale(0.95);
+}
+
+.interact-label {
+  position: absolute;
+  left: 50.5%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: clamp(0.7rem, 2vw, 0.9rem);
+  font-weight: bold;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.05em;
+  opacity: 1;
+  font-family: 'Satoshi-Regular', sans-serif;
+}
+
+.interact-button-container.active .interact-label {
+  opacity: 1;
+}
+
+/* Hide on desktop */
+@media (min-width: 1025px) {
+  .mobile-interact-controls {
+    display: none;
+  }
+}
+
+/* Adjust for smaller phones */
+@media (max-width: 480px) {
+  .mobile-interact-controls {
+    padding: 0 3% 2%;
+  }
+  
+  .interact-button-container {
+    width: clamp(85px, 19vw, 130px);
+    height: clamp(85px, 19vw, 130px);
+  }
+  
+  .interact-label {
+    font-size: clamp(0.6rem, 1.8vw, 0.8rem);
+  }
+}
+

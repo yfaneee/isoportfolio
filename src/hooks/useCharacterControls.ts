@@ -19,6 +19,7 @@ interface CharacterControlsReturn {
   handleTouch: (touch: Touch) => void;
   stopMovement: () => void;
   resetMovementState: () => void;
+  handleMobileInput: (direction: { x: number; y: number } | null, isRunning: boolean) => void;
   onNavigatePrev?: () => void;
   onNavigateNext?: () => void;
 }
@@ -482,6 +483,25 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     isMovingRef.current = false;
   };
 
+  // Handle mobile D-pad input
+  const handleMobileInput = (direction: { x: number; y: number } | null, isRunning: boolean) => {
+    if (!direction) {
+      // Stop all movement
+      keysRef.current.forward = false;
+      keysRef.current.backward = false;
+      keysRef.current.left = false;
+      keysRef.current.right = false;
+      keysRef.current.shift = false;
+      return;
+    }
+    
+    keysRef.current.left = direction.x < 0;
+    keysRef.current.right = direction.x > 0;
+    keysRef.current.forward = direction.y < 0;
+    keysRef.current.backward = direction.y > 0;
+    keysRef.current.shift = isRunning;
+  };
+
   // Monitor content visibility and reset movement state when content opens
   useEffect(() => {
     const checkContentVisibility = () => {
@@ -509,6 +529,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     handleTouch,
     stopMovement,
     resetMovementState,
+    handleMobileInput,
     onNavigatePrev,
     onNavigateNext,
   };

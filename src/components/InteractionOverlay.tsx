@@ -16,6 +16,9 @@ const InteractionOverlay: React.FC<InteractionOverlayProps> = ({
 }) => {
   if (!isVisible) return null;
 
+  // Check if we're on mobile
+  const isMobile = window.innerWidth <= 960 && window.innerHeight <= 500;
+
   return (
     <div 
       className="interaction-overlay"
@@ -26,7 +29,15 @@ const InteractionOverlay: React.FC<InteractionOverlayProps> = ({
     >
       <div className="interaction-content">
         <div className="interaction-key">
-          <span className="key-icon">{keyText}</span>
+          {isMobile && keyText === 'SPACE' ? (
+            <img 
+              src="/images/button_hexagon.png" 
+              alt="Interact" 
+              className="key-icon-mobile"
+            />
+          ) : (
+            <span className="key-icon">{keyText}</span>
+          )}
         </div>
         <div className="interaction-text">{interactionText}</div>
       </div>

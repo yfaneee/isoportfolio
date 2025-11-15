@@ -46,6 +46,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const cameraPanOffsetRef = useRef(new THREE.Vector3(0, 0, 0));
+  
+  // Camera pan boundaries
+  const panBoundaries = {
+    x: { min: -25, max: 25 },
+    z: { min: -25, max: 25 }
+  };
 
 
   // Reset intro time when loading screen changes
@@ -135,9 +141,13 @@ const CameraController: React.FC<CameraControllerProps> = ({
       const cos45 = Math.cos(angle);
       const sin45 = Math.sin(angle);
       
-      // Rotate the input to match isometric orientation
-      cameraPanOffsetRef.current.x -= (deltaX * cos45 + deltaY * sin45) * panSpeed;
-      cameraPanOffsetRef.current.z -= (-deltaX * sin45 + deltaY * cos45) * panSpeed;
+      // Calculate new pan offset values
+      const newPanX = cameraPanOffsetRef.current.x - (deltaX * cos45 + deltaY * sin45) * panSpeed;
+      const newPanZ = cameraPanOffsetRef.current.z - (-deltaX * sin45 + deltaY * cos45) * panSpeed;
+      
+      // Clamp the pan offset within boundaries
+      cameraPanOffsetRef.current.x = Math.max(panBoundaries.x.min, Math.min(panBoundaries.x.max, newPanX));
+      cameraPanOffsetRef.current.z = Math.max(panBoundaries.z.min, Math.min(panBoundaries.z.max, newPanZ));
       
       lastMousePosRef.current = { x: event.clientX, y: event.clientY };
     };

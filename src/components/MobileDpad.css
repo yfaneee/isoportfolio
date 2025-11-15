@@ -1,0 +1,112 @@
+.mobile-controls {
+  position: fixed;
+  bottom: 0;
+  left: 2rem;
+  width: 100%;
+  height: 30vh;
+  pointer-events: none;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0 5% 3%;
+}
+
+.dpad-container {
+  position: relative;
+  width: clamp(100px, 21vw, 150px);
+  height: clamp(100px, 21vw, 150px);
+  pointer-events: all;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.dpad-image {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.dpad-container.active .dpad-image {
+  opacity: 1;
+}
+
+.dpad-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.1s ease;
+}
+
+.dpad-indicator.up {
+  opacity: 1;
+  transform: translate(-50%, -100%);
+}
+
+.dpad-indicator.down {
+  opacity: 1;
+  transform: translate(-50%, 0%);
+}
+
+.dpad-indicator.left {
+  opacity: 1;
+  transform: translate(-100%, -50%);
+}
+
+.dpad-indicator.right {
+  opacity: 1;
+  transform: translate(0%, -50%);
+}
+
+.dpad-indicator.up-left {
+  opacity: 1;
+  transform: translate(-100%, -100%);
+}
+
+.dpad-indicator.up-right {
+  opacity: 1;
+  transform: translate(0%, -100%);
+}
+
+.dpad-indicator.down-left {
+  opacity: 1;
+  transform: translate(-100%, 0%);
+}
+
+.dpad-indicator.down-right {
+  opacity: 1;
+  transform: translate(0%, 0%);
+}
+
+
+/* Hide on desktop */
+@media (min-width: 1025px) {
+  .mobile-controls {
+    display: none;
+  }
+}
+
+/* Adjust for smaller phones */
+@media (max-width: 480px) {
+  .mobile-controls {
+    padding: 0 3% 2%;
+  }
+  
+  .dpad-container {
+    width: clamp(85px, 19vw, 130px);
+    height: clamp(85px, 19vw, 130px);
+  }
+}
+

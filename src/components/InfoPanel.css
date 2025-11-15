@@ -136,101 +136,6 @@
 }
 
 /* Responsive adjustments  */
-@media (max-width: 768px) {
-  .info-panel {
-    top: auto;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    width: calc(100vw - 2rem);
-    height: 35vh;
-    min-width: none;
-    max-height: 35vh;
-  }
-  
-  .info-content {
-    justify-content: flex-start;
-  }
-  
-  .info-section {
-    margin-bottom: clamp(0.2rem, 0.8vh, 0.8rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(14px, 1.8vw, 20px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.4rem, 0.8vw, 0.8rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(1.1rem, 2.5vw + 0.2vh, 1.6rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.8rem, 1.6vw + 0.1vh, 1.1rem);
-  }
-  
-  .controls-list {
-    gap: clamp(2px, 0.6vh, 8px);
-  }
-  
-  .control-row {
-    gap: clamp(4px, 1.2vw, 10px);
-    font-size: clamp(0.65rem, 1.3vw + 0.08vh, 0.9rem);
-  }
-  
-  .key {
-    padding: clamp(1px, 0.6vw + 0.05vh, 4px) clamp(3px, 1.2vw + 0.08vh, 8px);
-    min-width: clamp(30px, 6vw, 50px);
-    font-size: clamp(0.6rem, 1.1vw + 0.06vh, 0.85rem);
-  }
-  
-  .control-desc {
-    font-size: clamp(0.65rem, 1.3vw + 0.08vh, 0.9rem);
-  }
-}
-
-/* Extra small phones */
-@media (max-width: 480px) {
-  .info-panel {
-    height: 37vh;
-    max-height: 37vh;
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(12px, 1.6vw, 18px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.3rem, 0.6vw, 0.6rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(1.2rem, 2.2vw + 0.15vh, 1.6rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.8rem, 1.4vw + 0.08vh, 1.1rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.6rem, 1.1vw + 0.06vh, 0.85rem);
-  }
-  
-  .key {
-    font-size: clamp(0.55rem, 1vw + 0.05vh, 0.8rem);
-    min-width: clamp(25px, 5vw, 45px);
-  }
-  
-  .control-desc {
-    font-size: clamp(0.7rem, 1.1vw + 0.06vh, 0.95rem);
-  }
-}
-
 /* Short screens - adjust info panel */
 @media (max-height: 700px) and (max-width: 768px) {
   .info-panel {
@@ -470,6 +375,18 @@
     font-size: clamp(0.55rem, 0.85vw, 0.7rem);
   }
 
+}
+
+@media (max-width: 960px) and (max-height: 500px) {
+  .info-panel {
+    height: 240px;
+    max-height: none;
+    bottom: 1rem;
+  }
+  
+  .info-content {
+    height: max-content;
+  }
 }
 
 @keyframes border-glow {

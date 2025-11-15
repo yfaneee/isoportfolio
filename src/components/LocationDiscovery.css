@@ -109,16 +109,16 @@
     0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+/* Mobile landscape only */
+@media (max-width: 960px) and (max-height: 500px) {
   .location-discovery-overlay {
-    padding-top: 60px;
+    padding-top: 20px;
   }
   
   .location-discovery-background {
-    min-width: 300px;
-    max-width: 400px;
-    padding: 10px 20px;
+    min-width: 400px;
+    max-width: 500px;
+    padding: 8px 30px;
   }
   
   .location-content {
@@ -126,43 +126,17 @@
   }
   
   .location-discovered-text {
-    font-size: 0.8rem;
-  }
-  
-  .location-name {
-    font-size: 1.2rem;
-    font-weight: 500;
-  }
-  
-  .divider-left img,
-  .divider-right img {
-    height: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .location-discovery-background {
-    min-width: 250px;
-    max-width: 320px;
-    padding: 8px 15px;
-  }
-  
-  .location-content {
-    margin: 0 12px;
-  }
-  
-  .location-discovered-text {
-    font-size: 0.7rem;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
     letter-spacing: 1px;
   }
   
   .location-name {
-    font-size: 1rem;
+    font-size: clamp(1rem, 3vw, 1.3rem);
     font-weight: 500;
   }
   
   .divider-left img,
   .divider-right img {
-    height: 18px;
+    height: clamp(16px, 4vh, 20px);
   }
 }

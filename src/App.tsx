@@ -14,6 +14,9 @@ import LocationDiscovery from './components/LocationDiscovery';
 import InteractionOverlay from './components/InteractionOverlay';
 import WebsiteOverlay from './components/WebsiteOverlay';
 import ClickSpark from './components/ClickSpark';
+import RotatePhoneScreen from './components/RotatePhoneScreen';
+import MobileDpad from './components/MobileDpad';
+import MobileInteractButton from './components/MobileInteractButton';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { shiftElevator, isOnElevator } from './utils/elevatorSystem';
@@ -66,6 +69,8 @@ function App() {
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [canInteract, setCanInteract] = useState(false);
   const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [mobileDpadDirection, setMobileDpadDirection] = useState<{ x: number; y: number } | null>(null);
+  const [mobileInteractPressed, setMobileInteractPressed] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
   
@@ -83,6 +88,14 @@ function App() {
   // Handle billboard ref registration
   const handleBillboardRef = useCallback((key: string, ref: any) => {
     billboardRefs.current[key] = ref;
+  }, []);
+
+  // Mobile D-pad handlers
+  const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
+    setMobileDpadDirection(direction);
+    if (characterControllerRef.current && characterControllerRef.current.handleMobileInput) {
+      characterControllerRef.current.handleMobileInput(direction, false);
+    }
   }, []);
 
   const handleIntroComplete = useCallback(() => {
@@ -434,6 +447,15 @@ function App() {
       }
     }
   }, [showMenu, showContent, triggerBillboardClick]);
+
+  // Mobile interact button handler (must be after handleSpacePress)
+  const handleMobileInteract = useCallback((isPressed: boolean) => {
+    setMobileInteractPressed(isPressed);
+    // Trigger space press when button is pressed
+    if (isPressed) {
+      handleSpacePress();
+    }
+  }, [handleSpacePress]);
 
   const handleCloseContent = useCallback(() => {
     setShowContent(false);
@@ -1023,6 +1045,21 @@ function App() {
                 currentContent={currentContent}
               />
             )}
+
+            {/* Rotate Phone Screen - Only on mobile in portrait */}
+            <RotatePhoneScreen />
+
+            {/* Mobile D-pad Controls */}
+            <MobileDpad
+              onDirectionChange={handleMobileDpadDirection}
+              visible={introComplete && !showMenu && !showContent && !showLoadingScreen && !showWebsiteOverlay}
+            />
+
+            {/* Mobile Interact Button */}
+            <MobileInteractButton
+              onInteract={handleMobileInteract}
+              visible={introComplete && !showMenu && !showContent && !showLoadingScreen && !showWebsiteOverlay}
+            />
         
           </div>
         </ClickSpark>
