@@ -17,6 +17,7 @@ import ClickSpark from './components/ClickSpark';
 import RotatePhoneScreen from './components/RotatePhoneScreen';
 import MobileDpad from './components/MobileDpad';
 import MobileInteractButton from './components/MobileInteractButton';
+import AddToHomeScreenPrompt from './components/AddToHomeScreenPrompt';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { shiftElevator, isOnElevator } from './utils/elevatorSystem';
@@ -1048,6 +1049,9 @@ function App() {
 
             {/* Rotate Phone Screen - Only on mobile in portrait */}
             <RotatePhoneScreen />
+
+            {/* Add to Home Screen Prompt */}
+            <AddToHomeScreenPrompt />
 
             {/* Mobile D-pad Controls */}
             <MobileDpad
