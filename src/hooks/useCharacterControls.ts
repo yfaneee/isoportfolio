@@ -106,7 +106,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Immediately update character position to new elevator height
             const newElevatorY = getElevatorHeight();
             positionRef.current = [x, newElevatorY + VISUAL_OFFSET, z];
-            // Sync target height to prevent bumps when moving after elevator use
             targetHeight.current = newElevatorY;
           } else {
             // Check if on smaller-block-slab 

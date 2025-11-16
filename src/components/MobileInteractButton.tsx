@@ -82,7 +82,6 @@ const MobileInteractButton: React.FC<MobileInteractButtonProps> = ({ onInteract,
           className="interact-button-image"
           draggable={false}
         />
-        <div className="interact-label">INTERACT</div>
       </div>
     </div>
   );

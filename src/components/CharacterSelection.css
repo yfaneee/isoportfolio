@@ -353,6 +353,17 @@
   
   .character-selection-title {
     font-size: clamp(1.2rem, 5vw, 1.8rem);
+    transform: translateY(10px);
+  }
+  
+  .title-divider-left img,
+  .title-divider-right img {
+    height: 15px;
+    transform: translateY(10px);
+  }
+  
+  .title-divider-right img {
+    transform: translateY(10px) scaleX(-1);
   }
   
   .character-grid {
@@ -373,6 +384,20 @@
   .character-selection-container {
     padding: 5%;
     margin: 2%;
+  }
+  
+  .character-selection-title {
+    transform: translateY(12px);
+  }
+  
+  .title-divider-left img,
+  .title-divider-right img {
+    height: 12px;
+    transform: translateY(12px);
+  }
+  
+  .title-divider-right img {
+    transform: translateY(12px) scaleX(-1);
   }
 
   .character-grid {
