@@ -106,6 +106,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Immediately update character position to new elevator height
             const newElevatorY = getElevatorHeight();
             positionRef.current = [x, newElevatorY + VISUAL_OFFSET, z];
+            // Sync target height to prevent bumps when moving after elevator use
+            targetHeight.current = newElevatorY;
           } else {
             // Check if on smaller-block-slab 
             const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
@@ -213,6 +215,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       if (Math.abs(collisionY - elevatorY) > 0.01) {
         positionRef.current = [currentX, elevatorY + VISUAL_OFFSET, currentZ];
       }
+      // Synchronize target height with elevator height to prevent bumps
+      targetHeight.current = elevatorY;
       shiftElevator.wasOnElevator = true;
       
       // Allow movement while on elevator - don't return early
@@ -221,6 +225,11 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         return;
       }
     } else {
+      // Only reset wasOnElevator after leaving the elevator platform
+      if (shiftElevator.wasOnElevator) {
+        // Sync target height when just leaving elevator
+        targetHeight.current = collisionY;
+      }
       shiftElevator.wasOnElevator = false;
     }
     
