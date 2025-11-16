@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CharacterSelection.css';
 import SplitText from './SplitText';
 
@@ -17,52 +17,28 @@ interface CharacterSelectionProps {
 
 const characterOptions: CharacterOption[] = [
   {
-    id: 'character-a',
-    name: 'Alex',
-    modelPath: '/models/character-a.glb',
-    imagePath: '/images/character-a.png'
-  },
-  {
-    id: 'character-b',
-    name: 'Finley',
-    modelPath: '/models/character-b.glb',
-    imagePath: '/images/character-b.png'
-  },
-  {
-    id: 'character-c',
-    name: 'Drew',
-    modelPath: '/models/character-c.glb',
-    imagePath: '/images/character-c.png'
-  },
-  {
-    id: 'character-d',
-    name: 'Casey',
-    modelPath: '/models/character-e.glb',
-    imagePath: '/images/character-e.png'
-  },
-  {
-    id: 'character-e',
-    name: 'Emery',
-    modelPath: '/models/character-i.glb',
-    imagePath: '/images/character-i.png'
-  },
-  {
-    id: 'character-f',
-    name: 'Blake',
-    modelPath: '/models/character-j.glb',
-    imagePath: '/images/character-j.png'
-  },
-  {
-    id: 'character-g',
-    name: 'Gray',
-    modelPath: '/models/character-k.glb',
-    imagePath: '/images/character-k.png'
-  },
-  {
-    id: 'character-h',
+    id: 'character-r',
     name: 'Ninja',
     modelPath: '/models/character-r.glb',
     imagePath: '/images/character-r.png'
+  },
+  {
+    id: 'character-d',
+    name: 'Dummy',
+    modelPath: '/models/character-d.glb',
+    imagePath: '/images/character-d.png'
+  },
+  {
+    id: 'character-h',
+    name: 'Robot',
+    modelPath: '/models/character-h.glb',
+    imagePath: '/images/character-h.png'
+  },
+  {
+    id: 'character-l',
+    name: 'Zombie',
+    modelPath: '/models/character-l.glb',
+    imagePath: '/images/character-l.png'
   }
 ];
 
@@ -73,16 +49,25 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
 }) => {
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterOption>(characterOptions[0]);
   const [isReadyToAnimate, setIsReadyToAnimate] = useState(false);
-  const hasAnimatedRef = useRef(false);
+  const [showDividers, setShowDividers] = useState(false);
 
-  // Delay animation until after initial loading
   useEffect(() => {
     if (isVisible) {
-      const timer = setTimeout(() => {
+      const textTimer = setTimeout(() => {
         setIsReadyToAnimate(true);
-      }, 800); // Wait 800ms for initial loading to complete
+      }, 800);
       
-      return () => clearTimeout(timer);
+      const dividerTimer = setTimeout(() => {
+        setShowDividers(true);
+      }, 1440);
+      
+      return () => {
+        clearTimeout(textTimer);
+        clearTimeout(dividerTimer);
+      };
+    } else {
+      setIsReadyToAnimate(false);
+      setShowDividers(false);
     }
   }, [isVisible]);
 
@@ -102,8 +87,14 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
       <div className="character-selection-container">
         {/* Title */}
         <div className="character-selection-title-container">
+          {/* Left divider */}
+          <div className={`title-divider-left ${showDividers ? 'show' : ''}`}>
+            <img src="/images/divider-003.png" alt="" />
+          </div>
+          
           {isReadyToAnimate ? (
             <SplitText
+              key="character-title"
               text="Select a character"
               className="character-selection-title"
               delay={50}
@@ -116,16 +107,18 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
               rootMargin="-100px"
               textAlign="center"
               tag="h1"
-              animate={!hasAnimatedRef.current}
-              onLetterAnimationComplete={() => {
-                hasAnimatedRef.current = true;
-              }}
+              animate={true}
             />
           ) : (
             <h1 className="character-selection-title" style={{ opacity: 0, visibility: 'hidden' }}>
               Select a character
             </h1>
           )}
+          
+          {/* Right divider */}
+          <div className={`title-divider-right ${showDividers ? 'show' : ''}`}>
+            <img src="/images/divider-003.png" alt="" />
+          </div>
         </div>
         
         {/* Character Grid */}
@@ -156,7 +149,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
         
         {/* Start Button */}
         <button className="cssbuttons-io-button" onClick={handleStartClick}>
-          Start
+          START
           <div className="icon">
             <svg
               height="24"

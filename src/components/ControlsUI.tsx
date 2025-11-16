@@ -15,7 +15,7 @@ const ControlsUI: React.FC<ControlsUIProps> = ({ introComplete }) => {
           typingSpeed={75}
           pauseDuration={1500}
           showCursor={true}
-          cursorCharacter="|"
+          cursorCharacter=""
           className="intro-text"
         />
       </div>

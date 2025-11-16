@@ -52,10 +52,10 @@ function App() {
   const [currentBillboardKey, setCurrentBillboardKey] = useState('');
   const [triggerBillboardExit, setTriggerBillboardExit] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterOption>({
-    id: 'character-a',
-    name: 'Alex',
-    modelPath: '/models/character-a.glb',
-    imagePath: '/images/character-a.png'
+    id: 'character-r',
+    name: 'Ninja',
+    modelPath: '/models/character-r.glb',
+    imagePath: '/images/character-r.png'
   });
   const [showMenu, setShowMenu] = useState(false);
   const [showContent, setShowContent] = useState(false);

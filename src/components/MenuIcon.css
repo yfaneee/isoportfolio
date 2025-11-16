@@ -95,8 +95,8 @@
 /* Responsive design */
 @media (max-width: 1366px) and (min-width: 1261px) {
   .menu-icon {
-    top: 4rem;
-    right: 1.2rem;
+    top: 3rem;
+    right: 3rem;
     width: 90px;
     height: 36px;
   }

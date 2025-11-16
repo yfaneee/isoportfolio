@@ -101,3 +101,11 @@
     font-size: 1rem;
   }
 }
+
+@media (max-width: 1366px){
+  .interaction-overlay {
+    top: auto !important;
+    bottom: 17vh !important;
+    left: 50% !important;
+  }
+}

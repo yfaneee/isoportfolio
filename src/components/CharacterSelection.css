@@ -13,6 +13,7 @@
 }
 
 .character-selection-container {
+  position: relative;
   background: rgba(100, 30, 104, 0.85);
   backdrop-filter: blur(5px);
   border-radius: 20px;
@@ -24,21 +25,68 @@
   animation: slideUp 0.6s ease-out;
 }
 
+.character-selection-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(45deg, #E6E0FF, #9B5DE5, #E6E0FF, #9B5DE5, #E6E0FF);
+  background-size: 400% 400%;
+  animation: border-glow 6s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: exclude;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 .character-selection-title-container {
   height: 4rem;
   margin-bottom: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 20px;
 }
 
 .character-selection-title {
   font-family: 'Satoshi-Medium', Arial, sans-serif;
-  font-size: 2.1rem;
+  font-size: 2rem;
   color: #ffffff;
   margin: 0; 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: 0.3px;
+}
+
+/* Title dividers */
+.title-divider-left,
+.title-divider-right {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.6s ease-out;
+}
+
+.title-divider-left.show,
+.title-divider-right.show {
+  opacity: 0.8;
+  transform: translateY(0);
+}
+
+.title-divider-left img,
+.title-divider-right img {
+  height: 20px;
+  width: auto;
+  filter: brightness(1.2) contrast(1.1);
+}
+
+.title-divider-right img {
+  transform: scaleX(-1);
 }
 
 .character-grid {
@@ -148,16 +196,18 @@
 
 .cssbuttons-io-button:hover .icon {
   width: calc(100% - 0.6em);
+  background: #7b52b9;
 }
 
 .cssbuttons-io-button .icon svg {
-  width: 1.1em;
-  transition: transform 0.3s;
+  width: 1.4em;
+  transition: transform 0.3s, color 0.3s;
   color: #7b52b9;
 }
 
 .cssbuttons-io-button:hover .icon svg {
   transform: translateX(0.1em);
+  color: white;
 }
 
 .cssbuttons-io-button:active .icon {
@@ -332,5 +382,23 @@
   
   .character-card {
     padding: 4%;
+  }
+}
+
+@keyframes border-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

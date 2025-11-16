@@ -66,6 +66,12 @@ const CameraController: React.FC<CameraControllerProps> = ({
   // Mouse wheel zoom handler
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
+      // Disable zoom during intro
+      if (!introComplete) {
+        event.preventDefault();
+        return;
+      }
+      
       // Check if the wheel event is over a scrollable UI element
       const target = event.target as HTMLElement;
       
@@ -109,7 +115,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
     return () => {
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [minZoom, maxZoom]);
+  }, [minZoom, maxZoom, introComplete]);
 
   // Mouse drag pan handler
   useEffect(() => {
@@ -120,6 +126,11 @@ const CameraController: React.FC<CameraControllerProps> = ({
     };
 
     const handleMouseDown = (event: MouseEvent) => {
+      // Disable mouse drag during intro
+      if (!introComplete) {
+        return;
+      }
+      
       if (event.button === 0) {
         isDraggingRef.current = true;
         lastMousePosRef.current = { x: event.clientX, y: event.clientY };
@@ -167,7 +178,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []);
+  }, [introComplete]);
 
   // Handle camera animation 
   const prevNavigatingRef = useRef(isNavigatingSlabs);

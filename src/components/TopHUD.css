@@ -194,3 +194,9 @@
   }
   
 }
+
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .top-hud.shifted-left {
+    left: 24%;
+  }
+}

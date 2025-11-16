@@ -331,13 +331,9 @@ const Character: React.FC<CharacterProps> = ({
 // Preload all character models
 export const preloadCharacterModels = () => {
   const models = [
-    '/models/character-a.glb',
-    '/models/character-b.glb',
-    '/models/character-c.glb',
-    '/models/character-e.glb',
-    '/models/character-i.glb',
-    '/models/character-j.glb',
-    '/models/character-k.glb',
+    '/models/character-d.glb',
+    '/models/character-h.glb',
+    '/models/character-l.glb',
     '/models/character-r.glb'
   ];
   
