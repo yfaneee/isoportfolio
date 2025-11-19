@@ -103,15 +103,9 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       setIsAnimating(true);
       setIsFullscreen(true);
       onCameraAnimationStart?.();
-    } else {
-      // Start zoom out animation
-      setShowWebsite(false);
-      onHideWebsite?.();
-      setIsAnimating(true);
-      setIsFullscreen(false);
-      onCameraAnimationEnd?.();
     }
-  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart, onHideWebsite, onCameraAnimationEnd]);
+    // Removed else clause 
+  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart]);
 
   useFrame((state, delta) => {
     if (isAnimating) {

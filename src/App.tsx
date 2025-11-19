@@ -70,6 +70,8 @@ function App() {
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [canInteract, setCanInteract] = useState(false);
   const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [hoveredSlabId, setHoveredSlabId] = useState<string | null>(null);
+  const [hoveredSlabPosition, setHoveredSlabPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
   
@@ -88,6 +90,133 @@ function App() {
   const handleBillboardRef = useCallback((key: string, ref: any) => {
     billboardRefs.current[key] = ref;
   }, []);
+
+  // Get interaction text for hovered slab
+  const getSlabInteractionText = (slabId: string): string => {
+    if (slabId.startsWith('lo')) {
+      const loTexts: { [key: string]: string } = {
+        'lo1': 'LO1: Conceptualize, design, and develop',
+        'lo2': 'LO2: Transferable production',
+        'lo3': 'LO3: Creative iterations',
+        'lo4': 'LO4: Professional standards',
+        'lo5': 'LO5: Personal leadership'
+      };
+      return loTexts[slabId] || 'View Content';
+    } else if (slabId.startsWith('github-')) {
+      return 'View on GitHub';
+    } else if (slabId.startsWith('website-')) {
+      const websiteTexts: { [key: string]: string } = {
+        'website-castle': 'View Castle Portfolio',
+        'website-holleman': 'View Holleman Project',
+        'website-space': 'View Space Portfolio',
+        'website-spotify': 'View Spotify Portfolio'
+      };
+      return websiteTexts[slabId] || 'View Portfolio';
+    } else if (slabId === 'main-slab') {
+      return 'Open Menu';
+    } else if (slabId === 'project-studio') {
+      return 'Studio';
+    } else if (slabId === 'smaller-block') {
+      return 'Project';
+    } else if (slabId === 'artwork') {
+      return 'Artwork';
+    }
+    return 'Interact';
+  };
+
+  // Handle slab hover (mouse interaction)
+  const handleSlabHover = useCallback((slabId: string | null, screenPosition?: { x: number; y: number }) => {
+    if (slabId && screenPosition) {
+      setHoveredSlabId(slabId);
+      setHoveredSlabPosition(screenPosition);
+    } else {
+      setHoveredSlabId(null);
+    }
+  }, []);
+
+  // Handle slab click (mouse interaction)
+  const handleSlabClick = useCallback((slabId: string) => {
+    if (isBillboardFullscreen || showMenu || showContent) return;
+
+    // Determine action based on slab ID
+    if (slabId.startsWith('lo')) {
+      // Learning Outcomes slab - map to correct contentData keys
+      const slabKeyMapping: { [key: string]: string } = {
+        'lo1': 'staircase-slab-1',
+        'lo2': 'staircase-slab-2',
+        'lo3': 'staircase-slab-3',
+        'lo4': 'staircase-slab-4',
+        'lo5': 'staircase-slab-5',
+      };
+
+      const contentKey = slabKeyMapping[slabId];
+      const content = contentData[contentKey];
+      
+      if (content) {
+        setCurrentContent(content);
+        setCurrentSlabKey(contentKey);
+        setShowContent(true);
+      }
+    } else if (slabId.startsWith('github-')) {
+      // GitHub slabs
+      const githubUrls: { [key: string]: string } = {
+        'github-castle': 'https://git.fhict.nl/I503826/castleportfolio',
+        'github-holleman': 'https://github.com/yfaneee/holleman',
+        'github-space': 'https://github.com/yfaneee/SpacePortfolio',
+        'github-spotify': 'https://github.com/yfaneee/SpotifyFolio'
+      };
+
+      const url = githubUrls[slabId];
+      if (url) {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = url;
+        } else {
+          window.open(url, '_blank');
+        }
+      }
+    } else if (slabId.startsWith('website-')) {
+      // Website button slabs (trigger billboard)
+      const billboardKeys: { [key: string]: string } = {
+        'website-castle': 'billboard1',
+        'website-holleman': 'billboard2',
+        'website-space': 'billboard3',
+        'website-spotify': 'billboard4'
+      };
+
+      const billboardKey = billboardKeys[slabId];
+      if (billboardKey) {
+        triggerBillboardClick(billboardKey);
+      }
+    } else if (slabId === 'main-slab') {
+      // Main/Menu slab
+      setShowMenu(true);
+    } else if (slabId === 'project-studio') {
+      // Project Studio slab
+      const content = contentData['high-block-slab'];
+      if (content) {
+        setCurrentContent(content);
+        setCurrentSlabKey('high-block-slab');
+        setShowContent(true);
+      }
+    } else if (slabId === 'smaller-block') {
+      // Smaller block slab
+      const content = contentData['smaller-block-slab'];
+      if (content) {
+        setCurrentContent(content);
+        setCurrentSlabKey('smaller-block-slab');
+        setShowContent(true);
+      }
+    } else if (slabId === 'artwork') {
+      // Artwork platform slab
+      const content = contentData['artwork-platform-slab'];
+      if (content) {
+        setCurrentContent(content);
+        setCurrentSlabKey('artwork-platform-slab');
+        setShowContent(true);
+      }
+    }
+  }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick]);
 
   // Mobile D-pad handlers
   const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
@@ -912,6 +1041,7 @@ function App() {
         >
                 <IsometricScene
                   onIntroComplete={handleIntroComplete}
+                  introComplete={introComplete}
                   showMenu={showMenu}
                   showContent={showContent}
                   isTransitioning={isTransitioning}
@@ -939,6 +1069,8 @@ function App() {
                   onBillboardExitComplete={() => setTriggerBillboardExit(false)}
                   currentCharacterPosition={currentCharacterPosition}
                   onBillboardRef={handleBillboardRef}
+                  onSlabHover={handleSlabHover}
+                  onSlabClick={handleSlabClick}
                 />
             </Canvas>
             
@@ -1027,10 +1159,10 @@ function App() {
 
             {/* Interaction Overlay */}
             <InteractionOverlay
-              isVisible={showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)}
-              interactionText={interactionText}
-              position={overlayPosition}
-              keyText={interactionKeyText}
+              isVisible={(showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)) || (hoveredSlabId !== null && !showMenu && !showContent && !isBillboardFullscreen)}
+              interactionText={hoveredSlabId ? getSlabInteractionText(hoveredSlabId) : interactionText}
+              position={hoveredSlabId ? hoveredSlabPosition : overlayPosition}
+              keyText={hoveredSlabId ? 'CLICK' : interactionKeyText}
             />
 
             {/* Website Overlay */}

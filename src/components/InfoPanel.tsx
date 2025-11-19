@@ -8,7 +8,7 @@ interface InfoPanelProps {
 const InfoPanel: React.FC<InfoPanelProps> = ({ isVisible }) => {
   return (
     <div className={`info-panel ${isVisible ? 'visible' : ''}`} style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
-      <div className="info-content" style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+      <div className="info-content">
         <div className="info-section">
           <div className="section-title-with-dividers">
             <div className="divider-left">

@@ -6,6 +6,7 @@ import PlatformDebugger from '../components/PlatformDebugger';
 
 interface IsometricSceneProps {
   onIntroComplete: () => void;
+  introComplete: boolean;
   showMenu: boolean;
   showContent: boolean;
   isTransitioning: boolean;
@@ -33,10 +34,13 @@ interface IsometricSceneProps {
   onBillboardExitComplete?: () => void;
   currentCharacterPosition?: [number, number, number];
   onBillboardRef?: (key: string, ref: any) => void;
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
   onIntroComplete,
+  introComplete,
   showMenu,
   showContent,
   isTransitioning,
@@ -63,9 +67,10 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   triggerBillboardExit = false,
   onBillboardExitComplete,
   currentCharacterPosition = [0, 0, 0],
-  onBillboardRef
+  onBillboardRef,
+  onSlabHover,
+  onSlabClick
 }) => {
-  const [introComplete, setIntroComplete] = useState(false);
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
 
   // Handle character movement - hide menu when moving
@@ -77,7 +82,6 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   }, [onMovementStart]);
 
   const handleIntroComplete = useCallback(() => {
-    setIntroComplete(true);
     onIntroComplete();
   }, [onIntroComplete]);
 
@@ -120,6 +124,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onBillboardExitComplete={onBillboardExitComplete}
         characterPosition={currentCharacterPosition}
         onBillboardRef={onBillboardRef}
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
       />
       
       {/* Debug platform boundaries (red lines) */}

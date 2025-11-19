@@ -1,18 +1,23 @@
 .info-panel {
   position: fixed;
-  bottom: clamp(2rem, 4vh, 4rem);
-  right: clamp(2rem, 12vw, 20rem);
+  bottom: clamp(1.8rem, 3.5vh, 3.8rem);
+  right: clamp(1rem, 16vw, 24rem);
   width: clamp(200px, 30vw, 550px);
-  height: clamp(250px, 45vh, 50vh);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  height: auto;
   background: rgba(155, 93, 229, 0.9); 
   color: white;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: clamp(12px, 2vw, 20px);
   will-change: transform;
   backdrop-filter: blur(10px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
 .info-panel::before {
@@ -41,8 +46,27 @@
 .info-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: center;
+  min-height: 100%;
+  justify-content: flex-start;
+  padding: clamp(0.5rem, 2vh, 1.5rem) clamp(1rem, 2vw, 1.5rem);
+}
+
+/* Custom scrollbar for webkit browsers */
+.info-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.info-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.info-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.info-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .info-section {
@@ -136,256 +160,185 @@
 }
 
 /* Responsive adjustments  */
-/* Short screens - adjust info panel */
-@media (max-height: 700px) and (max-width: 768px) {
+/* Short screens - reduce spacing and font sizes */
+@media (max-height: 700px) {
   .info-panel {
-    height: 40vh;
-    max-height: 40vh;
+    bottom: clamp(2rem, 3vh, 3rem);
+    right: clamp(0.75rem, 12vw, 20rem);
   }
   
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(10px, 1.4vw, 16px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.25rem, 0.5vw, 0.5rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(1rem, 2.2vw + 0.15vh, 1.4rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.75rem, 1.4vw + 0.08vh, 1rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.6rem, 1.1vw + 0.06vh, 0.8rem);
-  }
-  
-  .controls-list {
-    gap: clamp(1px, 0.4vh, 6px);
-  }
-}
-
-/* Very short screens */
-@media (max-height: 600px) and (max-width: 768px) {
-  .info-panel {
-    height: 45vh;
-    max-height: 45vh;
+  .info-content {
+    padding: clamp(0.4rem, 1.5vh, 1rem) clamp(0.75rem, 1.8vw, 1.25rem);
   }
   
   .info-section {
-    margin-bottom: clamp(0.1rem, 0.4vh, 0.5rem);
+    margin-bottom: clamp(0.3rem, 1vh, 0.7rem);
+  }
+  
+  .section-title-with-dividers {
+    margin-bottom: clamp(0.25rem, 0.7vh, 0.5rem);
+    gap: clamp(0.3rem, 0.8vw, 0.7rem);
   }
   
   .section-title-with-dividers .divider-left img,
   .section-title-with-dividers .divider-right img {
-    height: clamp(8px, 1.2vw, 14px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.2rem, 0.4vw, 0.4rem);
+    height: clamp(9px, 1.5vw, 16px);
   }
   
   .info-section h3 {
-    font-size: clamp(0.9rem, 2vw + 0.1vh, 1.2rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.7rem, 1.2vw + 0.06vh, 0.9rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.55rem, 1vw + 0.04vh, 0.75rem);
-  }
-  
-  .key {
-    font-size: clamp(0.5rem, 0.9vw + 0.03vh, 0.7rem);
-    padding: clamp(0.5px, 0.4vw, 3px) clamp(2px, 1vw, 6px);
-  }
-  
-  .controls-list {
-    gap: clamp(0.5px, 0.3vh, 4px);
-  }
-}
-
-@media (max-height: 600px) {
-  .info-panel {
-    height: auto;
-    max-height: 50vh;
-  }
-  
-  .info-section {
-    margin-bottom: clamp(0.1rem, 0.5vh, 0.3rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(8px, 1vw, 12px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.15rem, 0.3vw, 0.3rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(0.8rem, 1.8vw, 1.1rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.65rem, 1.1vw, 0.8rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.5rem, 0.9vw, 0.7rem);
-  }
-  
-  .key {
-    font-size: clamp(0.45rem, 0.8vw, 0.65rem);
-  }
-}
-
-/* Landscape screens with short heights */
-@media (min-width: 769px) and (max-height: 800px) {
-  .info-panel {
-    height: clamp(260px, 50vh, 55vh);
-    max-height: 48vh;
-  }
-  
-  .info-section {
-    margin-bottom: clamp(0.3rem, 1vh, 0.6rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(12px, 1.5vw, 18px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.3rem, 0.6vw, 0.6rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-size: clamp(1rem, 2vw, 1.4rem);
   }
   
   .info-section p {
     font-size: clamp(0.7rem, 1.3vw, 0.85rem);
+    line-height: 1.25;
   }
   
   .control-row {
-    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+    font-size: clamp(0.65rem, 1.2vw, 0.8rem);
   }
   
-  .key {
-    font-size: clamp(0.65rem, 1.1vw, 0.8rem);
-  }
-  
-  .controls-list {
-    gap: clamp(3px, 0.8vh, 6px);
-  }
-}
-
-/* Very short landscape screens */
-@media (min-width: 769px) and (max-height: 720px) {
-  .info-panel {
-    height: clamp(250px, 45vh, 50vh);
-    max-height: 45vh;
-  }
-  
-  .info-section {
-    margin-bottom: clamp(0.2rem, 0.8vh, 0.5rem);
-  } 
-
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(10px, 1.2vw, 16px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.25rem, 0.5vw, 0.5rem);
-  }
-
-  .info-section h3 {
-    font-size: clamp(0.8rem, 1.8vw, 1.1rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.6rem, 1vw, 0.75rem);
-  }
-  
-  .key {
-    font-size: clamp(0.55rem, 0.9vw, 0.7rem);
-    padding: clamp(1px, 0.5vw, 3px) clamp(2px, 1vw, 6px);
-  }
-  
-  .controls-list {
-    gap: clamp(2px, 0.6vh, 4px);
-  }
-}
-
-/* Ultra short landscape screens */
-@media (min-width: 769px) and (max-height: 650px) {
-  .info-panel {
-    height: clamp(230px, 40vh, 45vh);
-    max-height: 42vh;
-  }
-  
-  .info-section {
-    margin-bottom: clamp(0.1rem, 0.6vh, 0.4rem);
-  }
-  
-  .section-title-with-dividers .divider-left img,
-  .section-title-with-dividers .divider-right img {
-    height: clamp(8px, 1vw, 14px);
-  }
-  
-  .section-title-with-dividers {
-    gap: clamp(0.2rem, 0.4vw, 0.4rem);
-  }
-  
-  .info-section h3 {
-    font-size: clamp(0.8rem, 1.6vw, 1.1rem);
-  }
-  
-  .info-section p {
-    font-size: clamp(0.6rem, 1vw, 0.75rem);
-  }
-  
-  .control-row {
-    font-size: clamp(0.5rem, 0.8vw, 0.65rem);
-  }
-  
-  .key {
-    font-size: clamp(0.45rem, 0.7vw, 0.6rem);
-    padding: clamp(0.5px, 0.4vw, 2px) clamp(1px, 0.8vw, 4px);
-  }
-  
-  .controls-list {
-    gap: clamp(1px, 0.4vh, 3px);
-  }
-
   .control-desc {
-    font-size: clamp(0.55rem, 0.85vw, 0.7rem);
+    font-size: clamp(0.7rem, 1.3vw, 0.85rem);
   }
-
+  
+  .key {
+    font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+    padding: clamp(1.5px, 0.6vw, 3px) clamp(3px, 1.2vw, 8px);
+  }
+  
+  .controls-list {
+    gap: clamp(4px, 1vh, 8px);
+  }
 }
 
-@media (max-width: 960px) and (max-height: 500px) {
+/* Very short screens */
+@media (max-height: 550px) {
   .info-panel {
-    height: 240px;
-    max-height: none;
-    bottom: 1rem;
+    bottom: clamp(1.5rem, 2.5vh, 2.5rem);
+    right: clamp(0.75rem, 10vw, 18rem);
   }
   
   .info-content {
-    height: max-content;
+    padding: clamp(0.3rem, 1vh, 0.75rem) clamp(0.6rem, 1.5vw, 1rem);
+  }
+  
+  .info-section {
+    margin-bottom: clamp(0.2rem, 0.7vh, 0.5rem);
+  }
+  
+  .section-title-with-dividers {
+    margin-bottom: clamp(0.2rem, 0.5vh, 0.35rem);
+    gap: clamp(0.25rem, 0.6vw, 0.5rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(8px, 1.2vw, 13px);
+  }
+  
+  .info-section h3 {
+    font-size: clamp(0.85rem, 1.8vw, 1.2rem);
+  }
+  
+  .info-section p {
+    font-size: clamp(0.65rem, 1.1vw, 0.75rem);
+    line-height: 1.2;
+  }
+  
+  .control-row {
+    font-size: clamp(0.6rem, 1vw, 0.7rem);
+  }
+  
+  .control-desc {
+    font-size: clamp(0.65rem, 1.1vw, 0.75rem);
+  }
+  
+  .key {
+    font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+    padding: clamp(1px, 0.5vw, 2.5px) clamp(2px, 1vw, 6px);
+    min-width: clamp(30px, 7vw, 45px);
+  }
+  
+  .key-group .key {
+    min-width: clamp(22px, 5.5vw, 32px);
+  }
+  
+  .controls-list {
+    gap: clamp(3px, 0.7vh, 6px);
+  }
+}
+
+/* Ultra short screens */
+@media (max-height: 450px) {
+  .info-panel {
+    bottom: 0.5rem;
+  }
+  
+  .info-content {
+    padding: 0.3rem 0.6rem;
+  }
+  
+  .info-section {
+    margin-bottom: clamp(0.15rem, 0.5vh, 0.35rem);
+  }
+  
+  .section-title-with-dividers {
+    margin-bottom: clamp(0.15rem, 0.4vh, 0.25rem);
+    gap: clamp(0.2rem, 0.5vw, 0.4rem);
+  }
+  
+  .section-title-with-dividers .divider-left img,
+  .section-title-with-dividers .divider-right img {
+    height: clamp(7px, 1.1vw, 11px);
+  }
+  
+  .info-section h3 {
+    font-size: clamp(0.75rem, 1.6vw, 1.05rem);
+  }
+  
+  .info-section p {
+    font-size: clamp(0.6rem, 1vw, 0.7rem);
+    line-height: 1.15;
+  }
+  
+  .control-row {
+    font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+  }
+  
+  .control-desc {
+    font-size: clamp(0.6rem, 1vw, 0.7rem);
+  }
+  
+  .key {
+    font-size: clamp(0.5rem, 0.8vw, 0.6rem);
+    padding: clamp(0.5px, 0.4vw, 2px) clamp(1.5px, 0.8vw, 5px);
+    min-width: clamp(28px, 6.5vw, 42px);
+  }
+  
+  .key-group .key {
+    min-width: clamp(20px, 5vw, 30px);
+  }
+  
+  .controls-list {
+    gap: clamp(2px, 0.5vh, 4px);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .info-panel {
+    right: clamp(1.5rem, 5vw, 3rem);
+    bottom: clamp(1.5rem, 3vh, 2.5rem);
+    width: clamp(180px, 80vw, 420px);
+  }
+}
+
+@media (max-width: 480px) {
+  .info-panel {
+    right: clamp(1rem, 4vw, 2rem);
+    bottom: clamp(1rem, 2.5vh, 2rem);
+    width: clamp(160px, 75vw, 380px);
   }
 }
 

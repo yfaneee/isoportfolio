@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { Box, Plane } from '@react-three/drei';
 import * as THREE from 'three';
 import InteractiveBillboard from './InteractiveBillboard';
+import InteractiveSlab from './InteractiveSlab';
+import InteractiveOutlineButton from './InteractiveOutlineButton';
 
 // ============================================================================
 // INSTANCED MESH COMPONENT 
@@ -86,7 +88,13 @@ const InstancedBoxes: React.FC<{
 // ============================================================================
 // MAIN GRID - 3x3 GRID INSTANCED 
 // ============================================================================
-const MainGrid = React.memo(() => {
+interface MainGridProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const MainGrid = React.memo<MainGridProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5; 
   const floorHeight = 0.3; 
@@ -114,14 +122,18 @@ const MainGrid = React.memo(() => {
         color={floorColor}
       />
 
-      {/* Bone white slab on middle floor */}
-      <Box
-        key="bone-white-slab"
+      {/* Interactive bone white slab on middle floor - Main Menu */}
+      <InteractiveSlab
+        key="main-menu-slab"
         position={[0, floorHeight - 0.092, 0]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="main-slab"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
 
       {/* Extension floors  */}
       <Box
@@ -146,7 +158,13 @@ const MainGrid = React.memo(() => {
 // ============================================================================
 // EXTENDED GRID - 5x5 GRID INSTANCED
 // ============================================================================
-const ExtendedGrid = React.memo(() => {
+interface ExtendedGridProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const ExtendedGrid = React.memo<ExtendedGridProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
   const floorHeight = 0.3;
@@ -446,7 +464,13 @@ const FoundationBlocks = React.memo(() => {
 // ============================================================================
 // WALL BLOCKS 
 // ============================================================================
-const WallBlocks = React.memo(() => {
+interface WallBlocksProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
   const wallHeight = 3.2; 
@@ -486,23 +510,31 @@ const WallBlocks = React.memo(() => {
       );
       })}
       
-      {/* High block slab */}
-      <Box
+      {/* High block slab - Interactive Project Studio */}
+      <InteractiveSlab
         key="high-block-slab"
         position={[3, wallHeight / 1.83 + wallHeight/2 + 0.07, grid5x5BaseZ - 4 * spacing]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="project-studio"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
       
-      {/* Smaller block slab */}
-      <Box
+      {/* Smaller block slab - Interactive Project */}
+      <InteractiveSlab
         key="smaller-block-slab"
         position={[-1.5, (wallHeight / 2) / 1.7 + (wallHeight / 2)/2 + 0.07, (grid5x5BaseZ - 3 * spacing) + 0.15]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="smaller-block"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
     </>
   );
 });
@@ -510,7 +542,13 @@ const WallBlocks = React.memo(() => {
 // ============================================================================
 // STAIR SYSTEMS 
 // ============================================================================
-const StairSystems = React.memo(() => {
+interface StairSystemsProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorSize = 1.5;
   const floorHeight = 0.3;
   const spacing = 1.5;
@@ -572,41 +610,62 @@ const StairSystems = React.memo(() => {
       })}
       
       {/* 5 Staircase slabs */}
-      <Box
+      {/* Interactive Learning Outcomes slabs */}
+      <InteractiveSlab
         key="staircase-slab-1"
         position={[-10.625, wallHeight * 1 + 0.5, 1.5]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
-      <Box
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="lo1"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
+      <InteractiveSlab
         key="staircase-slab-2"
         position={[-13.625, wallHeight * 1 + 1.01, 1.5]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
-      <Box
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="lo2"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
+      <InteractiveSlab
         key="staircase-slab-3"
         position={[-13.625, wallHeight * 1 + 1.52, -1.5]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
-      <Box
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="lo3"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
+      <InteractiveSlab
         key="staircase-slab-4"
         position={[-10.625, wallHeight * 1 + 2.02, -1.5]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
-      <Box
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="lo4"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
+      <InteractiveSlab
         key="staircase-slab-5"
         position={[-7.625, wallHeight * 1 + 2.52, -1.5]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="lo5"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
     </>
   );
 });
@@ -614,7 +673,13 @@ const StairSystems = React.memo(() => {
 // ============================================================================
 // LEARNING OUTCOMES PLATFORM 
 // ============================================================================
-const LearningOutcomesPlatform = React.memo(() => {
+interface LearningOutcomesPlatformProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const LearningOutcomesPlatform = React.memo<LearningOutcomesPlatformProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
   const floorHeight = 0.3;
@@ -712,7 +777,13 @@ const LearningOutcomesPlatform = React.memo(() => {
 // ============================================================================
 // ARTWORK PLATFORM 
 // ============================================================================
-const ArtworkPlatform = React.memo(() => {
+interface ArtworkPlatformProps {
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+}
+
+const ArtworkPlatform = React.memo<ArtworkPlatformProps>(({ onSlabHover, onSlabClick, introComplete }) => {
   const floorSize = 1.5;
   const floorHeight = 0.3;
   const spacing = 1.5;
@@ -891,14 +962,18 @@ const ArtworkPlatform = React.memo(() => {
       );
       })}
       
-      {/* Artwork platform slab */}
-      <Box
+      {/* Artwork platform slab - Interactive */}
+      <InteractiveSlab
         key="artwork-platform-slab"
         position={[octBaseX + spacing * 2, lowerFloorY + floorHeight/2 + 0.07, octBaseZ]}
         args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-      >
-        <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+        color="#F5F5DC"
+        hoverColor="#FFE4B5"
+        slabId="artwork"
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
+      />
     </>
   );
 });
@@ -916,6 +991,9 @@ interface ProjectPlatformsProps {
   onBillboardExitComplete?: () => void;
   characterPosition?: [number, number, number];
   onBillboardRef?: (key: string, ref: any) => void;
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
 }
 
 const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({ 
@@ -927,7 +1005,10 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   triggerBillboardExit,
   onBillboardExitComplete,
   characterPosition = [0, 0, 0],
-  onBillboardRef
+  onBillboardRef,
+  onSlabHover,
+  onSlabClick,
+  introComplete
 }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
@@ -977,74 +1058,50 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         color={floorColor}
       />
       
-      {/* Project slabs on 18x3 platform  */}
+      {/* Project slabs on 18x3 platform - Interactive GitHub buttons */}
       {[
-        { index: 2, key: 'project-slab-1' },
-        { index: 7, key: 'project-slab-2' },
-        { index: 12, key: 'project-slab-3' },
-        { index: 17, key: 'project-slab-4' }
+        { index: 2, key: 'project-slab-1', slabId: 'github-castle' },
+        { index: 7, key: 'project-slab-2', slabId: 'github-holleman' },
+        { index: 12, key: 'project-slab-3', slabId: 'github-space' },
+        { index: 17, key: 'project-slab-4', slabId: 'github-spotify' }
       ].map((slab) => (
-        <Box
+        <InteractiveSlab
           key={slab.key}
           position={[1.2, platform18x3Y + floorHeight/2 + 0.07, platform18x3StartZ + slab.index * spacing - 1.5]}
           args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        >
-          <meshStandardMaterial color={'#F5F5DC'} />
-      </Box>
+          color="#F5F5DC"
+          hoverColor="#FFE4B5"
+          slabId={slab.slabId}
+          onSlabHover={onSlabHover}
+          onSlabClick={onSlabClick}
+          introComplete={introComplete}
+        />
       ))}
 
-      {/* NEW OUTLINE BUTTON SLABS for website interaction */}
+      {/* NEW OUTLINE BUTTON SLABS for website interaction - with hover effect */}
       {[
-        { index: 2, key: 'outline-button-1', z: 9.15 },
-        { index: 7, key: 'outline-button-2', z: 16.65 },
-        { index: 12, key: 'outline-button-3', z: 24.15 },
-        { index: 17, key: 'outline-button-4', z: 31.65 }
-      ].map((button) => {
-        // Check if character is on this button
-        const isCharacterOnButton = 
-          characterPosition[0] >= -1 - 0.45 && characterPosition[0] <= -1 + 0.45 && 
-          characterPosition[2] >= button.z - 0.45 && characterPosition[2] <= button.z + 0.45;
-        
-        // Extrude height when character is on button 
-        const extrudeHeight = isCharacterOnButton ? 0.10 : 0.04;
-        const extrudeY = platform18x3Y + floorHeight/2 + extrudeHeight;
-        
-        const buttonSize = floorSize * 0.75; 
-        const outlineThickness = 0.06; 
-        
-        return (
-          <group key={button.key}>
-            {/* Top edge */}
-            <Box
-              position={[-1, extrudeY, platform18x3StartZ + button.index * spacing - 1.5 + buttonSize / 2 - outlineThickness/2]}
-              args={[buttonSize, extrudeHeight, outlineThickness]}
-            >
-              <meshStandardMaterial color={'#F5F5DC'} />
-            </Box>
-            {/* Bottom edge */}
-            <Box
-              position={[-1, extrudeY, platform18x3StartZ + button.index * spacing - 1.5 - buttonSize / 2 + outlineThickness/2]}
-              args={[buttonSize, extrudeHeight, outlineThickness]}
-            >
-              <meshStandardMaterial color={'#F5F5DC'} />
-            </Box>
-            {/* Left edge */}
-            <Box
-              position={[-1 - buttonSize / 2 + outlineThickness/2, extrudeY, platform18x3StartZ + button.index * spacing - 1.5]}
-              args={[outlineThickness, extrudeHeight, buttonSize - outlineThickness * 2]}
-            >
-              <meshStandardMaterial color={'#F5F5DC'} />
-            </Box>
-            {/* Right edge */}
-            <Box
-              position={[-1 + buttonSize / 2 - outlineThickness/2, extrudeY, platform18x3StartZ + button.index * spacing - 1.5]}
-              args={[outlineThickness, extrudeHeight, buttonSize - outlineThickness * 2]}
-            >
-              <meshStandardMaterial color={'#F5F5DC'} />
-            </Box>
-          </group>
-        );
-      })}
+        { index: 2, key: 'outline-button-1', z: 9.15, slabId: 'website-castle' },
+        { index: 7, key: 'outline-button-2', z: 16.65, slabId: 'website-holleman' },
+        { index: 12, key: 'outline-button-3', z: 24.15, slabId: 'website-space' },
+        { index: 17, key: 'outline-button-4', z: 31.65, slabId: 'website-spotify' }
+      ].map((button) => (
+        <InteractiveOutlineButton
+          key={button.key}
+          position={[-1, 0, 0]}
+          index={button.index}
+          z={button.z}
+          slabId={button.slabId}
+          characterPosition={characterPosition}
+          platform18x3Y={platform18x3Y}
+          platform18x3StartZ={platform18x3StartZ}
+          spacing={spacing}
+          floorHeight={floorHeight}
+          floorSize={floorSize}
+          onSlabHover={onSlabHover}
+          onSlabClick={onSlabClick}
+          introComplete={introComplete}
+        />
+      ))}
 
       {/* Extensions for billboard */}
       {[
@@ -1151,6 +1208,9 @@ interface IsometricWorldProps {
   onBillboardExitComplete?: () => void;
   characterPosition?: [number, number, number];
   onBillboardRef?: (key: string, ref: any) => void;
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
 }
 
 const IsometricWorld: React.FC<IsometricWorldProps> = ({ 
@@ -1162,17 +1222,20 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
   triggerBillboardExit,
   onBillboardExitComplete,
   characterPosition = [0, 0, 0],
-  onBillboardRef
+  onBillboardRef,
+  onSlabHover,
+  onSlabClick,
+  introComplete
 }) => {
   return (
     <group>
       <FoundationBlocks />
-      <MainGrid />
-      <ExtendedGrid />
-      <WallBlocks />
-      <StairSystems />
-      <LearningOutcomesPlatform />
-      <ArtworkPlatform />
+      <MainGrid onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <ExtendedGrid onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <WallBlocks onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <StairSystems onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <LearningOutcomesPlatform onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <ArtworkPlatform onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
       <ProjectPlatforms 
         onBillboardInteraction={onBillboardInteraction}
         onBillboardFullscreenStart={onBillboardFullscreenStart}
@@ -1183,6 +1246,9 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
         onBillboardExitComplete={onBillboardExitComplete}
         characterPosition={characterPosition}
         onBillboardRef={onBillboardRef}
+        onSlabHover={onSlabHover}
+        onSlabClick={onSlabClick}
+        introComplete={introComplete}
       />
     </group>
   );

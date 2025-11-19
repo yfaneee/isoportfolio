@@ -89,20 +89,13 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocati
                 <img src="/images/divider-003.png" alt="" />
               </div>
             </div>
-            <div className="work-links">
-              <a href="#work1" onClick={() => onNavigateToLocation?.('artwork')}>Artwork</a>
-              <a href="#work2" onClick={() => onNavigateToLocation?.('projects')}>Projects</a>
-            </div>
-          </div>
-
-          <div className="menu-section">
-            <div className="section-title-with-dividers">
-              <div className="divider-left">
-                <img src="/images/divider-003.png" alt="" />
+            <div className="work-links-wrapper">
+              <div className="work-links">
+                <a href="#work1" onClick={() => onNavigateToLocation?.('artwork')}>Artwork</a>
+                <a href="#work2" onClick={() => onNavigateToLocation?.('projects')}>Projects</a>
               </div>
-              <h3 className="cv-title-clickable" onClick={() => window.open('/pdfs/LSTCVv2.pdf', '_blank')}>CV</h3>
-              <div className="divider-right">
-                <img src="/images/divider-003.png" alt="" />
+              <div className="cv-link-container">
+                <a href="#cv" className="cv-link" onClick={() => window.open('/pdfs/LSTCVv2.pdf', '_blank')}>CV</a>
               </div>
             </div>
           </div>
