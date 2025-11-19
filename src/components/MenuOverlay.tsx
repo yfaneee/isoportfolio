@@ -100,7 +100,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocati
               <div className="divider-left">
                 <img src="/images/divider-003.png" alt="" />
               </div>
-              <h3 className="cv-title-clickable" onClick={() => window.open('/pdfs/LSTCV.pdf', '_blank')}>CV</h3>
+              <h3 className="cv-title-clickable" onClick={() => window.open('/pdfs/LSTCVv2.pdf', '_blank')}>CV</h3>
               <div className="divider-right">
                 <img src="/images/divider-003.png" alt="" />
               </div>
