@@ -36,6 +36,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
     startLookAt: new THREE.Vector3()
   });
   
+  
   const zoomFactorRef = useRef(1.0);
   const targetZoomRef = useRef(1.0); 
   const minZoom = 1.0; 
@@ -62,6 +63,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
     }
     wasMovingRef.current = isCharacterMoving;
   }, [isCharacterMoving]);
+
 
   // Mouse wheel zoom handler
   useEffect(() => {
@@ -183,6 +185,49 @@ const CameraController: React.FC<CameraControllerProps> = ({
   // Handle camera animation 
   const prevNavigatingRef = useRef(isNavigatingSlabs);
   const currentLookAtRef = useRef(new THREE.Vector3(0, 0.22, 0));
+  const prevCharacterPosRef = useRef<[number, number, number]>([0, 0.22, 0]);
+  
+  // Track if camera has been moved (for menu button)
+  const cameraMovedRef = useRef(false);
+  
+  useEffect(() => {
+    const checkCameraMovement = () => {
+      const zoomMoved = Math.abs(zoomFactorRef.current - 1.0) > 0.01;
+      const panMoved = Math.abs(cameraPanOffsetRef.current.x) > 0.1 || Math.abs(cameraPanOffsetRef.current.z) > 0.1;
+      cameraMovedRef.current = zoomMoved || panMoved;
+    };
+    
+    const interval = setInterval(checkCameraMovement, 100);
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Expose camera reset method through global window for menu button access
+  useEffect(() => {
+    (window as any).__resetCameraToCharacter = () => {
+      // Reset zoom and pan targets
+      targetZoomRef.current = 1.0;
+      cameraPanOffsetRef.current.set(0, 0, 0);
+      
+      // Trigger smooth camera animation from current position to normal view
+      cameraAnimationRef.current = {
+        isAnimating: true,
+        startTime: Date.now(),
+        startPos: camera.position.clone(),
+        startLookAt: currentLookAtRef.current.clone()
+      };
+    };
+    
+    (window as any).__checkIfCameraMoved = () => {
+      const zoomMoved = Math.abs(zoomFactorRef.current - 1.0) > 0.01;
+      const panMoved = Math.abs(cameraPanOffsetRef.current.x) > 0.1 || Math.abs(cameraPanOffsetRef.current.z) > 0.1;
+      return zoomMoved || panMoved;
+    };
+    
+    return () => {
+      delete (window as any).__resetCameraToCharacter;
+      delete (window as any).__checkIfCameraMoved;
+    };
+  }, [camera]);
   
   // Cache responsive camera settings to avoid recalculating every frame
   const cameraSettingsRef = useRef({ distance: 8, height: 7 });
@@ -299,6 +344,30 @@ const CameraController: React.FC<CameraControllerProps> = ({
       }
       
       const actualCharacterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      
+      // Detect teleportation and trigger smooth camera animation
+      const dx = actualCharacterPosition[0] - prevCharacterPosRef.current[0];
+      const dz = actualCharacterPosition[2] - prevCharacterPosRef.current[2];
+      const distanceMoved = Math.sqrt(dx * dx + dz * dz);
+      
+      // If character moved more than 3 units, trigger smooth camera animation
+      if (distanceMoved > 3 && !cameraAnimationRef.current.isAnimating && !isNavigatingSlabs) {
+        // Reset zoom and pan when teleporting
+        targetZoomRef.current = 1.0;
+        cameraPanOffsetRef.current.set(0, 0, 0);
+        
+        // Start camera animation from current position to new character position
+        cameraAnimationRef.current = {
+          isAnimating: true,
+          startTime: Date.now(),
+          startPos: camera.position.clone(),
+          startLookAt: currentLookAtRef.current.clone()
+        };
+      }
+      
+      // Update previous character position
+      prevCharacterPosRef.current = actualCharacterPosition;
+      
       const introEndPosition = [0, 0.22, 0]; 
       
       const transitionDuration = 300; 

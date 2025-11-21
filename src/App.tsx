@@ -72,6 +72,7 @@ function App() {
   const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [hoveredSlabId, setHoveredSlabId] = useState<string | null>(null);
   const [hoveredSlabPosition, setHoveredSlabPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isSlabClickAnimating, setIsSlabClickAnimating] = useState(false);
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
   
@@ -117,14 +118,14 @@ function App() {
     } else if (slabId === 'project-studio') {
       return 'Studio';
     } else if (slabId === 'smaller-block') {
-      return 'Project';
+      return 'IronFilms Project';
     } else if (slabId === 'artwork') {
       return 'Artwork';
     }
     return 'Interact';
   };
 
-  // Handle slab hover (mouse interaction)
+  // Handle slab hover 
   const handleSlabHover = useCallback((slabId: string | null, screenPosition?: { x: number; y: number }) => {
     if (slabId && screenPosition) {
       setHoveredSlabId(slabId);
@@ -134,13 +135,25 @@ function App() {
     }
   }, []);
 
-  // Handle slab click (mouse interaction)
+  // Handle slab click 
   const handleSlabClick = useCallback((slabId: string) => {
     if (isBillboardFullscreen || showMenu || showContent) return;
 
+    // Hide both interaction overlays when clicking
+    setHoveredSlabId(null);
+    setShowInteractionOverlay(false);
+
     // Determine action based on slab ID
     if (slabId.startsWith('lo')) {
-      // Learning Outcomes slab - map to correct contentData keys
+      // Learning Outcomes slab 
+      const locationMapping: { [key: string]: string } = {
+        'lo1': 'conceptualize',
+        'lo2': 'transferable',
+        'lo3': 'creative',
+        'lo4': 'professional',
+        'lo5': 'leadership',
+      };
+
       const slabKeyMapping: { [key: string]: string } = {
         'lo1': 'staircase-slab-1',
         'lo2': 'staircase-slab-2',
@@ -149,16 +162,27 @@ function App() {
         'lo5': 'staircase-slab-5',
       };
 
+      const location = locationMapping[slabId];
       const contentKey = slabKeyMapping[slabId];
       const content = contentData[contentKey];
       
-      if (content) {
-        setCurrentContent(content);
-        setCurrentSlabKey(contentKey);
-        setShowContent(true);
+      if (content && location && characterControllerRef.current) {
+        // Start slab click animation 
+        setIsSlabClickAnimating(true);
+        
+        // Teleport character to location
+        characterControllerRef.current.teleportToLocation(location);
+        
+        // Wait for camera animation 
+        setTimeout(() => {
+          setCurrentContent(content);
+          setCurrentSlabKey(contentKey);
+          setShowContent(true);
+          setIsSlabClickAnimating(false);
+        }, 1200);
       }
     } else if (slabId.startsWith('github-')) {
-      // GitHub slabs
+      // GitHub slabs 
       const githubUrls: { [key: string]: string } = {
         'github-castle': 'https://git.fhict.nl/I503826/castleportfolio',
         'github-holleman': 'https://github.com/yfaneee/holleman',
@@ -176,7 +200,7 @@ function App() {
         }
       }
     } else if (slabId.startsWith('website-')) {
-      // Website button slabs (trigger billboard)
+      // Website button slabs (trigger billboard) 
       const billboardKeys: { [key: string]: string } = {
         'website-castle': 'billboard1',
         'website-holleman': 'billboard2',
@@ -189,31 +213,53 @@ function App() {
         triggerBillboardClick(billboardKey);
       }
     } else if (slabId === 'main-slab') {
-      // Main/Menu slab
-      setShowMenu(true);
+      // Main/Menu slab 
+      if (characterControllerRef.current) {
+        setIsSlabClickAnimating(true);
+        characterControllerRef.current.teleportToLocation('home');
+        setTimeout(() => {
+          setShowMenu(true);
+          setIsSlabClickAnimating(false);
+        }, 1200);
+      }
     } else if (slabId === 'project-studio') {
-      // Project Studio slab
+      // Project Studio slab 
       const content = contentData['high-block-slab'];
-      if (content) {
-        setCurrentContent(content);
-        setCurrentSlabKey('high-block-slab');
-        setShowContent(true);
+      if (content && characterControllerRef.current) {
+        setIsSlabClickAnimating(true);
+        characterControllerRef.current.teleportToLocation('studio');
+        setTimeout(() => {
+          setCurrentContent(content);
+          setCurrentSlabKey('high-block-slab');
+          setShowContent(true);
+          setIsSlabClickAnimating(false);
+        }, 1200);
       }
     } else if (slabId === 'smaller-block') {
-      // Smaller block slab
+      // Smaller block slab 
       const content = contentData['smaller-block-slab'];
-      if (content) {
-        setCurrentContent(content);
-        setCurrentSlabKey('smaller-block-slab');
-        setShowContent(true);
+      if (content && characterControllerRef.current) {
+        setIsSlabClickAnimating(true);
+        characterControllerRef.current.teleportToLocation('ironfilms');
+        setTimeout(() => {
+          setCurrentContent(content);
+          setCurrentSlabKey('smaller-block-slab');
+          setShowContent(true);
+          setIsSlabClickAnimating(false);
+        }, 1200);
       }
     } else if (slabId === 'artwork') {
-      // Artwork platform slab
+      // Artwork platform slab 
       const content = contentData['artwork-platform-slab'];
-      if (content) {
-        setCurrentContent(content);
-        setCurrentSlabKey('artwork-platform-slab');
-        setShowContent(true);
+      if (content && characterControllerRef.current) {
+        setIsSlabClickAnimating(true);
+        characterControllerRef.current.teleportToLocation('artwork');
+        setTimeout(() => {
+          setCurrentContent(content);
+          setCurrentSlabKey('artwork-platform-slab');
+          setShowContent(true);
+          setIsSlabClickAnimating(false);
+        }, 1200);
       }
     }
   }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick]);
@@ -392,7 +438,7 @@ function App() {
           setInteractionText('Studio SeaMonkeys');
           break;
         case 'smaller-block':
-          setInteractionText('IronFilms');
+          setInteractionText('IronFilms Project');
           break;
         case 'artwork':
           setInteractionText('Artwork Gallery');
@@ -607,25 +653,43 @@ function App() {
   }, []);
 
 
+
   const handleMenuIconClick = useCallback(() => {
     if (showContent && !isTransitioning) {
       setIsTransitioning(true);
       setShowContent(false);
       setCurrentContent(null);
-      
-      // Wait for content to close, then open menu
-      setTimeout(() => {
-        setShowMenu(true);
-        setMenuDelayOver(true);
-        setIsTransitioning(false);
-      }, 400); 
-    } else if (!showMenu && !isTransitioning) {
       setShowMenu(true);
-      if (menuTimerRef.current) {
-        clearTimeout(menuTimerRef.current);
-        menuTimerRef.current = null;
-      }
       setMenuDelayOver(true);
+      setIsTransitioning(false);
+    } else if (!showMenu && !isTransitioning) {
+      // Check if camera needs to return to character 
+      const checkCameraMoved = (window as any).__checkIfCameraMoved;
+      const resetCamera = (window as any).__resetCameraToCharacter;
+      
+      const needsCameraReset = checkCameraMoved ? checkCameraMoved() : false;
+      
+      if (needsCameraReset && resetCamera) {
+        // Camera has been moved 
+        resetCamera();
+        
+        setTimeout(() => {
+          setShowMenu(true);
+          if (menuTimerRef.current) {
+            clearTimeout(menuTimerRef.current);
+            menuTimerRef.current = null;
+          }
+          setMenuDelayOver(true);
+        }, 1000);
+      } else {
+        // Camera is already on character
+        setShowMenu(true);
+        if (menuTimerRef.current) {
+          clearTimeout(menuTimerRef.current);
+          menuTimerRef.current = null;
+        }
+        setMenuDelayOver(true);
+      }
     } else if (showMenu && !isTransitioning) {
       setShowMenu(false);
       if (menuTimerRef.current) {
@@ -1159,7 +1223,7 @@ function App() {
 
             {/* Interaction Overlay */}
             <InteractionOverlay
-              isVisible={(showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)) || (hoveredSlabId !== null && !showMenu && !showContent && !isBillboardFullscreen)}
+              isVisible={!isSlabClickAnimating && ((showInteractionOverlay && !showMenu && !showContent && (canInteract || isHoveringBillboard)) || (hoveredSlabId !== null && !showMenu && !showContent && !isBillboardFullscreen))}
               interactionText={hoveredSlabId ? getSlabInteractionText(hoveredSlabId) : interactionText}
               position={hoveredSlabId ? hoveredSlabPosition : overlayPosition}
               keyText={hoveredSlabId ? 'CLICK' : interactionKeyText}

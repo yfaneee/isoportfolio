@@ -20,46 +20,126 @@ export interface Platform {
   type: 'floor' | 'stair' | 'triangle';
   stairDirection?: 'north' | 'south' | 'east' | 'west';
   triangleVertices?: { x: number; z: number }[];
+  staircaseId?: string; 
 }
+
+//Define staircase boundaries
+interface Staircase {
+  id: string;
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+  minY: number;
+  maxY: number;
+  steps: Platform[];
+}
+
+const staircases: Staircase[] = [
+  // LEFT STAIRS TO TALL WALL
+  {
+    id: 'left-wall',
+    minX: -3.75,
+    maxX: -2.25,
+    minZ: -10.8,
+    maxZ: -7.3,
+    minY: 0.85,
+    maxY: 3.25,
+    steps: []
+  },
+  // MIDDLE STAIRS TO SECOND WALL
+  {
+    id: 'middle-wall',
+    minX: -0.75,
+    maxX: 0.75,
+    minZ: -9.45,
+    maxZ: -7.55,
+    minY: 0.65,
+    maxY: 1.75,
+    steps: []
+  },
+  // STAIRS TO LEARNING OUTCOMES PLATFORM
+  {
+    id: 'learning-outcomes',
+    minX: -6.6,
+    maxX: -1.65,
+    minZ: -0.75,
+    maxZ: 0.85,
+    minY: 0.45,
+    maxY: 3.0,
+    steps: []
+  },
+  // DOWNWARD STAIRS
+  {
+    id: 'downward',
+    minX: -0.75,
+    maxX: 0.75,
+    minZ: 2.05,
+    maxZ: 7.05,
+    minY: -2.6,
+    maxY: -0.2,
+    steps: []
+  }
+];
 
 // Define all walkable areas - STAIRS FIRST (they override floors beneath them)
 export const platforms: Platform[] = [
-  // LEFT STAIRS TO TALL WALL (10 steps on left side) 
-  { minX: -3.75, maxX: -2.25, minZ: -8.1, maxZ: -7.3, y: 0.85, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -8.4, maxZ: -7.6, y: 1.15, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -8.7, maxZ: -7.9, y: 1.45, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -9.0, maxZ: -8.2, y: 1.85, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -9.3, maxZ: -8.5, y: 2.25, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -9.6, maxZ: -8.8, y: 2.65, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -9.9, maxZ: -9.1, y: 2.85, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -10.2, maxZ: -9.4, y: 3.05, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -10.5, maxZ: -9.7, y: 3.15, type: 'stair', stairDirection: 'south' },
-  { minX: -3.75, maxX: -2.25, minZ: -10.8, maxZ: -10, y: 3.25, type: 'stair', stairDirection: 'south' },
+  // LEFT STAIRS TO TALL WALL (19 steps - doubled for smoother movement) 
+  { minX: -3.75, maxX: -2.25, minZ: -7.7, maxZ: -7.3, y: 0.45, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -7.85, maxZ: -7.45, y: 0.60, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8, maxZ: -7.6, y: 0.75, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.15, maxZ: -7.75, y: 0.90, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.3, maxZ: -7.9, y: 1.05, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.45, maxZ: -8.05, y: 1.20, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.6, maxZ: -8.2, y: 1.35, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.75, maxZ: -8.35, y: 1.50, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -8.9, maxZ: -8.5, y: 1.65, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.05, maxZ: -8.65, y: 1.80, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.2, maxZ: -8.8, y: 1.95, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.35, maxZ: -8.95, y: 2.10, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.5, maxZ: -9.1, y: 2.25, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.65, maxZ: -9.25, y: 2.40, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.8, maxZ: -9.4, y: 2.55, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -9.95, maxZ: -9.55, y: 2.70, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -10.1, maxZ: -9.7, y: 2.85, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -10.25, maxZ: -9.85, y: 3.00, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
+  { minX: -3.75, maxX: -2.25, minZ: -11.4, maxZ: -10, y: 3.15, type: 'stair', stairDirection: 'south', staircaseId: 'left-wall' },
   
   // CONNECTION from left stairs to tall wall blocks
   { minX: -3.75, maxX: -2.25, minZ: -11.55, maxZ: -10.8, y: 3.25, type: 'floor' },
   
-  // MIDDLE STAIRS TO SECOND WALL (5 steps in center) - Going SOUTH (negative Z)
-  { minX: -0.75, maxX: 0.75, minZ: -8.25, maxZ: -7.55, y: 0.65, type: 'stair', stairDirection: 'south' },
-  { minX: -0.75, maxX: 0.75, minZ: -8.55, maxZ: -7.85, y: 0.95, type: 'stair', stairDirection: 'south' },
-  { minX: -0.75, maxX: 0.75, minZ: -8.85, maxZ: -8.15, y: 1.25, type: 'stair', stairDirection: 'south' },
-  { minX: -0.75, maxX: 0.75, minZ: -9.15, maxZ: -8.45, y: 1.55, type: 'stair', stairDirection: 'south' },
-  { minX: -0.75, maxX: 0.75, minZ: -9.45, maxZ: -8.75, y: 1.75, type: 'stair', stairDirection: 'south' },
+  // MIDDLE STAIRS TO SECOND WALL (9 steps - doubled for smoother movement) - Going SOUTH (negative Z)
+  { minX: -0.75, maxX: 0.75, minZ: -7.9, maxZ: -7.45, y: 0.45, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.05, maxZ: -7.625, y: 0.60, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.2, maxZ: -7.8, y: 0.75, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.35, maxZ: -7.95, y: 0.90, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.5, maxZ: -8.1, y: 1.05, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.65, maxZ: -8.25, y: 1.20, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.8, maxZ: -8.4, y: 1.35, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -8.9, maxZ: -8.55, y: 1.50, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
+  { minX: -0.75, maxX: 0.75, minZ: -9.6, maxZ: -8.7, y: 1.65, type: 'stair', stairDirection: 'south', staircaseId: 'middle-wall' },
   
   // CONNECTION from middle stairs to second wall blocks
   { minX: -0.75, maxX: 0.75, minZ: -9.6, maxZ: -9.45, y: 1.6, type: 'floor' },
   
-  // STAIRS TO LEARNING OUTCOMES PLATFORM (9 steps going WEST)
-  { minX: -2.55, maxX: -1.65, minZ: -0.75, maxZ: 0.85, y: 0.45, type: 'stair', stairDirection: 'west' },
-  { minX: -2.85, maxX: -2.05, minZ: -0.75, maxZ: 0.85, y: 0.75, type: 'stair', stairDirection: 'west' },
-  { minX: -3.15, maxX: -2.25, minZ: -0.75, maxZ: 0.85, y: 1.05, type: 'stair', stairDirection: 'west' },
-  { minX: -3.6, maxX: -2.7, minZ: -0.75, maxZ: 0.85, y: 1.35, type: 'stair', stairDirection: 'west' },
-  { minX: -4.05, maxX: -3.15, minZ: -0.75, maxZ: 0.85, y: 1.65, type: 'stair', stairDirection: 'west' },
-  { minX: -4.5, maxX: -3.6, minZ: -0.75, maxZ: 0.85, y: 1.95, type: 'stair', stairDirection: 'west' },
-  { minX: -4.95, maxX: -4.05, minZ: -0.75, maxZ: 0.85, y: 2.25, type: 'stair', stairDirection: 'west' },
-  { minX: -5.4, maxX: -4.5, minZ: -0.75, maxZ: 0.85, y: 2.55, type: 'stair', stairDirection: 'west' },
-  { minX: -5.85, maxX: -5.4, minZ: -0.75, maxZ: 0.85, y: 2.85, type: 'stair', stairDirection: 'west' },
-  { minX: -6.6, maxX: -5.85, minZ: -0.75, maxZ: 0.85, y: 3, type: 'stair', stairDirection: 'west' },
+  // STAIRS TO LEARNING OUTCOMES PLATFORM (17 steps - doubled for smoother movement) going WEST
+  { minX: -2.25, maxX: -1.75, minZ: -0.75, maxZ: 0.75, y: 0.45, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -2.475, maxX: -1.975, minZ: -0.75, maxZ: 0.75, y: 0.60, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -2.7, maxX: -2.2, minZ: -0.75, maxZ: 0.75, y: 0.75, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -2.925, maxX: -2.425, minZ: -0.75, maxZ: 0.75, y: 0.90, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -3.15, maxX: -2.65, minZ: -0.75, maxZ: 0.75, y: 1.05, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -3.375, maxX: -2.875, minZ: -0.75, maxZ: 0.75, y: 1.20, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -3.6, maxX: -3.1, minZ: -0.75, maxZ: 0.75, y: 1.35, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -3.825, maxX: -3.325, minZ: -0.75, maxZ: 0.75, y: 1.50, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -4.05, maxX: -3.55, minZ: -0.75, maxZ: 0.75, y: 1.65, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -4.275, maxX: -3.775, minZ: -0.75, maxZ: 0.75, y: 1.80, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -4.5, maxX: -4, minZ: -0.75, maxZ: 0.75, y: 1.95, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -4.725, maxX: -4.225, minZ: -0.75, maxZ: 0.75, y: 2.10, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -4.95, maxX: -4.45, minZ: -0.75, maxZ: 0.75, y: 2.25, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -5.175, maxX: -4.675, minZ: -0.75, maxZ: 0.75, y: 2.40, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -5.4, maxX: -4.9, minZ: -0.75, maxZ: 0.75, y: 2.55, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -5.7, maxX: -5.125, minZ: -0.75, maxZ: 0.75, y: 2.70, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
+  { minX: -7, maxX: -5.35, minZ: -0.75, maxZ: 0.75, y: 2.85, type: 'stair', stairDirection: 'west', staircaseId: 'learning-outcomes' },
 
   
   // NOW THE FLOORS 
@@ -146,23 +226,24 @@ export const platforms: Platform[] = [
   { minX: -9.25 - 0.75, maxX: -9.22 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 5.35, type: 'floor' },
   { minX: -7.75 - 0.75, maxX: -7.82 + 0.75, minZ: -1.5 - 0.75, maxZ: -1.5 + 0.75, y: 5.55, type: 'floor' },
   
-  // DOWNWARD STAIRS - Three sets of 3 stairs each (fixed collision boundaries)
-  // First set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 2.80 - 0.75, maxZ: 2.75 + 0.75, y: -0.2, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.9 - 0.75, maxZ: 3.15 + 0.75, y: -0.47, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.35 - 0.75, maxZ: 3.6 + 0.75, y: -0.8, type: 'stair', stairDirection: 'south' },
-  
-  // Second set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.8 - 0.75, maxZ: 4.05 + 0.75, y: -1.1, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.25 - 0.75, maxZ: 4.5 + 0.75, y: -1.4, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.7 - 0.75, maxZ: 4.95 + 0.75, y: -1.7, type: 'stair', stairDirection: 'south' },
-  
-  // Third set of downward stairs
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.15 - 0.75, maxZ: 5.4 + 0.75, y: -2.0, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.60 - 0.75, maxZ: 5.85 + 0.75, y: -2.3, type: 'stair', stairDirection: 'south' },
-  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 7.05 - 0.75, maxZ: 6.3 + 0.75, y: -2.6, type: 'stair', stairDirection: 'south' },
-  
-
+  // DOWNWARD STAIRS - Doubled for smoother movement (17 steps total)
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 2.80 - 0.75, maxZ: 2.6 + 0.75, y: -0.2, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 3.8 - 0.75, maxZ: 2.825 + 0.75, y: -0.335, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.05 - 0.75, maxZ: 3.05 + 0.75, y: -0.47, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.275 - 0.75, maxZ: 3.275 + 0.75, y: -0.635, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.50 - 0.75, maxZ: 3.5 + 0.75, y: -0.8, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.725 - 0.75, maxZ: 3.725 + 0.75, y: -0.95, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 4.95 - 0.75, maxZ: 3.95 + 0.75, y: -1.1, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.175 - 0.75, maxZ: 4.175 + 0.75, y: -1.25, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.4 - 0.75, maxZ: 4.4 + 0.75, y: -1.4, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.625 - 0.75, maxZ: 4.625 + 0.75, y: -1.55, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 5.85 - 0.75, maxZ: 4.85 + 0.75, y: -1.7, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.075 - 0.75, maxZ: 5.075 + 0.75, y: -1.85, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.3 - 0.75, maxZ: 5.3 + 0.75, y: -2.0, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.525 - 0.75, maxZ: 5.525 + 0.75, y: -2.15, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.75 - 0.75, maxZ: 5.75 + 0.75, y: -2.3, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.975 - 0.75, maxZ: 5.975 + 0.75, y: -2.45, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
+  { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 7.2 - 0.75, maxZ: 6.2 + 0.75, y: -2.6, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
   
   // PROJECT SLABS on 18x3 platform (4 interactive slabs) - MOVED SOUTH towards platform edge
   { minX: 1.2 - 0.45, maxX: 1.2 + 0.45, minZ: 7.65 + 2 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 2 * 1.5 - 1.5 + 0.45, y: -2.47, type: 'floor' },  
@@ -365,7 +446,7 @@ export function getHeightAtPosition(x: number, z: number): number | null {
     cleanupCache();
   }
   
-  // First check if on elevator - elevator takes priority
+  // First check if on elevator 
   if (isOnElevator(x, z)) {
     const height = getElevatorHeight();
     positionCache.set(cacheKey, { height, timestamp: now, accessCount: 1 });
@@ -385,14 +466,12 @@ export function getHeightAtPosition(x: number, z: number): number | null {
     if (x >= platform.minX && x <= platform.maxX &&
         z >= platform.minZ && z <= platform.maxZ) {
       
-      // If it's a triangle, do precise triangle collision check
       if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
         if (isPointInTriangle(x, z, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
           positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
           return platform.y;
         }
       } else {
-        // For rectangles/stairs, bounding box check is enough
         positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
         return platform.y;
       }
@@ -401,6 +480,26 @@ export function getHeightAtPosition(x: number, z: number): number | null {
   
   positionCache.set(cacheKey, { height: null, timestamp: now, accessCount: 1 });
   return null; 
+}
+
+// Check if character is on a staircase
+function getStaircaseAt(x: number, z: number, y: number): Staircase | null {
+  for (const staircase of staircases) {
+    if (x >= staircase.minX && x <= staircase.maxX &&
+        z >= staircase.minZ && z <= staircase.maxZ &&
+        y >= staircase.minY - 0.5 && y <= staircase.maxY + 0.5) {
+      return staircase;
+    }
+  }
+  return null;
+}
+
+// Clamp position to staircase bounds
+function clampToStaircase(x: number, z: number, staircase: Staircase): { x: number; z: number } {
+  return {
+    x: Math.max(staircase.minX, Math.min(staircase.maxX, x)),
+    z: Math.max(staircase.minZ, Math.min(staircase.maxZ, z))
+  };
 }
 
 // Constrain position to stay within platform boundaries
@@ -416,7 +515,7 @@ export function constrainToPlatform(
   if (currentHeight === null) {
     console.warn('Character in invalid position, blocking movement', { currentX, currentZ });
     return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
-  }
+  } 
 
   // First check if trying to move onto the elevator
   if (isOnElevator(newX, newZ)) {
@@ -428,7 +527,45 @@ export function constrainToPlatform(
     }
   }
   
-  // Use spatial grid to find nearby platforms only
+  // ========== NEW STAIRCASE SYSTEM ==========
+  const currentStaircase = getStaircaseAt(currentX, currentZ, currentY);
+  
+  if (currentStaircase) {
+    // Check if trying to exit the staircase
+    const isExiting = newX < currentStaircase.minX || newX > currentStaircase.maxX ||
+                      newZ < currentStaircase.minZ || newZ > currentStaircase.maxZ;
+    
+    if (isExiting) {
+      const exitHeight = getHeightAtPosition(newX, newZ);
+      
+      if (exitHeight !== null) {
+        const heightDiff = Math.abs(exitHeight - currentY);
+        
+        if (heightDiff <= 0.5) {
+          return { x: newX, y: exitHeight, z: newZ, onPlatform: true };
+        }
+      }
+      
+      return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+    }
+    
+    // Still within staircase 
+    const clampedPos = clampToStaircase(newX, newZ, currentStaircase);
+    const targetHeight = getHeightAtPosition(clampedPos.x, clampedPos.z);
+    
+    if (targetHeight !== null) {
+      const heightDiff = Math.abs(targetHeight - currentY);
+      
+      if (heightDiff <= 0.5) {
+        return { x: clampedPos.x, y: targetHeight, z: clampedPos.z, onPlatform: true };
+      }
+    }
+    
+    // If height difference too large, block movement
+    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+  }
+  
+  // ========== REGULAR PLATFORM SYSTEM (non-stairs) ==========
   const nearbyPlatforms = getPlatformsNear(newX, newZ);
   let targetPlatform: Platform | null = null;
   
@@ -449,25 +586,24 @@ export function constrainToPlatform(
   }
   
   if (targetPlatform) {
-    // If it's a stair, check if we're approaching from the correct direction (or opposite for going down)
-    if (targetPlatform.type === 'stair' && targetPlatform.stairDirection) {
-      const movementZ = newZ - currentZ;
-      const movementX = newX - currentX;
+    // If trying to enter a staircase
+    if (targetPlatform.type === 'stair' && targetPlatform.staircaseId) {
+      const staircaseId = targetPlatform.staircaseId;
+      const targetStaircase = staircases.find(s => s.id === staircaseId);
       
-      const validDirection = 
-        (targetPlatform.stairDirection === 'south' && Math.abs(movementZ) > Math.abs(movementX) * 2) || 
-        (targetPlatform.stairDirection === 'north' && Math.abs(movementZ) > Math.abs(movementX) * 2) || 
-        (targetPlatform.stairDirection === 'east' && Math.abs(movementX) > Math.abs(movementZ) * 2) ||   
-        (targetPlatform.stairDirection === 'west' && Math.abs(movementX) > Math.abs(movementZ) * 2);   
-      
-      if (!validDirection) {
-        return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+      if (targetStaircase) {
+        const heightDiff = Math.abs(targetPlatform.y - currentY);
+        
+        // Only allow entering stairs if at the entrance
+        if (heightDiff > 0.5) {
+          return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+        }
       }
     }
     
     const heightDiff = Math.abs(targetPlatform.y - currentY);
     
-    // Allow reasonable height changes for stairs (including downward stairs)
+    // Allow reasonable height changes
     if (heightDiff <= 2.0) {
       return { x: newX, y: targetPlatform.y, z: newZ, onPlatform: true };
     } else {
@@ -475,6 +611,7 @@ export function constrainToPlatform(
     }
   }
   
+  // Try to stay on current platform if possible
   const currentPlatforms = getPlatformsNear(currentX, currentZ);
   const currentPlatform = currentPlatforms.find(platform => {
     if (currentX >= platform.minX && currentX <= platform.maxX &&
