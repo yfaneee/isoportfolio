@@ -1163,7 +1163,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
 
       {/* Interactive Billboard/Screen structures */}
       {[
-        { row: 2, key: 'billboard1', websiteUrl: 'https://i503826.hera.fontysict.net/castle/' },
+        { row: 2, key: 'billboard1', websiteUrl: 'https://castle-portfolio.vercel.app/' },
         { row: 7, key: 'billboard2', websiteUrl: 'https://holleman.vercel.app/' },
         { row: 12, key: 'billboard3', websiteUrl: 'https://space-portfolio-one-mu.vercel.app/' },
         { row: 17, key: 'billboard4', websiteUrl: 'https://spotify-folio.vercel.app/' }
@@ -1188,6 +1188,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
             triggerBillboardExit={triggerBillboardExit}
             onBillboardExitComplete={onBillboardExitComplete}
             onRef={(ref) => onBillboardRef?.(billboard.key, ref)}
+            introComplete={introComplete}
           />
         );
       })}

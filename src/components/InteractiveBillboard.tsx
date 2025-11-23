@@ -17,6 +17,7 @@ interface InteractiveBillboardProps {
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
   onRef?: (ref: any) => void;
+  introComplete?: boolean;
 }
 
 const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
@@ -31,7 +32,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   onHideWebsite,
   triggerBillboardExit = false,
   onBillboardExitComplete,
-  onRef
+  onRef,
+  introComplete = false
 }) => {
   const { camera } = useThree();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -93,6 +95,9 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   const handleBillboardClick = React.useCallback((event: any) => {
     event.stopPropagation();
     
+    // Disable billboard clicks during intro/loading
+    if (!introComplete) return;
+    
     if (isAnimating) return;
     
     if (!isFullscreen) {
@@ -105,7 +110,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       onCameraAnimationStart?.();
     }
     // Removed else clause 
-  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart]);
+  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart, introComplete]);
 
   useFrame((state, delta) => {
     if (isAnimating) {
@@ -212,12 +217,16 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
           onClick={handleBillboardClick}
           onPointerOver={(e) => {
             e.stopPropagation();
+            // Disable billboard hover during intro/loading
+            if (!introComplete) return;
             document.body.style.cursor = 'pointer';
             setIsHovered(true);
             onBillboardInteraction?.(true, billboardKey);
           }}
           onPointerOut={(e) => {
             e.stopPropagation();
+            // Disable billboard hover during intro/loading
+            if (!introComplete) return;
             document.body.style.cursor = 'default';
             setIsHovered(false);
             onBillboardInteraction?.(false, billboardKey);

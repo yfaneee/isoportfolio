@@ -121,7 +121,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
           // Check GitHub project slabs on 18x3 platform 
           const githubProjectSlabs = [
-            { x: 1.2, z: 9.15, id: 'github-castle', url: 'https://git.fhict.nl/I503826/castleportfolio' },
+            { x: 1.2, z: 9.15, id: 'github-castle', url: 'https://github.com/yfaneee/CastlePortfolio' },
             { x: 1.2, z: 16.65, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
             { x: 1.2, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
             { x: 1.2, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
@@ -129,7 +129,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
           
           // Check NEW OUTLINE BUTTON SLABS 
           const websiteButtonSlabs = [
-            { x: -1, z: 9.15, id: 'website-castle', url: 'https://i503826.hera.fontysict.net/castle/' },
+            { x: -1, z: 9.15, id: 'website-castle', url: 'https://castle-portfolio.vercel.app/' },
             { x: -1, z: 16.65, id: 'website-holleman', url: 'https://holleman.vercel.app/' },
             { x: -1, z: 24.15, id: 'website-space', url: 'https://space-portfolio-one-mu.vercel.app/' },
             { x: -1, z: 31.65, id: 'website-spotify', url: 'https://spotify-folio.vercel.app/' }

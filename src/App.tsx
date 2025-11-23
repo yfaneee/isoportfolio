@@ -127,16 +127,24 @@ function App() {
 
   // Handle slab hover 
   const handleSlabHover = useCallback((slabId: string | null, screenPosition?: { x: number; y: number }) => {
+    // Disable slab hover during intro/loading/character selection
+    if (!introComplete || showLoadingScreen || showCharacterSelection) {
+      setHoveredSlabId(null);
+      return;
+    }
+    
     if (slabId && screenPosition) {
       setHoveredSlabId(slabId);
       setHoveredSlabPosition(screenPosition);
     } else {
       setHoveredSlabId(null);
     }
-  }, []);
+  }, [introComplete, showLoadingScreen, showCharacterSelection]);
 
   // Handle slab click 
   const handleSlabClick = useCallback((slabId: string) => {
+    // Disable slab clicks during intro/loading/character selection
+    if (!introComplete || showLoadingScreen || showCharacterSelection) return;
     if (isBillboardFullscreen || showMenu || showContent) return;
 
     // Hide both interaction overlays when clicking
@@ -184,7 +192,7 @@ function App() {
     } else if (slabId.startsWith('github-')) {
       // GitHub slabs 
       const githubUrls: { [key: string]: string } = {
-        'github-castle': 'https://git.fhict.nl/I503826/castleportfolio',
+        'github-castle': 'https://github.com/yfaneee/CastlePortfolio',
         'github-holleman': 'https://github.com/yfaneee/holleman',
         'github-space': 'https://github.com/yfaneee/SpacePortfolio',
         'github-spotify': 'https://github.com/yfaneee/SpotifyFolio'
@@ -262,7 +270,7 @@ function App() {
         }, 1200);
       }
     }
-  }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick]);
+  }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection]);
 
   // Mobile D-pad handlers
   const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
@@ -483,6 +491,10 @@ function App() {
 
   // Handle billboard interaction overlay
   const handleBillboardInteraction = useCallback((isHovering: boolean, billboardKey?: string) => {
+    if (!introComplete || showLoadingScreen) {
+      return;
+    }
+    
     if (isHovering && billboardKey) {
       // Calculate overlay position 
       const centerX = window.innerWidth / 2;
@@ -518,7 +530,7 @@ function App() {
         setShowInteractionOverlay(false);
       }
     }
-  }, [canInteract]);
+  }, [canInteract, introComplete, showLoadingScreen]);
 
   const handleMovementStart = useCallback(() => {
     if (showMenu) {
@@ -537,6 +549,9 @@ function App() {
   }, [showMenu, showContent]);
 
   const handleSpacePress = useCallback(() => {
+    // Disable space press during intro/loading/character selection
+    if (!introComplete || showLoadingScreen || showCharacterSelection) return;
+    
     if (!showMenu && !showContent) {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
       
@@ -548,7 +563,7 @@ function App() {
       
       // Check GitHub slabs directly
       const githubSlabsCheck = [
-        { x: 1.2, z: 9.15, url: 'https://git.fhict.nl/I503826/castleportfolio' },
+        { x: 1.2, z: 9.15, url: 'https://github.com/yfaneee/CastlePortfolio' },
         { x: 1.2, z: 16.65, url: 'https://github.com/yfaneee/holleman' },
         { x: 1.2, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
         { x: 1.2, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
@@ -561,7 +576,7 @@ function App() {
       
       // Check website button slabs directly
       const websiteSlabsCheck = [
-        { x: -1, z: 9.15, url: 'https://i503826.hera.fontysict.net/castle/', key: 'billboard1' },
+        { x: -1, z: 9.15, url: 'https://castle-portfolio.vercel.app/', key: 'billboard1' },
         { x: -1, z: 16.65, url: 'https://holleman.vercel.app/', key: 'billboard2' },
         { x: -1, z: 24.15, url: 'https://space-portfolio-one-mu.vercel.app/', key: 'billboard3' },
         { x: -1, z: 31.65, url: 'https://spotify-folio.vercel.app/', key: 'billboard4' }
@@ -629,7 +644,7 @@ function App() {
         setShowMenu(true);
       }
     }
-  }, [showMenu, showContent, triggerBillboardClick]);
+  }, [showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection]);
 
   // Mobile interact button handler (must be after handleSpacePress)
   const handleMobileInteract = useCallback((isPressed: boolean) => {
@@ -655,6 +670,9 @@ function App() {
 
 
   const handleMenuIconClick = useCallback(() => {
+    // Disable menu icon clicks during intro/loading/character selection
+    if (!introComplete || showLoadingScreen || showCharacterSelection) return;
+    
     if (showContent && !isTransitioning) {
       setIsTransitioning(true);
       setShowContent(false);
@@ -697,7 +715,7 @@ function App() {
         menuTimerRef.current = null;
       }
     }
-  }, [showMenu, showContent, isTransitioning]);
+  }, [showMenu, showContent, isTransitioning, introComplete, showLoadingScreen, showCharacterSelection]);
 
   const handleNavigateToLocation = useCallback((location: string) => {
     // Hide menu
