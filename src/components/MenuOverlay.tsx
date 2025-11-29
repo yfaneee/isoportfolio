@@ -95,7 +95,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isVisible, onNavigateToLocati
                 <a href="#work2" onClick={() => onNavigateToLocation?.('projects')}>Projects</a>
               </div>
               <div className="cv-link-container">
-                <a href="#cv" className="cv-link" onClick={() => window.open('/pdfs/LSTCVv2.pdf', '_blank')}>CV</a>
+                <a href="#cv" className="cv-link" onClick={() => window.open('/pdfs/LSTCVv4.pdf', '_blank')}>CV</a>
               </div>
             </div>
           </div>

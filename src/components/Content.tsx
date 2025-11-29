@@ -39,7 +39,11 @@ const Content: React.FC<ContentProps> = React.memo(({
   };
 
   const renderExample = (example: ExampleItem) => (
-    <div key={example.id} className="example-card">
+    <div 
+      key={example.id} 
+      className="example-card"
+      onClick={() => handlePdfOpen(example.pdfUrl)}
+    >
       <div className="example-image-container">
         <img 
           src={example.image} 
@@ -52,7 +56,6 @@ const Content: React.FC<ContentProps> = React.memo(({
         <p className="example-description">{example.description}</p>
         <button 
           className="pdf-link-button"
-          onClick={() => handlePdfOpen(example.pdfUrl, example.pdfPage)}
         >
           View More →
         </button>
