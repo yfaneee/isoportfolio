@@ -25,9 +25,9 @@ export const contentData: Record<string, ContentItem> = {
   },
   'high-block-slab': {
     title: 'Studio',
-    description: 'Studio.',
+    description: 'SeaMonkeys',
     details: [
-      'SeaMonkeys'
+      ''
     ],
     color: '#F5F5DC'
   },
