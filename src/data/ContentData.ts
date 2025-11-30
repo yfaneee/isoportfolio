@@ -27,7 +27,7 @@ export const contentData: Record<string, ContentItem> = {
     title: 'Studio',
     description: 'Studio.',
     details: [
-      '...'
+      'SeaMonkeys'
     ],
     color: '#F5F5DC'
   },
