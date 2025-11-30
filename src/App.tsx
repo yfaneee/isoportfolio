@@ -18,6 +18,7 @@ import RotatePhoneScreen from './components/RotatePhoneScreen';
 import MobileDpad from './components/MobileDpad';
 import MobileInteractButton from './components/MobileInteractButton';
 import AddToHomeScreenPrompt from './components/AddToHomeScreenPrompt';
+import RepoLinks from './components/RepoLinks';
 import { getContentForSlab, ContentItem, slabNavigationOrder, getSlabKeyFromPosition, getLocationFromSlabKey, contentData } from './data/ContentData';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { shiftElevator, isOnElevator, triggerElevator } from './utils/elevatorSystem';
@@ -1282,6 +1283,11 @@ function App() {
             <MobileInteractButton
               onInteract={handleMobileInteract}
               visible={introComplete && !showMenu && !showContent && !showLoadingScreen && !showWebsiteOverlay}
+            />
+
+            {/* Repository Links - Fixed on right side */}
+            <RepoLinks
+              isVisible={introComplete && !showLoadingScreen && !showWebsiteOverlay}
             />
         
           </div>

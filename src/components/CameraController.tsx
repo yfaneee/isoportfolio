@@ -128,8 +128,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
     };
 
     const handleMouseDown = (event: MouseEvent) => {
-      // Disable mouse drag 
-      if (!introComplete || showContent) {
+      // Disable mouse drag
+      if (!introComplete || showContent || showMenu) {
         return;
       }
       
@@ -141,8 +141,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      // Stop dragging if content is open
-      if (showContent && isDraggingRef.current) {
+      // Stop dragging if content or menu is open
+      if ((showContent || showMenu) && isDraggingRef.current) {
         isDraggingRef.current = false;
         document.body.style.cursor = '';
         return;
@@ -187,7 +187,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [introComplete, showContent]);
+  }, [introComplete, showContent, showMenu]);
 
   // Handle camera animation 
   const prevNavigatingRef = useRef(isNavigatingSlabs);

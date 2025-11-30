@@ -9,7 +9,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-  padding: 0 5% 3%;
+  padding: 0 10% 3%;
 }
 
 .interact-button-container {
@@ -70,7 +70,7 @@
 /* Adjust for smaller phones */
 @media (max-width: 480px) {
   .mobile-interact-controls {
-    padding: 0 3% 2%;
+    padding: 0 8% 2%;
   }
   
   .interact-button-container {
