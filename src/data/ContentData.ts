@@ -6,11 +6,29 @@ export interface ExampleItem {
   pdfUrl: string;
 }
 
+export interface StudioContent {
+  logo: string;
+  missionTitle: string;
+  missionText: string;
+  brandGuideImage: string;
+  brandGuideUrl: string;
+  coreValuesTitle: string;
+  coreValues: string[];
+  artworkTitle: string;
+  artworkImage: string;
+}
+
+export interface ArtworkGallery {
+  images: string[];
+}
+
 export interface ContentItem {
   title: string;
   description: string;
   details: string[];
   examples?: ExampleItem[];
+  studioContent?: StudioContent;
+  artworkGallery?: ArtworkGallery;
   color: string;
 }
 
@@ -29,6 +47,17 @@ export const contentData: Record<string, ContentItem> = {
     details: [
       ''
     ],
+    studioContent: {
+      logo: '/images/studio/logo.png',
+      missionTitle: 'Mission Statement',
+      missionText: 'SeaMonkeys is a design studio born from experimentation and driven by imagination. Our mission is to craft original, impactful design that connects people with brands in fresh and memorable ways.',
+      brandGuideImage: '/images/studio/brandguide.png',
+      brandGuideUrl: 'https://www.figma.com/design/YkB8TVvWoICxUf1IX9NxSQ/SeaMonkeysBrandGuide?node-id=25-63&t=nmeZeYyk4ljRjIXC-0',
+      coreValuesTitle: 'Core values',
+      coreValues: ['Fun', 'Bold', 'Unconventional'],
+      artworkTitle: 'Artwork',
+      artworkImage: '/images/studio/SMartwork.png'
+    },
     color: '#F5F5DC'
   },
   'staircase-slab-1': {
@@ -237,10 +266,35 @@ export const contentData: Record<string, ContentItem> = {
   },
   'artwork-platform-slab': {
     title: 'Artwork',
-    description: 'Artwork.',
-    details: [
-      '...'
-    ],
+    description: '',
+    details: [],
+    artworkGallery: {
+      images: [
+        '/images/artwork/albumcover1.png',
+        '/images/artwork/blitzlogo.png',
+        '/images/artwork/Cover.png',
+        '/images/artwork/Cover2.png',
+        '/images/artwork/Cover23.png',
+        '/images/artwork/Cover24.png',
+        '/images/artwork/Desktop10.png',
+        '/images/artwork/Desktop7.png',
+        '/images/artwork/Desktop8.png',
+        '/images/artwork/Desktop9.png',
+        '/images/artwork/Frame21.png',
+        '/images/artwork/Group124.png',
+        '/images/artwork/Group126.png',
+        '/images/artwork/Group165.webp',
+        '/images/artwork/Logo.png',
+        '/images/artwork/PosibleFinalStyleScapeGroup2.webp',
+        '/images/artwork/postera1.png',
+        '/images/artwork/posterc1.png',
+        '/images/artwork/posterz1.png',
+        '/images/artwork/PrototypeFifth.webp',
+        '/images/artwork/StylescapeWoodyFinal.webp',
+        '/images/artwork/tee3.webp',
+        '/images/artwork/tee4.webp'
+      ]
+    },
     color: '#F5F5DC'
   }
 };

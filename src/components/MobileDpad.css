@@ -15,8 +15,8 @@
 
 .dpad-container {
   position: relative;
-  width: clamp(100px, 21vw, 150px);
-  height: clamp(100px, 21vw, 150px);
+  width: clamp(100px, 21vw, 130px);
+  height: clamp(100px, 21vw, 130px);
   pointer-events: all !important;
   user-select: none;
   -webkit-user-select: none;

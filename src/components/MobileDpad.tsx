@@ -141,7 +141,7 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
         className={`dpad-container ${activeDirection ? 'active' : ''}`}
       >
         <img 
-          src="/images/dpadmobile.png" 
+          src="/images/newdpad.png" 
           alt="D-pad" 
           className="dpad-image"
           draggable={false}
