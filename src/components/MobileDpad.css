@@ -4,7 +4,7 @@
   left: 0;
   width: 50%;
   height: 30vh;
-  pointer-events: none;
+  pointer-events: auto; 
   z-index: 9999;
   display: flex;
   align-items: flex-end;

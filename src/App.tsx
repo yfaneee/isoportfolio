@@ -52,6 +52,7 @@ function App() {
   const [currentWebsiteUrl, setCurrentWebsiteUrl] = useState('');
   const [currentBillboardKey, setCurrentBillboardKey] = useState('');
   const [triggerBillboardExit, setTriggerBillboardExit] = useState(false);
+  const [activeSlabId, setActiveSlabId] = useState<string | null>(null);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterOption>({
     id: 'character-r',
     name: 'Ninja',
@@ -411,6 +412,15 @@ function App() {
 
   // Handle slab interaction overlay
   const handleSlabInteraction = useCallback((isOnSlab: boolean, slabType?: string, githubUrl?: string) => {
+    const mapSlabTypeToId = (type?: string): string | null => {
+      if (!type) return null;
+      if (type === 'main') return 'main-slab';
+      if (type.startsWith('lo')) return type; 
+      return type;
+    };
+
+    setActiveSlabId(isOnSlab ? mapSlabTypeToId(slabType) : null);
+
     if (isOnSlab) {
       // Calculate overlay position 
       const centerX = window.innerWidth / 2;
@@ -1098,16 +1108,25 @@ function App() {
           style={{ 
             width: '100vw', 
             height: '100vh',
-            background: 'linear-gradient(135deg, #E5D3FF 0%, #C5A3FF 50%, #A580FF 100%)',
+            backgroundImage: 'linear-gradient(180deg, #E5D3FF 0%, #D9C7FF 28%, #D19DDB 55%, #B244E5 78%, #51258E 100%), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABN0lEQVR4Xu3YMQrCQBBF0XszO2CHCuxnxOQk4LLxI02qsLE0kNsMchGN28AL/fOHnqd7qV3CyMfCVAA/gjByBPYEVAk0AVkOkCTQZWCVQJNAFZDpAk0GVglUCbQDWBJQJNAFZDpAk0GVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVgk8/4PVQwDFi1Cdm42Hcps225y7sY9qsK0kGugHchGXQT0AVkOkCTQZWCVQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCbwB8Z8SGvtQvE4E14R/2uOeGjn5ERsYj8i1Cdm42Hcps225y7sY9qsK0kGugHchGXQT0A/4Y5E9O+V1YAAAAASUVORK5CYII=")',
+            backgroundBlendMode: 'normal, soft-light',
+            backgroundRepeat: 'no-repeat, repeat',
+            backgroundSize: 'cover, 600px 600px',
             touchAction: 'none',
             pointerEvents: 'auto'
           }}
           onTouchStart={(e) => {
-            // Only handle touch on the canvas, not UI elements
-            if (e.target === e.currentTarget && characterControllerRef.current) {
-              e.preventDefault();
-              characterControllerRef.current.handleTouch(e.touches[0]);
-            }
+            if (e.target !== e.currentTarget || !characterControllerRef.current) return;
+
+            const touch = e.touches[0];
+            const controlZoneHeight = window.innerHeight * 0.35;
+            const isInControlZone =
+              touch.clientY > window.innerHeight - controlZoneHeight;
+
+            if (isInControlZone) return;
+
+            e.preventDefault();
+            characterControllerRef.current.handleTouch(touch);
           }}
           onTouchEnd={(e) => {
             if (e.target === e.currentTarget && characterControllerRef.current) {
@@ -1154,6 +1173,7 @@ function App() {
                   onBillboardRef={handleBillboardRef}
                   onSlabHover={handleSlabHover}
                   onSlabClick={handleSlabClick}
+                activeSlabId={activeSlabId}
                 />
             </Canvas>
             

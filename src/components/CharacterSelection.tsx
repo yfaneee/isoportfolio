@@ -36,7 +36,7 @@ const characterOptions: CharacterOption[] = [
   },
   {
     id: 'character-l',
-    name: 'Zombie',
+    name: 'Woody',
     modelPath: '/models/character-l.glb',
     imagePath: '/images/character-l.png'
   }

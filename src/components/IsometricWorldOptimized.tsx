@@ -92,9 +92,10 @@ interface MainGridProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
-const MainGrid = React.memo<MainGridProps>(({ onSlabHover, onSlabClick, introComplete }) => {
+const MainGrid = React.memo<MainGridProps>(({ onSlabHover, onSlabClick, introComplete, activeSlabId }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5; 
   const floorHeight = 0.3; 
@@ -133,6 +134,7 @@ const MainGrid = React.memo<MainGridProps>(({ onSlabHover, onSlabClick, introCom
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'main-slab'}
       />
 
       {/* Extension floors  */}
@@ -468,9 +470,10 @@ interface WallBlocksProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
-const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, introComplete }) => {
+const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, introComplete, activeSlabId }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
   const wallHeight = 3.2; 
@@ -521,6 +524,7 @@ const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, intr
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'project-studio'}
       />
       
       {/* Smaller block slab - Interactive Project */}
@@ -534,6 +538,7 @@ const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, intr
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'smaller-block'}
       />
     </>
   );
@@ -546,9 +551,10 @@ interface StairSystemsProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
-const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, introComplete }) => {
+const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, introComplete, activeSlabId }) => {
   const floorSize = 1.5;
   const floorHeight = 0.3;
   const spacing = 1.5;
@@ -621,6 +627,7 @@ const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, 
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'lo1'}
       />
       <InteractiveSlab
         key="staircase-slab-2"
@@ -632,6 +639,7 @@ const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, 
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'lo2'}
       />
       <InteractiveSlab
         key="staircase-slab-3"
@@ -643,6 +651,7 @@ const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, 
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'lo3'}
       />
       <InteractiveSlab
         key="staircase-slab-4"
@@ -654,6 +663,7 @@ const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, 
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'lo4'}
       />
       <InteractiveSlab
         key="staircase-slab-5"
@@ -665,6 +675,7 @@ const StairSystems = React.memo<StairSystemsProps>(({ onSlabHover, onSlabClick, 
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'lo5'}
       />
     </>
   );
@@ -781,9 +792,10 @@ interface ArtworkPlatformProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
-const ArtworkPlatform = React.memo<ArtworkPlatformProps>(({ onSlabHover, onSlabClick, introComplete }) => {
+const ArtworkPlatform = React.memo<ArtworkPlatformProps>(({ onSlabHover, onSlabClick, introComplete, activeSlabId }) => {
   const floorSize = 1.5;
   const floorHeight = 0.3;
   const spacing = 1.5;
@@ -973,6 +985,7 @@ const ArtworkPlatform = React.memo<ArtworkPlatformProps>(({ onSlabHover, onSlabC
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        isActive={activeSlabId === 'artwork'}
       />
     </>
   );
@@ -994,6 +1007,7 @@ interface ProjectPlatformsProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
 const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({ 
@@ -1008,7 +1022,8 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   onBillboardRef,
   onSlabHover,
   onSlabClick,
-  introComplete
+  introComplete,
+  activeSlabId
 }) => {
   const floorColor = '#641E68';
   const floorSize = 1.5;
@@ -1075,6 +1090,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
           onSlabHover={onSlabHover}
           onSlabClick={onSlabClick}
           introComplete={introComplete}
+        isActive={activeSlabId === slab.slabId}
         />
       ))}
 
@@ -1100,6 +1116,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
           onSlabHover={onSlabHover}
           onSlabClick={onSlabClick}
           introComplete={introComplete}
+          activeSlabId={activeSlabId}
         />
       ))}
 
@@ -1212,6 +1229,7 @@ interface IsometricWorldProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
 const IsometricWorld: React.FC<IsometricWorldProps> = ({ 
@@ -1226,17 +1244,18 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
   onBillboardRef,
   onSlabHover,
   onSlabClick,
-  introComplete
+  introComplete,
+  activeSlabId
 }) => {
   return (
     <group>
       <FoundationBlocks />
-      <MainGrid onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <MainGrid onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} activeSlabId={activeSlabId} />
       <ExtendedGrid onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
-      <WallBlocks onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
-      <StairSystems onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <WallBlocks onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} activeSlabId={activeSlabId} />
+      <StairSystems onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} activeSlabId={activeSlabId} />
       <LearningOutcomesPlatform onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
-      <ArtworkPlatform onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} />
+      <ArtworkPlatform onSlabHover={onSlabHover} onSlabClick={onSlabClick} introComplete={introComplete} activeSlabId={activeSlabId} />
       <ProjectPlatforms 
         onBillboardInteraction={onBillboardInteraction}
         onBillboardFullscreenStart={onBillboardFullscreenStart}
@@ -1250,6 +1269,7 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        activeSlabId={activeSlabId}
       />
     </group>
   );

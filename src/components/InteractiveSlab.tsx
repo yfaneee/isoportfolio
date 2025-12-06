@@ -10,6 +10,7 @@ interface InteractiveSlabProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  isActive?: boolean;
 }
 
 const InteractiveSlab: React.FC<InteractiveSlabProps> = ({
@@ -20,9 +21,11 @@ const InteractiveSlab: React.FC<InteractiveSlabProps> = ({
   slabId,
   onSlabHover,
   onSlabClick,
-  introComplete
+  introComplete,
+  isActive = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const activeColor = '#E8A200';
 
   const handlePointerOver = (e: any) => {
     if (!introComplete) return; 
@@ -60,7 +63,7 @@ const InteractiveSlab: React.FC<InteractiveSlabProps> = ({
     }
   };
 
-  const finalColor = isHovered && hoverColor ? hoverColor : color;
+  const finalColor = (isActive || isHovered) ? activeColor : (hoverColor || color);
   const isTransparent = color === 'transparent';
 
   return (

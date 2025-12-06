@@ -15,16 +15,16 @@ const MobileInteractButton: React.FC<MobileInteractButtonProps> = ({ onInteract,
     const handleTouchStart = (e: TouchEvent) => {
       if (!buttonRef.current || !visible) return;
       
-      const touch = e.touches[0];
       const rect = buttonRef.current.getBoundingClientRect();
+      const touch = Array.from(e.changedTouches).find(
+        (t) =>
+          t.clientX >= rect.left &&
+          t.clientX <= rect.right &&
+          t.clientY >= rect.top &&
+          t.clientY <= rect.bottom
+      );
       
-      // Check if touch is within button bounds
-      if (
-        touch.clientX >= rect.left &&
-        touch.clientX <= rect.right &&
-        touch.clientY >= rect.top &&
-        touch.clientY <= rect.bottom
-      ) {
+      if (touch) {
         e.preventDefault();
         touchIdRef.current = touch.identifier;
         setIsPressed(true);

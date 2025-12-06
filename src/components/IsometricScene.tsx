@@ -36,6 +36,7 @@ interface IsometricSceneProps {
   onBillboardRef?: (key: string, ref: any) => void;
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
+  activeSlabId?: string | null;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -69,7 +70,8 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   currentCharacterPosition = [0, 0, 0],
   onBillboardRef,
   onSlabHover,
-  onSlabClick
+  onSlabClick,
+  activeSlabId
 }) => {
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
 
@@ -88,7 +90,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   return (
     <>
       {/* Lighting setup */}
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={2} />
       <directionalLight 
         position={[10, 10, 5]} 
         intensity={2}
@@ -127,6 +129,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}
         introComplete={introComplete}
+        activeSlabId={activeSlabId}
       />
       
       {/* Debug platform boundaries (red lines) */}

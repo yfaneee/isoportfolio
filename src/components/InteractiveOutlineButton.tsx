@@ -15,6 +15,7 @@ interface InteractiveOutlineButtonProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
+  activeSlabId?: string | null;
 }
 
 const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
@@ -30,7 +31,8 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
   floorSize,
   onSlabHover,
   onSlabClick,
-  introComplete
+  introComplete,
+  activeSlabId
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -38,8 +40,12 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
   const isCharacterOnButton = 
     characterPosition[0] >= -1 - 0.45 && characterPosition[0] <= -1 + 0.45 && 
     characterPosition[2] >= z - 0.45 && characterPosition[2] <= z + 0.45;
+
+  const activeColor = '#E8A200';
+  const isActive = activeSlabId === slabId || isCharacterOnButton;
+  const edgeColor = isActive || (isHovered && introComplete) ? activeColor : '#F5F5DC';
   
-  const extrudeHeight = (isCharacterOnButton || (isHovered && introComplete)) ? 0.10 : 0.04;
+  const extrudeHeight = (isActive || (isHovered && introComplete)) ? 0.10 : 0.04;
   const extrudeY = platform18x3Y + floorHeight/2 + extrudeHeight;
   
   const buttonSize = floorSize * 0.75; 
@@ -92,8 +98,8 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerMove={handlePointerOver}
       >
         <meshStandardMaterial 
-          color={'#F5F5DC'} 
-          emissive={isHovered ? '#FFE4B5' : '#000000'}
+          color={edgeColor} 
+          emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
         />
       </Box>
@@ -107,8 +113,8 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerMove={handlePointerOver}
       >
         <meshStandardMaterial 
-          color={'#F5F5DC'} 
-          emissive={isHovered ? '#FFE4B5' : '#000000'}
+          color={edgeColor} 
+          emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
         />
       </Box>
@@ -122,8 +128,8 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerMove={handlePointerOver}
       >
         <meshStandardMaterial 
-          color={'#F5F5DC'} 
-          emissive={isHovered ? '#FFE4B5' : '#000000'}
+          color={edgeColor} 
+          emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
         />
       </Box>
@@ -137,8 +143,8 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerMove={handlePointerOver}
       >
         <meshStandardMaterial 
-          color={'#F5F5DC'} 
-          emissive={isHovered ? '#FFE4B5' : '#000000'}
+          color={edgeColor} 
+          emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
         />
       </Box>

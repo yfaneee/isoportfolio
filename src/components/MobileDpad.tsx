@@ -13,10 +13,19 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
 
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      if (!visible) return;
-      
-      const touch = e.touches[0];
-      
+      if (!visible || !dpadRef.current) return;
+
+      const rect = dpadRef.current.getBoundingClientRect();
+      const touch = Array.from(e.changedTouches).find(
+        (t) =>
+          t.clientX >= rect.left &&
+          t.clientX <= rect.right &&
+          t.clientY >= rect.top &&
+          t.clientY <= rect.bottom
+      );
+
+      if (!touch) return;
+
       e.preventDefault();
       e.stopPropagation();
       touchIdRef.current = touch.identifier;

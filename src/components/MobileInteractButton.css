@@ -4,7 +4,7 @@
   right: 0;
   width: 50%;
   height: 30vh;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 9999;
   display: flex;
   align-items: flex-end;
@@ -39,25 +39,6 @@
 .interact-button-container.active .interact-button-image {
   opacity: 1;
   transform: scale(0.95);
-}
-
-.interact-label {
-  position: absolute;
-  left: 50.5%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: clamp(0.7rem, 2vw, 0.9rem);
-  font-weight: bold;
-  text-align: center;
-  pointer-events: none;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  letter-spacing: 0.05em;
-  opacity: 1;
-  font-family: 'Satoshi-Regular', sans-serif;
-}
-
-.interact-button-container.active .interact-label {
-  opacity: 1;
 }
 
 /* Hide on desktop */
