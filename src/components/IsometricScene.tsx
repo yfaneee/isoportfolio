@@ -37,6 +37,8 @@ interface IsometricSceneProps {
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
   activeSlabId?: string | null;
+  onIntroProgress?: (value: number) => void;
+  introProgress?: number;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -71,7 +73,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   onBillboardRef,
   onSlabHover,
   onSlabClick,
-  activeSlabId
+  activeSlabId,
+  onIntroProgress,
+  introProgress = 0
 }) => {
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
 
@@ -107,6 +111,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
                characterControllerRef={characterControllerRef}
                introComplete={introComplete}
                onIntroComplete={handleIntroComplete}
+        onIntroProgress={onIntroProgress}
                isCharacterMoving={isCharacterMoving}
                showMenu={showMenu}
                showContent={showContent}
@@ -130,6 +135,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onSlabClick={onSlabClick}
         introComplete={introComplete}
         activeSlabId={activeSlabId}
+        introProgress={introProgress}
       />
       
       {/* Debug platform boundaries (red lines) */}

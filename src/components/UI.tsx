@@ -11,7 +11,7 @@ const UI: React.FC<UIProps> = ({ visible, canInteract = false, showContent = fal
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   
   return (
-    <div className="ui-overlay">
+    <div className={`ui-overlay ${visible ? 'show' : ''}`}>
       {visible && (
         <div className="controls-hint" aria-label="Controls hint">
           {isMobile ? (

@@ -53,6 +53,7 @@ function App() {
   const [currentBillboardKey, setCurrentBillboardKey] = useState('');
   const [triggerBillboardExit, setTriggerBillboardExit] = useState(false);
   const [activeSlabId, setActiveSlabId] = useState<string | null>(null);
+  const [introProgress, setIntroProgress] = useState(0);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterOption>({
     id: 'character-r',
     name: 'Ninja',
@@ -1112,6 +1113,7 @@ function App() {
             backgroundBlendMode: 'normal, soft-light',
             backgroundRepeat: 'no-repeat, repeat',
             backgroundSize: 'cover, 600px 600px',
+            filter: `brightness(${0.7 + 0.3 * introProgress})`,
             touchAction: 'none',
             pointerEvents: 'auto'
           }}
@@ -1173,12 +1175,14 @@ function App() {
                   onBillboardRef={handleBillboardRef}
                   onSlabHover={handleSlabHover}
                   onSlabClick={handleSlabClick}
-                activeSlabId={activeSlabId}
+                  activeSlabId={activeSlabId}
+                  onIntroProgress={setIntroProgress}
+                  introProgress={introProgress}
                 />
             </Canvas>
             
-            {/* Controls UI Overlay - hidden when loading screen is visible or website overlay is open */}
-            {!showLoadingScreen && !showWebsiteOverlay && <ControlsUI introComplete={introComplete} />}
+            {/* Controls UI Overlay - always mounted, handles its own visibility */}
+            <ControlsUI introComplete={introComplete} showCharacterSelection={showCharacterSelection} />
         
             {/* UI Overlay - always mounted; controls hint visible after intro and after menu delay, hidden when website overlay is open */}
             <UI 

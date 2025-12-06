@@ -1230,6 +1230,7 @@ interface IsometricWorldProps {
   onSlabClick?: (slabId: string) => void;
   introComplete: boolean;
   activeSlabId?: string | null;
+  introProgress?: number;
 }
 
 const IsometricWorld: React.FC<IsometricWorldProps> = ({ 
@@ -1245,7 +1246,8 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
   onSlabHover,
   onSlabClick,
   introComplete,
-  activeSlabId
+  activeSlabId,
+  introProgress = 0
 }) => {
   return (
     <group>
@@ -1270,6 +1272,15 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
         onSlabClick={onSlabClick}
         introComplete={introComplete}
         activeSlabId={activeSlabId}
+      />
+      {/* Intro light beam */}
+      <spotLight
+        position={[0, 12, 0]}
+        angle={0.6}
+        penumbra={0.6}
+        intensity={2 * Math.max(0, Math.min(Math.max((introProgress - 0.35) / 0.25, 0), 1)) * (1 - Math.min(Math.max((introProgress - 0.85) / 0.15, 0), 1))}
+        color={'#ffdca8'}
+        castShadow={false}
       />
     </group>
   );

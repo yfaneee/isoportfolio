@@ -6,6 +6,7 @@ interface CameraControllerProps {
   characterControllerRef: React.RefObject<any>;
   introComplete: boolean;
   onIntroComplete: () => void;
+  onIntroProgress?: (value: number) => void;
   isCharacterMoving: boolean;
   showMenu: boolean;
   showContent: boolean;
@@ -18,6 +19,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
   characterControllerRef,
   introComplete,
   onIntroComplete,
+  onIntroProgress,
   isCharacterMoving,
   showMenu,
   showContent,
@@ -27,7 +29,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
 }) => {
   const { camera } = useThree();
   const introTimeRef = useRef(0);
-  const introDuration = 3;
+  const introDuration = 4;
   const introCompleteTimeRef = useRef(0);
   const cameraAnimationRef = useRef<{isAnimating: boolean, startTime: number, startPos: THREE.Vector3, startLookAt: THREE.Vector3}>({
     isAnimating: false,
@@ -42,6 +44,7 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const minZoom = 1.0; 
   const maxZoom = 3.5; 
   const wasMovingRef = useRef(false);
+  const lastIntroProgressRef = useRef(0);
   
   // Pan/drag state
   const isDraggingRef = useRef(false);
@@ -296,53 +299,76 @@ const CameraController: React.FC<CameraControllerProps> = ({
       currentLookAtRef.current.set(0, 0.22, 0);
       // Reset intro time when in loading screen
       introTimeRef.current = 0;
-      return; // Early return - no need to process further
+    if (onIntroProgress && lastIntroProgressRef.current !== 0) {
+      lastIntroProgressRef.current = 0;
+      onIntroProgress(0);
+    }
+      return; 
     } else if (!introComplete) {
-      // Intro animation
       introTimeRef.current += delta;
       const t = Math.min(introTimeRef.current / introDuration, 1);
       
-      const eased = t < 0.5 
+      // Ease in, then ease out
+      const easeInOut = t < 0.5 
         ? 4 * t * t * t 
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      // Overshoot phase 
+      const overshootAmount = 0.08; 
+      const approach = Math.min(t / 0.8, 1); 
+      const settle = t <= 0.8 ? 0 : (t - 0.8) / 0.2; 
+      const overshootFactor = approach * (1 + overshootAmount * (1 - settle));
+
+      const characterPosition = [0, 0.22, 0]; 
+      const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
+      const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
       
-      // Animate camera from far to close 
-             const characterPosition = [0, 0.22, 0]; 
-             const menuOffsetX = showMenu && !isTransitioning ? 3 : 0;
-             const contentOffsetX = showContent && !isTransitioning ? -3 : 0;
-      
-      // Use cached responsive camera positioning
       let cameraDistance = cameraSettingsRef.current.distance;
       let cameraHeight = cameraSettingsRef.current.height;
       
-      // Zoom in when content box is open
       if (showContent && !isTransitioning) {
         cameraDistance *= 0.7; 
         cameraHeight *= 0.8; 
       }
       
-      // Apply zoom factor
       cameraDistance *= zoomFactorRef.current;
       cameraHeight *= zoomFactorRef.current;
       
-             const targetCameraPos = [
-               characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
-               characterPosition[1] + cameraHeight,
-               characterPosition[2] + cameraDistance + cameraPanOffsetRef.current.z
-             ];
+      const baseTarget = [
+        characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
+        characterPosition[1] + cameraHeight,
+        characterPosition[2] + cameraDistance + cameraPanOffsetRef.current.z
+      ];
+
+      const targetCameraPos = [
+        baseTarget[0] * overshootFactor,
+        baseTarget[1] * overshootFactor,
+        baseTarget[2] * overshootFactor
+      ];
 
       camera.position.set(
-        0 + eased * targetCameraPos[0],
-        40 - eased * (40 - targetCameraPos[1]),
-        40 - eased * (40 - targetCameraPos[2])
+        0 + easeInOut * targetCameraPos[0],
+        40 - easeInOut * (40 - targetCameraPos[1]),
+        40 - easeInOut * (40 - targetCameraPos[2])
       );
-             const introLookAtX = characterPosition[0] + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x;
-             const introLookAtY = characterPosition[1];
-             const introLookAtZ = characterPosition[2] + cameraPanOffsetRef.current.z;
-             camera.lookAt(introLookAtX, introLookAtY, introLookAtZ);
-             currentLookAtRef.current.set(introLookAtX, introLookAtY, introLookAtZ);
+
+      const introLookAtX = (characterPosition[0] + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x);
+      const introLookAtY = characterPosition[1];
+      const introLookAtZ = (characterPosition[2] + cameraPanOffsetRef.current.z);
+      const lookOvershoot = 1 + overshootAmount * (1 - settle);
+      camera.lookAt(introLookAtX * lookOvershoot, introLookAtY, introLookAtZ * lookOvershoot);
+      currentLookAtRef.current.set(introLookAtX, introLookAtY, introLookAtZ);
       
+    if (onIntroProgress && Math.abs(t - lastIntroProgressRef.current) > 0.01) {
+      lastIntroProgressRef.current = t;
+      onIntroProgress(t);
+    }
+    
       if (t >= 1) {
+      if (onIntroProgress) {
+        onIntroProgress(1);
+        lastIntroProgressRef.current = 1;
+      }
         onIntroComplete();
       }
     } else {
