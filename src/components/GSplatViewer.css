@@ -5,7 +5,7 @@
   min-height: 350px;
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+  background: linear-gradient(145deg, #000000 0%, #2d0a3d 50%, #1a0a1a 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -101,7 +101,7 @@
   width: 48px;
   height: 48px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #00d9ff;
+  border-top-color: #7951b1;
   border-radius: 50%;
   animation: gsplat-spin 1s linear infinite;
 }
@@ -127,7 +127,7 @@
 
 .gsplat-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00d9ff, #00ff88);
+  background: linear-gradient(90deg, #E5D3FF, #51258E);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -135,7 +135,7 @@
 .gsplat-progress-text {
   font-family: 'Satoshi-Medium', sans-serif;
   font-size: 0.8rem;
-  color: #00d9ff;
+  color: #7951b1;
   margin: 0;
 }
 
