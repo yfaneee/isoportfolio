@@ -1,0 +1,264 @@
+.gsplat-viewer-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  min-height: 350px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Load prompt screen */
+.gsplat-load-prompt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  z-index: 10;
+}
+
+.gsplat-load-icon {
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+  animation: gsplat-float 3s ease-in-out infinite;
+}
+
+.gsplat-load-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes gsplat-float {
+  0%, 100% { transform: translateY(0) rotateY(0deg); }
+  50% { transform: translateY(-8px) rotateY(10deg); }
+}
+
+.gsplat-load-title {
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.gsplat-load-description {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 8px 0;
+}
+
+.gsplat-load-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #E5D3FF 0%, #51258E 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(189, 55, 189, 0.3);
+}
+
+.gsplat-load-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(212, 49, 204, 0.4);
+}
+
+.gsplat-load-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.gsplat-load-button-icon {
+  font-size: 0.875rem;
+}
+
+/* Loading state */
+.gsplat-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.gsplat-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #00d9ff;
+  border-radius: 50%;
+  animation: gsplat-spin 1s linear infinite;
+}
+
+@keyframes gsplat-spin {
+  to { transform: rotate(360deg); }
+}
+
+.gsplat-loading-text {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.gsplat-progress-bar {
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gsplat-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d9ff, #00ff88);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.gsplat-progress-text {
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.8rem;
+  color: #00d9ff;
+  margin: 0;
+}
+
+/* Error state */
+.gsplat-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.gsplat-error p {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 0.9rem;
+  color: #ff6b6b;
+  margin: 0;
+}
+
+.gsplat-retry-button {
+  padding: 10px 20px;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.875rem;
+  color: #fff;
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gsplat-retry-button:hover {
+  background: rgba(255, 107, 107, 0.3);
+}
+
+/* Canvas container */
+.gsplat-canvas-container {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gsplat-canvas-container.visible {
+  opacity: 1;
+}
+
+.gsplat-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Controls hint */
+.gsplat-controls-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  z-index: 20;
+}
+
+.gsplat-controls-hint span {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.gsplat-reset-button {
+  padding: 6px 14px;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.75rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gsplat-reset-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gsplat-viewer-wrapper {
+    height: 300px;
+    min-height: 280px;
+  }
+
+  .gsplat-load-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .gsplat-load-title {
+    font-size: 1.1rem;
+  }
+
+  .gsplat-load-button {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+
+  .gsplat-controls-hint {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .gsplat-controls-hint span {
+    font-size: 0.7rem;
+  }
+}
+

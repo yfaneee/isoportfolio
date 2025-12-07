@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ContentItem, ExampleItem } from '../data/ContentData';
+import GSplatViewer from './GSplatViewer';
 import './Content.css';
 
 // Lazy image component with intersection observer
@@ -245,7 +246,63 @@ const Content: React.FC<ContentProps> = React.memo(({
           {canNavigateNext && <span className="nav-key nav-key-right">E</span>}
         </div>
         <div className="content-box-body" ref={contentBoxBodyRef}>
-          {content.studioContent ? (
+          {content.projectContent ? (
+            <div className="project-content-container" ref={examplesContainerRef}>
+              {/* Project Logo */}
+              {content.projectContent.logo && (
+                <div className="studio-logo-container">
+                  <img 
+                    src={content.projectContent.logo} 
+                    alt={`${content.title} logo`}
+                    className="studio-logo"
+                  />
+                </div>
+              )}
+
+              {/* Project Header */}
+              <div className="project-header">
+                <p className="project-description">{content.projectContent.description}</p>
+              </div>
+
+              {/* GSplat Viewer */}
+              <div className="project-viewer-section">
+                <GSplatViewer plyUrl={content.projectContent.gsplatUrl} />
+              </div>
+
+              {/* Project Process / Notes */}
+              {content.projectContent.processText && (
+                <div className="project-notes">
+                  <p className="project-description">{content.projectContent.processText}</p>
+                </div>
+              )}
+
+              {/* Project Process Points */}
+              {content.projectContent.processPoints && content.projectContent.processPoints.length > 0 && (
+                <div className="project-process-points">
+                  <ul className="project-points-list">
+                    {content.projectContent.processPoints.map((point, idx) => (
+                      <li key={idx} className="project-point-item">{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Optional Images */}
+              {content.projectContent.images && content.projectContent.images.length > 0 && (
+                <div className="project-images">
+                  {content.projectContent.images.map((img, idx) => (
+                    <img 
+                      key={idx} 
+                      src={img} 
+                      alt={`Project ${idx + 1}`}
+                      className="project-image"
+                      onClick={() => handleImageClick(img)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : content.studioContent ? (
             <div className="studio-content-container" ref={examplesContainerRef}>
               {/* Logo */}
               <div className="studio-logo-container">

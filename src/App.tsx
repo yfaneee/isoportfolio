@@ -1099,7 +1099,38 @@ function App() {
           sparkCount={8}
           duration={400}
         >
-          <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+          <div style={{ 
+            width: '100vw', 
+            height: '100vh', 
+            position: 'relative',
+            background: 'linear-gradient(180deg, #E5D3FF 0%, #D9C7FF 28%, #D19DDB 55%, #B244E5 78%, #51258E 100%)',
+          }}>
+            {/* SVG Noise Filter Definition */}
+            <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+              <defs>
+                <filter id="perlin-noise" x="0%" y="0%" width="100%" height="100%">
+                  <feTurbulence 
+                    type="fractalNoise" 
+                    baseFrequency="0.7" 
+                    numOctaves="4" 
+                    stitchTiles="stitch"
+                    result="noise"
+                  />
+                  <feColorMatrix type="saturate" values="0" />
+                </filter>
+              </defs>
+            </svg>
+            
+            {/* Noise Overlay */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              filter: 'url(#perlin-noise)',
+              opacity: 0.1,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }} />
+            
             {/* Three.js Canvas for the isometric world - always visible */}
             <Canvas
           camera={{
@@ -1107,12 +1138,11 @@ function App() {
             fov: 50
           }}
           style={{ 
+            position: 'relative',
+            zIndex: 1,
             width: '100vw', 
             height: '100vh',
-            backgroundImage: 'linear-gradient(180deg, #E5D3FF 0%, #D9C7FF 28%, #D19DDB 55%, #B244E5 78%, #51258E 100%), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABN0lEQVR4Xu3YMQrCQBBF0XszO2CHCuxnxOQk4LLxI02qsLE0kNsMchGN28AL/fOHnqd7qV3CyMfCVAA/gjByBPYEVAk0AVkOkCTQZWCVQJNAFZDpAk0GVglUCbQDWBJQJNAFZDpAk0GVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVglUCbQDVgk8/4PVQwDFi1Cdm42Hcps225y7sY9qsK0kGugHchGXQT0AVkOkCTQZWCVQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCZQJtANWCbwB8Z8SGvtQvE4E14R/2uOeGjn5ERsYj8i1Cdm42Hcps225y7sY9qsK0kGugHchGXQT0A/4Y5E9O+V1YAAAAASUVORK5CYII=")',
-            backgroundBlendMode: 'normal, soft-light',
-            backgroundRepeat: 'no-repeat, repeat',
-            backgroundSize: 'cover, 600px 600px',
+            background: 'transparent',
             filter: `brightness(${0.7 + 0.3 * introProgress})`,
             touchAction: 'none',
             pointerEvents: 'auto'

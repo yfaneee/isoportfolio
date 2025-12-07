@@ -137,9 +137,9 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  justify-content: center;
   align-items: center;
   text-align: center;
+  overflow: hidden;
 }
 
 .content-box-body .description {
@@ -519,7 +519,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  max-height: 60vh;
+  max-height: 70vh;
   overflow-y: auto;
   padding-right: 0.5rem;
   scrollbar-width: thin;
@@ -576,6 +576,7 @@
 }
 
 .studio-section-text {
+  font-family: 'Satoshi-Regular', sans-serif;
   margin: 0 3rem;
   font-size: 1.1rem;
   line-height: 1.6;
@@ -899,5 +900,150 @@
 @media (max-width: 500px) {
   .artwork-masonry {
     column-count: 1;
+  }
+}
+
+/* ============================================
+   Project Content Styles (GSplat Viewer)
+   ============================================ */
+
+.project-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 12px 8px 8px;
+  overflow-y: auto;
+  flex: 1;
+  width: 100%;
+  align-items: center;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.project-content-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-content-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.project-content-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.project-content-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.project-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-description {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 1);
+  margin: 0 3rem;
+  text-align: center;
+}
+
+.project-viewer-section {
+  width: 100%;
+  min-height: 410px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.project-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.project-process-points {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
+  align-items: flex-start;
+}
+
+.project-points-list {
+  list-style-type: disc;
+  padding-left: 2rem;
+  margin: 0;
+  width: 100%;
+}
+
+.project-point-item {
+  font-family: 'Satoshi-Regular', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0.8rem;
+  text-align: left;
+}
+
+.project-point-item::marker {
+  color: rgba(254, 93, 38, 1);
+  font-size: 1.2rem;
+}
+
+.project-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+  width: 100%;
+  max-width: 700px;
+}
+
+.project-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  opacity: 0.9;
+}
+
+/* Responsive project content */
+@media (max-width: 768px) {
+  .project-content-container {
+    gap: 16px;
+    padding: 4px;
+  }
+
+  .project-description {
+    font-size: 0.875rem;
+  }
+
+  .project-images {
+    grid-template-columns: 1fr;
+  }
+
+  .project-point-item {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.6rem;
+  }
+
+  .project-points-list {
+    padding-left: 1.5rem;
   }
 }

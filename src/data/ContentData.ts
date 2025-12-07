@@ -22,6 +22,16 @@ export interface ArtworkGallery {
   images: string[];
 }
 
+export interface ProjectContent {
+  intro: string;
+  description: string;
+  gsplatUrl: string;
+  logo?: string;
+  processText?: string;
+  processPoints?: string[];
+  images?: string[];
+}
+
 export interface ContentItem {
   title: string;
   description: string;
@@ -29,16 +39,34 @@ export interface ContentItem {
   examples?: ExampleItem[];
   studioContent?: StudioContent;
   artworkGallery?: ArtworkGallery;
+  projectContent?: ProjectContent;
   color: string;
 }
 
 export const contentData: Record<string, ContentItem> = {
   'smaller-block-slab': {
-    title: 'Project.',
-    description: 'Project.',
-    details: [
-      '...'
-    ],
+    title: 'Achterom 3D',
+    description: '',
+    details: [],
+    projectContent: {
+      intro: '3D Gaussian Splatting Capture',
+      description: 'This project explores photogrammetry and Gaussian Splatting techniques to create immersive 3D captures of real-world locations. The scan below shows a street corner in Eindhoven featuring urban graffiti art, captured using advanced 3D reconstruction methods.',
+      gsplatUrl: '/gsplat/Achterom/point_cloud.ply',
+      logo: '/images/Logo_IRON_Films_150p.png',
+      processPoints: [
+        'I built photogrammetry workflows using Meshroom, improving scan quality through iterative testing',
+        'Researched and implemented Gaussian Splatting, producing real-time, high-detail 3D scenes',
+        'Developed optimized capture methods (orbital, swirl, face-forward) for clean datasets',
+        'Presented workflow to stakeholders, translating complex rendering tech into clear explanations',
+        'Documented full pipeline from photo capture to Unreal Engine import for team use'
+      ],
+      images: [
+        '/images/meshpics/ChurchRenderA.png',
+        '/images/meshpics/ChurchRenderC.png',
+        '/images/meshpics/CornerV2b.png',
+        '/images/meshpics/CornerV2c.png'
+      ]
+    },
     color: '#F5F5DC'
   },
   'high-block-slab': {
