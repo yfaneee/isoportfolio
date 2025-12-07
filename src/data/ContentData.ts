@@ -45,7 +45,7 @@ export interface ContentItem {
 
 export const contentData: Record<string, ContentItem> = {
   'smaller-block-slab': {
-    title: 'Achterom 3D',
+    title: '3D Scanning Project',
     description: '',
     details: [],
     projectContent: {
