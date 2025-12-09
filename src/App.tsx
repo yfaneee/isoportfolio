@@ -31,6 +31,17 @@ function App() {
   const [introComplete, setIntroComplete] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [showCharacterSelection, setShowCharacterSelection] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isMusicPlayingRef = useRef(false);
+  
+  // Playlist of songs 
+  const playlistRef = useRef([
+    '/music/Baguira.mp3',
+    '/music/Boy.mp3',
+    '/music/Sudo.mp3'
+  ]);
+  const currentSongIndexRef = useRef(0);
   const [showLocationDiscovery, setShowLocationDiscovery] = useState(false);
   const [showProjectStudioDiscovery, setShowProjectStudioDiscovery] = useState(false);
   const [hasVisitedProjectStudio, setHasVisitedProjectStudio] = useState(false);
@@ -1013,6 +1024,73 @@ function App() {
   const handleCharacterSelectionStart = useCallback(() => {
     setShowCharacterSelection(false);
     setShowLoadingScreen(false);
+    
+    // Start music on user interaction (bypasses autoplay restrictions)
+    if (audioRef.current && !isMusicPlayingRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setIsMusicPlaying(true);
+          isMusicPlayingRef.current = true;
+        }).catch((error) => {
+          console.log('Audio playback failed:', error);
+        });
+      }
+    }
+  }, []);
+
+  // Toggle music handler
+  const toggleMusic = useCallback(() => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+        setIsMusicPlaying(false);
+        isMusicPlayingRef.current = false;
+      } else {
+        audioRef.current.play();
+        setIsMusicPlaying(true);
+        isMusicPlayingRef.current = true;
+      }
+    }
+  }, [isMusicPlaying]);
+
+  // Initialize music on app start
+  useEffect(() => {
+    const playlist = playlistRef.current;
+    audioRef.current = new Audio(playlist[0]);
+    audioRef.current.volume = 0.5;
+    
+    // Handle song end 
+    const handleSongEnd = () => {
+      currentSongIndexRef.current = (currentSongIndexRef.current + 1) % playlist.length;
+      if (audioRef.current) {
+        audioRef.current.src = playlist[currentSongIndexRef.current];
+        // Use ref to get current playing state
+        if (isMusicPlayingRef.current) {
+          audioRef.current.play();
+        }
+      }
+    };
+    
+    audioRef.current.addEventListener('ended', handleSongEnd);
+    
+    // Try to autoplay (may be blocked by browser)
+    audioRef.current.play().then(() => {
+      setIsMusicPlaying(true);
+      isMusicPlayingRef.current = true;
+    }).catch(() => {
+      // music will start when user clicks START button
+      setIsMusicPlaying(false);
+      isMusicPlayingRef.current = false;
+    });
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener('ended', handleSongEnd);
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   // Preload collision system, character models, and billboard textures on app start
@@ -1250,6 +1328,8 @@ function App() {
               isVisible={showCharacterSelection}
               onCharacterSelect={handleCharacterSelect}
               onStart={handleCharacterSelectionStart}
+              isMusicPlaying={isMusicPlaying}
+              onToggleMusic={toggleMusic}
             />
 
             {/* Location Discovery Notification */}
@@ -1342,6 +1422,8 @@ function App() {
             {/* Repository Links - Fixed on right side */}
             <RepoLinks
               isVisible={introComplete && !showLoadingScreen && !showWebsiteOverlay}
+              isMusicPlaying={isMusicPlaying}
+              onToggleMusic={toggleMusic}
             />
         
           </div>

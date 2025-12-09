@@ -40,6 +40,31 @@
   overflow: hidden;
 }
 
+.music-button {
+  border: none;
+  padding: 0;
+}
+
+.music-button.playing {
+  background: rgba(229, 62, 149, 0.9);
+  box-shadow: 0 4px 15px rgba(229, 62, 149, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.music-button.playing:hover {
+  background: rgba(229, 62, 149, 1);
+  box-shadow: 0 6px 20px rgba(229, 62, 149, 0.6);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(229, 62, 149, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(229, 62, 149, 0.6);
+  }
+}
+
 .repo-link-fixed::before {
   content: '';
   position: absolute;
