@@ -58,7 +58,7 @@ export const contentData: Record<string, ContentItem> = {
         'Researched and implemented Gaussian Splatting, producing real-time, high-detail 3D scenes',
         'Developed optimized capture methods (orbital, swirl, face-forward) for clean datasets',
         'Presented workflow to stakeholders, translating complex rendering tech into clear explanations',
-        'Documented full pipeline from photo capture to Unreal Engine import for team use test'
+        'Documented full pipeline from photo capture to Unreal Engine import for team use'
       ],
       images: [
         '/images/meshpics/ChurchRenderA.png',
