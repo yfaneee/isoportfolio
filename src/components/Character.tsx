@@ -285,7 +285,8 @@ const Character: React.FC<CharacterProps> = ({
     // Update position and rotation
     if (groupRef.current) {
       groupRef.current.position.set(position[0], position[1], position[2]);
-      groupRef.current.rotation.y = rotation + magicalRotationY;
+      // If magicalRotationY is set use it as override
+      groupRef.current.rotation.y = magicalRotationY !== 0 ? magicalRotationY : rotation;
       
       const isMagicalTransition = scale !== 1;
       

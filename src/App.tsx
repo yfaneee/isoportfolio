@@ -1165,6 +1165,19 @@ function App() {
     };
   }, [showMenu, showContent, isTransitioning, handleMenuIconClick, handleCloseContent]);
 
+  // Auto-rotate character when menu or content opens for better presentation
+  useEffect(() => {
+    if (showMenu) {
+      // Face character diagonally towards camera 
+      setCharacterRotationY( Math.PI / 4);
+    } else if (showContent) {
+      // Face character SOUTH 
+      setCharacterRotationY(Math.PI / 2); 
+    } else {
+      // When both close
+      setCharacterRotationY(0);
+    }
+  }, [showMenu, showContent]);
 
   return (
     <Router>
@@ -1328,8 +1341,6 @@ function App() {
               isVisible={showCharacterSelection}
               onCharacterSelect={handleCharacterSelect}
               onStart={handleCharacterSelectionStart}
-              isMusicPlaying={isMusicPlaying}
-              onToggleMusic={toggleMusic}
             />
 
             {/* Location Discovery Notification */}

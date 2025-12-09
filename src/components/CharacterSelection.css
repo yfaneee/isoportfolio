@@ -156,14 +156,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Buttons Container */
-.buttons-container {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  align-items: center;
-}
-
 /* New Start Button Styles */
 .cssbuttons-io-button {
   background: #ffffff;
@@ -184,24 +176,7 @@
   height: 2.8em;
   padding-right: 3.3em;
   cursor: pointer;
-}
-
-.music-toggle-button {
-  padding: 0.35em;
-  padding-right: 0.35em;
-  padding-left: 0.35em;
-  width: 2.8em;
-  justify-content: center;
-}
-
-.music-toggle-button .icon {
-  margin-left: 0;
-  position: relative;
-  right: 0;
-}
-
-.music-toggle-button:hover .icon {
-  width: 2.2em;
+  margin: 0 auto;
 }
 
 .cssbuttons-io-button .icon {
@@ -362,10 +337,6 @@
   .cssbuttons-io-button {
     font-size: clamp(1rem, 3vw, 1.3rem);
   }
-  
-  .buttons-container {
-    gap: 10px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -407,10 +378,6 @@
   .character-name {
     font-size: clamp(0.7rem, 2vw, 1rem);
   }
-  
-  .buttons-container {
-    gap: 8px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -440,10 +407,6 @@
   
   .character-card {
     padding: 4%;
-  }
-  
-  .buttons-container {
-    gap: 6px;
   }
 }
 

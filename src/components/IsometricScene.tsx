@@ -3,6 +3,7 @@ import IsometricWorld from '../components/IsometricWorldOptimized';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
 import PlatformDebugger from '../components/PlatformDebugger';
+import TrainSystem from '../components/TrainSystem';
 
 interface IsometricSceneProps {
   onIntroComplete: () => void;
@@ -137,6 +138,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         activeSlabId={activeSlabId}
         introProgress={introProgress}
       />
+      
+      {/* Animated train system circling the scene */}
+      <TrainSystem isVisible={introComplete} />
       
       {/* Debug platform boundaries (red lines) */}
       <PlatformDebugger enabled={false} />
