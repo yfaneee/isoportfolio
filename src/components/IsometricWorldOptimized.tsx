@@ -1,9 +1,333 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Box, Plane } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import InteractiveBillboard from './InteractiveBillboard';
 import InteractiveSlab from './InteractiveSlab';
 import InteractiveOutlineButton from './InteractiveOutlineButton';
+
+// ============================================================================
+// SKYSCRAPER FOUNDATION WITH ANIMATED WINDOWS
+// ============================================================================
+const SkyscraperFoundation: React.FC<{
+  position: [number, number, number];
+  size: [number, number, number];
+  baseColor: string;
+}> = ({ position, size, baseColor }) => {
+  const windowMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
+  const windowStatesRef = useRef<{ brightness: number; targetBrightness: number; timer: number }[]>([]);
+  const initializedRef = useRef(false);
+  
+  // Window configuration 
+  const windowsPerRow = 4;
+  const windowsPerColumn = 16;
+  
+  const windowWidth = (size[0] - 1) / windowsPerRow - 0.2;
+  const windowHeight = 2;
+  const windowGapX = 0.2;
+  const windowGapY = 2;
+  const windowInset = 0.02;
+  
+  // Generate window positions for all 4 sides
+  const windowPositions = useMemo(() => {
+    const windows: { pos: [number, number, number]; rotation: [number, number, number] }[] = [];
+    
+    const startY = size[1] / 2 - 2.5;
+    const totalWidthX = windowsPerRow * windowWidth + (windowsPerRow - 1) * windowGapX;
+    const startX = -totalWidthX / 2 + windowWidth / 2;
+    
+    // Front and back faces
+    for (let row = 0; row < windowsPerColumn; row++) {
+      for (let col = 0; col < windowsPerRow; col++) {
+        const x = startX + col * (windowWidth + windowGapX);
+        const y = startY - row * (windowHeight + windowGapY);
+        
+        // Front face
+        windows.push({ pos: [x, y, size[2] / 2 + windowInset], rotation: [0, 0, 0] });
+        
+      }
+    }
+    
+    // Left and right faces
+    const totalWidthZ = windowsPerRow * windowWidth + (windowsPerRow - 1) * windowGapX;
+    const startZ = -totalWidthZ / 2 + windowWidth / 2;
+    
+    for (let row = 0; row < windowsPerColumn; row++) {
+      for (let col = 0; col < windowsPerRow; col++) {
+        const z = startZ + col * (windowWidth + windowGapX);
+        const y = startY - row * (windowHeight + windowGapY);
+        
+        // Right face
+        windows.push({ pos: [size[0] / 2 + windowInset, y, z], rotation: [0, Math.PI / 2, 0] });
+        
+      }
+    }
+    
+    return windows;
+  }, [size, windowsPerRow, windowsPerColumn, windowWidth, windowHeight, windowGapX, windowGapY, windowInset]);
+  
+  // Initialize window states
+  useEffect(() => {
+    if (!initializedRef.current) {
+      windowStatesRef.current = windowPositions.map(() => {
+        const isOn = Math.random() > 0.5;
+        return {
+          brightness: isOn ? 0.7 + Math.random() * 0.3 : 0.05 + Math.random() * 0.1,
+          targetBrightness: isOn ? 0.7 + Math.random() * 0.3 : 0.05 + Math.random() * 0.1,
+          timer: Math.random() * 10
+        };
+      });
+      initializedRef.current = true;
+    }
+  }, [windowPositions.length]);
+  
+  // Animate windows
+  useFrame((_, delta) => {
+    windowMaterialsRef.current.forEach((material, index) => {
+      if (!material || !windowStatesRef.current[index]) return;
+      
+      const state = windowStatesRef.current[index];
+      
+      // Update timer
+      state.timer -= delta;
+      
+      // When timer expires, change state
+      if (state.timer <= 0) {
+        state.timer = 1.5 + Math.random() * 8;
+        
+        // 60% chance to toggle state
+        if (Math.random() < 0.6) {
+          const isCurrentlyOn = state.targetBrightness > 0.5;
+          if (isCurrentlyOn) {
+            // Turn off
+            state.targetBrightness = 0.05 + Math.random() * 0.1;
+          } else {
+            // Turn on
+            state.targetBrightness = 0.7 + Math.random() * 0.3;
+          }
+        }
+      }
+      
+      // Smooth interpolation
+      state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
+      
+      // Update material emissive
+      material.emissiveIntensity = state.brightness * 3;
+    });
+  });
+  
+  return (
+    <group position={position}>
+      {/* Main building structure */}
+      <Box args={size}>
+        <meshStandardMaterial color={baseColor} />
+      </Box>
+      
+      {/* Windows */}
+      {windowPositions.map((window, index) => (
+        <mesh
+          key={`window-${index}`}
+          position={window.pos}
+          rotation={window.rotation}
+        >
+          <planeGeometry args={[windowWidth, windowHeight]} />
+          <meshStandardMaterial
+            ref={(el) => { if (el) windowMaterialsRef.current[index] = el; }}
+            color="#2a1a0a"
+            emissive="#E8A200"
+            emissiveIntensity={Math.random() > 0.5 ? 2.5 : 0.3}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+// ============================================================================
+// RAMP FOUNDATIONS WITH WINDOWS (only on visible north/west sides)
+// ============================================================================
+const RampFoundationsWithWindows: React.FC<{
+  floorColor: string;
+  spacing: number;
+  floorHeight: number;
+}> = ({ floorColor, spacing, floorHeight }) => {
+  const windowMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
+  const windowStatesRef = useRef<{ brightness: number; targetBrightness: number; timer: number }[]>([]);
+  const initializedRef = useRef(false);
+  
+  const floorSize = 1.5;
+  const platformLevel = floorHeight * 9 + floorHeight * 1;
+  const platformCenterX = -1 * spacing - spacing * 0.4 - spacing * 0.28 * 9 - spacing * 3.18;
+  const platformCenterZ = 0;
+  const rampWidth = 5;
+  const rampDepth = 3;
+  const maxRampHeight = 3;
+  const rampFoundationHeight = 200;
+  
+  // Window settings
+  const windowWidth = 1.1;
+  const windowHeight = 1.7;
+  const windowGapY = 2;
+  const windowsPerColumn = 16;
+  
+  // Generate foundation data and window positions
+  const { foundations, windowPositions } = useMemo(() => {
+    const foundations: { key: string; position: [number, number, number]; hasEastWindows: boolean; hasSouthWindows: boolean; hasBigFaceWindows: boolean }[] = [];
+    const windows: { pos: [number, number, number]; rotation: [number, number, number] }[] = [];
+    
+    for (let x = 0; x < rampWidth; x++) {
+      for (let z = 0; z < rampDepth; z++) {
+        const isInHole = (x >= 1 && x <= 3) && (z >= 1 && z <= 1);
+        if (isInHole) continue;
+        
+        const isLastRampPiece = (x === 0) && (z === 1);
+        if (isLastRampPiece) continue;
+
+        if (x === 0 || x === rampWidth - 1 || z === 0 || z === rampDepth - 1) {
+          let rampHeight = 0;
+          const perimeter = 2 * (rampWidth + rampDepth - 2);
+          let perimeterIndex = 0;
+          
+          if (z === 0) {
+            perimeterIndex = x;
+          } else if (x === rampWidth - 1) {
+            perimeterIndex = rampWidth + z - 1;
+          } else if (z === rampDepth - 1) {
+            perimeterIndex = rampWidth + rampDepth + (rampWidth - 1 - x) - 2;
+          } else if (x === 0) {
+            perimeterIndex = 2 * rampWidth + rampDepth + (rampDepth - 1 - z) - 3;
+          }
+          
+          rampHeight = (perimeterIndex / perimeter) * maxRampHeight;
+          
+          const foundationX = platformCenterX - (x - rampWidth/2 + 0.5) * spacing;
+          const foundationZ = platformCenterZ - (z - rampDepth/2 + 0.5) * spacing;
+          const currentFloorY = platformLevel + rampHeight;
+          const foundationY = currentFloorY - rampFoundationHeight/2 - 0.15;
+          
+          // Check which sides should have windows 
+          const hasEastWindows = x === 0; 
+          const hasSouthWindows = z === rampDepth - 1; 
+          const hasBigFaceWindows = z === 0; 
+          
+          foundations.push({
+            key: `ramp-foundation-${x}-${z}`,
+            position: [foundationX, foundationY, foundationZ],
+            hasEastWindows,
+            hasSouthWindows,
+            hasBigFaceWindows
+          });
+          
+          // Generate windows for visible sides
+          const startY = rampFoundationHeight / 2 - 3;
+          
+          if (hasEastWindows) {
+            // Windows on east face (positive X)
+            for (let row = 0; row < windowsPerColumn; row++) {
+              const winY = foundationY + startY - row * (windowHeight + windowGapY);
+              windows.push({
+                pos: [foundationX + floorSize/2 + 0.02, winY, foundationZ],
+                rotation: [0, Math.PI / 2, 0]
+              });
+            }
+          }
+          
+          if (hasSouthWindows) {
+            // Windows on south face (positive Z) - outer face of ramp
+            for (let row = 0; row < windowsPerColumn; row++) {
+              const winY = foundationY + startY - row * (windowHeight + windowGapY);
+              windows.push({
+                pos: [foundationX, winY, foundationZ + floorSize/2 + 0.02],
+                rotation: [0, 0, 0]
+              });
+            }
+          }
+          
+          if (hasBigFaceWindows) {
+            // Windows on south face (+Z) of ALL north row foundations 
+            for (let row = 0; row < windowsPerColumn; row++) {
+              const winY = foundationY + startY - row * (windowHeight + windowGapY);
+              windows.push({
+                pos: [foundationX, winY, foundationZ + floorSize/2 + 0.02],
+                rotation: [0, 0, 0]
+              });
+            }
+          }
+        }
+      }
+    }
+    
+    return { foundations, windowPositions: windows };
+  }, [platformCenterX, platformCenterZ, platformLevel, rampFoundationHeight, floorSize, windowHeight, windowGapY, windowsPerColumn, spacing, rampWidth, rampDepth, maxRampHeight, floorHeight]);
+  
+  // Initialize window states
+  useEffect(() => {
+    if (!initializedRef.current && windowPositions.length > 0) {
+      windowStatesRef.current = windowPositions.map(() => {
+        const isOn = Math.random() > 0.5;
+        return {
+          brightness: isOn ? 0.7 + Math.random() * 0.3 : 0.05 + Math.random() * 0.1,
+          targetBrightness: isOn ? 0.7 + Math.random() * 0.3 : 0.05 + Math.random() * 0.1,
+          timer: Math.random() * 10
+        };
+      });
+      initializedRef.current = true;
+    }
+  }, [windowPositions.length]);
+  
+  // Animate windows
+  useFrame((_, delta) => {
+    windowMaterialsRef.current.forEach((material, index) => {
+      if (!material || !windowStatesRef.current[index]) return;
+      
+      const state = windowStatesRef.current[index];
+      state.timer -= delta;
+      
+      if (state.timer <= 0) {
+        state.timer = 1.5 + Math.random() * 8;
+        if (Math.random() < 0.6) {
+          const isCurrentlyOn = state.targetBrightness > 0.5;
+          state.targetBrightness = isCurrentlyOn ? 0.05 + Math.random() * 0.1 : 0.7 + Math.random() * 0.3;
+        }
+      }
+      
+      state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
+      material.emissiveIntensity = state.brightness * 3;
+    });
+  });
+  
+  return (
+    <>
+      {/* Foundation boxes */}
+      {foundations.map(f => (
+        <Box
+          key={f.key}
+          position={f.position}
+          args={[floorSize, rampFoundationHeight, floorSize]}
+        >
+          <meshStandardMaterial color={floorColor} />
+        </Box>
+      ))}
+      
+      {/* Windows on visible sides */}
+      {windowPositions.map((window, index) => (
+        <mesh
+          key={`ramp-window-${index}`}
+          position={window.pos}
+          rotation={window.rotation}
+        >
+          <planeGeometry args={[windowWidth, windowHeight]} />
+          <meshStandardMaterial
+            ref={(el) => { if (el) windowMaterialsRef.current[index] = el; }}
+            color="#2a1a0a"
+            emissive="#E8A200"
+            emissiveIntensity={Math.random() > 0.5 ? 2.5 : 0.3}
+          />
+        </mesh>
+      ))}
+    </>
+  );
+};
 
 // ============================================================================
 // INSTANCED MESH COMPONENT 
@@ -222,14 +546,12 @@ const FoundationBlocks = React.memo(() => {
         <meshStandardMaterial color={floorColor} />
       </Box>
       
-      {/* 5x5 foundation */}
-      <Box
-        key="foundation-block-5x5"
+      {/* 5x5 foundation - Skyscraper with animated windows */}
+      <SkyscraperFoundation
         position={[0, -foundationHeight/2 - 0.15, -1 * spacing - spacing * 3 - (2 * spacing)]}
-        args={[5 * spacing, foundationHeight, 5 * spacing]}
-      >
-        <meshStandardMaterial color={floorColor} />
-      </Box>
+        size={[5 * spacing, foundationHeight, 5 * spacing]}
+        baseColor={floorColor}
+      />
 
       {/* ELEVATOR FOUNDATION */}
       <Box
@@ -398,67 +720,8 @@ const FoundationBlocks = React.memo(() => {
         </React.Fragment>
       ))}
 
-      {/* FOUNDATION for the Learning Outcomes ramp platform */}
-      {(() => {
-        const floorSize = 1.5;
-        const platformLevel = floorHeight * 9 + floorHeight * 1;
-        const platformCenterX = -1 * spacing - spacing * 0.4 - spacing * 0.28 * 9 - spacing * 3.18;
-        const platformCenterZ = 0;
-        const rampWidth = 5; 
-        const rampDepth = 3;
-        const maxRampHeight = 3;
-        const rampFoundationHeight = 200;
-        
-        const rampFoundations = [];
-        
-        // Create foundation for each ramp segment
-        for (let x = 0; x < rampWidth; x++) {
-          for (let z = 0; z < rampDepth; z++) {
-            const isInHole = (x >= 1 && x <= 3) && (z >= 1 && z <= 1);
-            if (isInHole) continue;
-            
-            const isLastRampPiece = (x === 0) && (z === 1);
-            if (isLastRampPiece) continue;
-
-            // Only create foundation for perimeter pieces
-            if (x === 0 || x === rampWidth - 1 || z === 0 || z === rampDepth - 1) {
-              let rampHeight = 0;
-              const perimeter = 2 * (rampWidth + rampDepth - 2);
-              let perimeterIndex = 0;
-              
-              if (z === 0) {
-                perimeterIndex = x;
-              } else if (x === rampWidth - 1) {
-                perimeterIndex = rampWidth + z - 1;
-              } else if (z === rampDepth - 1) {
-                perimeterIndex = rampWidth + rampDepth + (rampWidth - 1 - x) - 2;
-              } else if (x === 0) {
-                perimeterIndex = 2 * rampWidth + rampDepth + (rampDepth - 1 - z) - 3; 
-              }
-              
-              rampHeight = (perimeterIndex / perimeter) * maxRampHeight;
-              
-              const foundationKey = `ramp-foundation-${x}-${z}`;
-              const foundationX = platformCenterX - (x - rampWidth/2 + 0.5) * spacing;
-              const foundationZ = platformCenterZ - (z - rampDepth/2 + 0.5) * spacing;
-              const currentFloorY = platformLevel + rampHeight;
-              const foundationY = currentFloorY - rampFoundationHeight/2 - 0.15;
-              
-              rampFoundations.push(
-                <Box
-                  key={foundationKey}
-                  position={[foundationX, foundationY, foundationZ]}
-                  args={[floorSize, rampFoundationHeight, floorSize]}
-                >
-                  <meshStandardMaterial color={floorColor} />
-                </Box>
-              );
-            }
-          }
-        }
-        
-        return rampFoundations;
-      })()}
+      {/* FOUNDATION for the Learning Outcomes ramp platform - with windows on visible sides */}
+      <RampFoundationsWithWindows floorColor={floorColor} spacing={spacing} floorHeight={floorHeight} />
     </>
   );
 });

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
@@ -81,16 +81,17 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   }, [billboardKey]);
 
   // Target camera position 
-  const targetCameraPosition = new THREE.Vector3(
+  const targetCameraPosition = useMemo(() => new THREE.Vector3(
     position[0] + 1.5,
     position[1] + 1.2,
     position[2] + 2
-  );
-  const targetCameraTarget = new THREE.Vector3(
+  ), [position]);
+  
+  const targetCameraTarget = useMemo(() => new THREE.Vector3(
     position[0] + 0.2,
     position[1] + 1.35,
     position[2]
-  );
+  ), [position]);
 
   const handleBillboardClick = React.useCallback((event: any) => {
     event.stopPropagation();

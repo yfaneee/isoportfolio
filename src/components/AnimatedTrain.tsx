@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useGLTF, Box } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface AnimatedTrainProps {
   speed?: number;
+  showTrain?: boolean;
 }
 
 const WAYPOINTS: [number, number, number][] = [
@@ -28,13 +29,13 @@ const WAYPOINTS: [number, number, number][] = [
   [-18, 0.25, 16.9],
   
   // ===== SOUTHWEST CORNER (smooth arc) =====
-  [-17.5, 0, 17.5],
-  [-17, -0.2, 18],
-  [-16.5, -0.3, 18.5],
-  [-16, -0.4, 19],
-  [-15.5, -0.45, 19.5],
-  [-15, -0.48, 20],
-  [-14.5, -0.5, 20.4],
+  [-18, 0, 17.6],
+  [-17.5, -0.15, 18.4],
+  [-17.0, -0.25, 19.1],
+  [-16.5, -0.35, 19.65],
+  [-16.0, -0.42, 20.15],
+  [-15.3, -0.48, 20.5],
+  [-14.6, -0.5, 20.72],
   [-14, -0.5, 20.8],
   
   // ===== BOTTOM SECTION (going east) =====
@@ -55,13 +56,13 @@ const WAYPOINTS: [number, number, number][] = [
   [1, -1.5, 20.6],
   
   // ===== SOUTHEAST CORNER (smooth arc) =====
-  [2, -1.5, 20.3],
-  [3, -1.5, 19.8],
-  [3.5, -1.5, 19.3],
-  [4, -1.5, 18.8],
-  [4.5, -1.5, 18.2],
-  [5, -1.5, 17.5],
-  [5.4, -1.5, 17],
+  [2.5, -1.5, 20.5],
+  [3.5, -1.5, 20.1],
+  [4.2, -1.5, 19.5],
+  [4.7, -1.5, 18.9],
+  [5.1, -1.5, 18.2],
+  [5.4, -1.5, 17.5],
+  [5.6, -1.5, 17],
   [5.7, -1.5, 16.59],
   
   // ===== EAST SIDE (going north, with elevation changes) =====
@@ -86,14 +87,20 @@ const WAYPOINTS: [number, number, number][] = [
   [6.28, -3.2, -11],
   [6.35, -2.6, -13],
   [6.3, -2.4, -14.5],
+  [6.3, -2.38, -15.2],
+  [6.3, -2.36, -15.9],
+  [6.3, -2.35, -16.5],
+  [6.3, -2.34, -17.0],
   
   // ===== NORTHEAST CORNER (smooth arc) =====
-  [6.1, -2.2, -15.5],
-  [5.8, -2.0, -16.5],
-  [5.5, -1.9, -17.2],
-  [5.2, -1.85, -17.8],
-  [4.9, -1.82, -18.3],
-  [4.6, -1.8, -19],
+  [6.25, -2.3, -17.5],
+  [6.15, -2.22, -17.8],
+  [6.0, -2.14, -18.1],
+  [5.8, -2.06, -18.35],
+  [5.55, -2.0, -18.55],
+  [5.25, -1.94, -18.73],
+  [4.9, -1.88, -18.88],
+  [4.6, -1.83, -19],
   
   // ===== TOP SECTION (going west, ascending) =====
   [4, -1.6, -19],
@@ -172,54 +179,32 @@ const _pitchQuat = new THREE.Quaternion();
 const _yAxis = new THREE.Vector3(0, 1, 0);
 const _xAxis = new THREE.Vector3(1, 0, 0);
 
-// Individual car component that follows the path independently
-const TrainCar: React.FC<{
-  model: THREE.Group;
-  distanceRef: React.MutableRefObject<number>;
-  offset: number; 
-  totalLength: number;
-  segmentLengths: number[];
-  yOffset: number;
-}> = ({ model, distanceRef, offset, totalLength, segmentLengths, yOffset }) => {
-  const carRef = useRef<THREE.Group>(null);
-  
-  useFrame(() => {
-    if (!carRef.current) return;
-    
-    // Get position for the car 
-    const { pos, yaw, pitch } = getPositionAtDistance(
-      distanceRef.current - offset,
-      totalLength,
-      segmentLengths
-    );
-    
-    carRef.current.position.set(pos[0], pos[1] + yOffset, pos[2]);
-    
-    // Use quaternions for explicit rotation order:
-    _yawQuat.setFromAxisAngle(_yAxis, yaw);
-    _pitchQuat.setFromAxisAngle(_xAxis, pitch);
-    
-    // For intrinsic rotation
-    carRef.current.quaternion.multiplyQuaternions(_yawQuat, _pitchQuat);
-  });
-  
-  return (
-    <group ref={carRef}>
-      <primitive object={model.clone()} scale={0.5} />
-    </group>
-  );
-};
-
-const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1 }) => {
+const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = true }) => {
   const distanceTraveled = useRef(0);
+  
+  // Refs for all train cars 
+  const car1Ref = useRef<THREE.Group>(null);
+  const car2Ref = useRef<THREE.Group>(null);
+  const car3Ref = useRef<THREE.Group>(null);
+  const car4Ref = useRef<THREE.Group>(null);
+  const car5Ref = useRef<THREE.Group>(null);
   
   // Load electric train models
   const frontCar = useGLTF('/train/train-electric-bullet-a.glb');
   const middleCar = useGLTF('/train/train-electric-bullet-b.glb');
   const rearCar = useGLTF('/train/train-electric-bullet-c.glb');
   
+  // Memoize cloned models 
+  const clonedModels = useMemo(() => ({
+    front: frontCar.scene.clone(),
+    middle: middleCar.scene.clone(),
+    rear1: rearCar.scene.clone(),
+    rear2: rearCar.scene.clone(),
+    rear3: rearCar.scene.clone(),
+  }), [frontCar.scene, middleCar.scene, rearCar.scene]);
+  
   // Calculate total path length and segment lengths
-  const { totalLength, segmentLengths } = React.useMemo(() => {
+  const { totalLength, segmentLengths } = useMemo(() => {
     const lengths: number[] = [];
     let total = 0;
     
@@ -237,85 +222,134 @@ const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1 }) => {
     return { totalLength: total, segmentLengths: lengths };
   }, []);
   
-  // Update distance traveled
-  useFrame((state, delta) => {
+  const yOffset = -1; 
+  const carSpacing = 1.3;
+  
+  // Single useFrame for ALL cars 
+  useFrame((_, delta) => {
+    if (!showTrain) return;
+    
+    // Update distance
     distanceTraveled.current += delta * speed;
     if (distanceTraveled.current >= totalLength) {
       distanceTraveled.current = 0;
     }
+    
+    // Update all cars in one loop
+    const carRefs = [car1Ref, car2Ref, car3Ref, car4Ref, car5Ref];
+    const offsets = [0, carSpacing, carSpacing * 2, carSpacing * 3, carSpacing * 4];
+    
+    for (let i = 0; i < carRefs.length; i++) {
+      const carRef = carRefs[i];
+      if (!carRef.current) continue;
+      
+      const { pos, yaw, pitch } = getPositionAtDistance(
+        distanceTraveled.current - offsets[i],
+        totalLength,
+        segmentLengths
+      );
+      
+      carRef.current.position.set(pos[0], pos[1] + yOffset, pos[2]);
+      
+      _yawQuat.setFromAxisAngle(_yAxis, yaw);
+      _pitchQuat.setFromAxisAngle(_xAxis, pitch);
+      carRef.current.quaternion.multiplyQuaternions(_yawQuat, _pitchQuat);
+    }
   });
-  
-  const yOffset = -1; 
-  const carSpacing = 1.3; 
   
   return (
     <group name="electric-train">
-      {/* Front car */}
-      <TrainCar 
-        model={frontCar.scene} 
-        distanceRef={distanceTraveled}
-        offset={0}
-        totalLength={totalLength}
-        segmentLengths={segmentLengths}
-        yOffset={yOffset}
-      />
-      
-      {/* Car 2 */}
-      <TrainCar 
-        model={middleCar.scene} 
-        distanceRef={distanceTraveled}
-        offset={carSpacing}
-        totalLength={totalLength}
-        segmentLengths={segmentLengths}
-        yOffset={yOffset}
-      />
-      
-      {/* Car 3 */}
-      <TrainCar 
-        model={rearCar.scene} 
-        distanceRef={distanceTraveled}
-        offset={carSpacing * 2}
-        totalLength={totalLength}
-        segmentLengths={segmentLengths}
-        yOffset={yOffset}
-      />
-      
-      {/* Car 4 */}
-      <TrainCar 
-        model={rearCar.scene} 
-        distanceRef={distanceTraveled}
-        offset={carSpacing * 3}
-        totalLength={totalLength}
-        segmentLengths={segmentLengths}
-        yOffset={yOffset}
-      />
-      
-      {/* Car 5 */}
-      <TrainCar 
-        model={rearCar.scene} 
-        distanceRef={distanceTraveled}
-        offset={carSpacing * 4}
-        totalLength={totalLength}
-        segmentLengths={segmentLengths}
-        yOffset={yOffset}
-      />
+      {/* Train cars - only render when showTrain is true */}
+      {showTrain && (
+        <>
+          {/* Front car */}
+          <group ref={car1Ref}>
+            <primitive object={clonedModels.front} scale={0.5} />
+          </group>
+          
+          {/* Car 2 */}
+          <group ref={car2Ref}>
+            <primitive object={clonedModels.middle} scale={0.5} />
+          </group>
+          
+          {/* Car 3 */}
+          <group ref={car3Ref}>
+            <primitive object={clonedModels.rear1} scale={0.5} />
+          </group>
+          
+          {/* Car 4 */}
+          <group ref={car4Ref}>
+            <primitive object={clonedModels.rear2} scale={0.5} />
+          </group>
+          
+          {/* Car 5 */}
+          <group ref={car5Ref}>
+            <primitive object={clonedModels.rear3} scale={0.5} />
+          </group>
+        </>
+      )}
       
       {/* Support Pillars - Foundation Style */}
       {/* Southwest Corner Pillar */}
       <Box
-        position={[-16, -101.45, 20.3]}
+        position={[-18, -100.7, 16]}
         args={[1.5, 200, 1.5]}
       >
-        <meshStandardMaterial color='#641E68' />
+        <meshStandardMaterial color='#C5A3FF' />
       </Box>
+
+      <Box
+        position={[-14, -101.6, 20.6]}
+        args={[1.5, 200, 1.5]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
+      <Box
+        position={[3, -102.55, 20.6]}
+        args={[1.5, 200, 2]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
+      <Box
+        position={[3.5, -102.55, 19.6]}
+        args={[2.5, 200, 2]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
+      
       
       {/* Northwest Corner Pillar */}
       <Box
-        position={[-16.5, -99, -17.5]}
-        args={[1.5, 200, 1.5]}
+        position={[-18, -98.95, -15]}
+        args={[2, 200, 1.5]}
       >
-        <meshStandardMaterial color='#641E68' />
+        <meshStandardMaterial color='#C5A3FF' />
       </Box>
+
+      <Box
+        position={[-14, -99.11, -19]}
+        args={[1.5, 200, 2]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
+      <Box
+        position={[3, -102.59, -19]}
+        args={[1.5, 200, 2]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
+      <Box
+        position={[6.4, -103.3, -15]}
+        args={[2, 200, 1.5]}
+      >
+        <meshStandardMaterial color='#C5A3FF' />
+      </Box>
+
     </group>
   );
 };
@@ -325,4 +359,5 @@ useGLTF.preload('/train/train-electric-bullet-a.glb');
 useGLTF.preload('/train/train-electric-bullet-b.glb');
 useGLTF.preload('/train/train-electric-bullet-c.glb');
 
-export default AnimatedTrain;
+// Memoize to prevent unnecessary re-renders
+export default React.memo(AnimatedTrain);
