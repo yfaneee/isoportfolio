@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, Box } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -299,6 +299,23 @@ const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1 }) => {
         segmentLengths={segmentLengths}
         yOffset={yOffset}
       />
+      
+      {/* Support Pillars - Foundation Style */}
+      {/* Southwest Corner Pillar */}
+      <Box
+        position={[-16, -101.45, 20.3]}
+        args={[1.5, 200, 1.5]}
+      >
+        <meshStandardMaterial color='#641E68' />
+      </Box>
+      
+      {/* Northwest Corner Pillar */}
+      <Box
+        position={[-16.5, -99, -17.5]}
+        args={[1.5, 200, 1.5]}
+      >
+        <meshStandardMaterial color='#641E68' />
+      </Box>
     </group>
   );
 };
