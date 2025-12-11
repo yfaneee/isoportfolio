@@ -13,7 +13,10 @@ const RepoLinks: React.FC<RepoLinksProps> = ({ isVisible, isMusicPlaying, onTogg
   return (
     <div className="repo-links-fixed">
       <button 
-        onClick={onToggleMusic}
+        onClick={(e) => {
+          onToggleMusic();
+          e.currentTarget.blur(); 
+        }}
         className={`repo-link-fixed music-button ${isMusicPlaying ? 'playing' : ''}`}
         title={isMusicPlaying ? 'Mute Music' : 'Unmute Music'}
       >

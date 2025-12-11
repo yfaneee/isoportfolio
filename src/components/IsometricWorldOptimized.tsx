@@ -19,12 +19,12 @@ const SkyscraperFoundation: React.FC<{
   const initializedRef = useRef(false);
   
   // Window configuration 
-  const windowsPerRow = 4;
+  const windowsPerRow = 5;
   const windowsPerColumn = 16;
   
-  const windowWidth = (size[0] - 1) / windowsPerRow - 0.2;
+  const windowWidth = (size[0] - 1) / windowsPerRow - 0.3;
   const windowHeight = 2;
-  const windowGapX = 0.2;
+  const windowGapX = 0.4;
   const windowGapY = 2;
   const windowInset = 0.02;
   
@@ -79,7 +79,7 @@ const SkyscraperFoundation: React.FC<{
       });
       initializedRef.current = true;
     }
-  }, [windowPositions.length]);
+  }, [windowPositions]);
   
   // Animate windows
   useFrame((_, delta) => {
@@ -258,7 +258,7 @@ const RampFoundationsWithWindows: React.FC<{
     }
     
     return { foundations, windowPositions: windows };
-  }, [platformCenterX, platformCenterZ, platformLevel, rampFoundationHeight, floorSize, windowHeight, windowGapY, windowsPerColumn, spacing, rampWidth, rampDepth, maxRampHeight, floorHeight]);
+  }, [platformCenterX, platformCenterZ, platformLevel, rampFoundationHeight, floorSize, windowHeight, windowGapY, windowsPerColumn, spacing, rampWidth, rampDepth, maxRampHeight]);
   
   // Initialize window states
   useEffect(() => {
@@ -273,7 +273,7 @@ const RampFoundationsWithWindows: React.FC<{
       });
       initializedRef.current = true;
     }
-  }, [windowPositions.length]);
+  }, [windowPositions]);
   
   // Animate windows
   useFrame((_, delta) => {
