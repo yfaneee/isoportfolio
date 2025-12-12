@@ -5,13 +5,14 @@ interface RepoLinksProps {
   isVisible: boolean;
   isMusicPlaying: boolean;
   onToggleMusic: () => void;
+  hideWhenMenuOpen?: boolean;
 }
 
-const RepoLinks: React.FC<RepoLinksProps> = ({ isVisible, isMusicPlaying, onToggleMusic }) => {
+const RepoLinks: React.FC<RepoLinksProps> = ({ isVisible, isMusicPlaying, onToggleMusic, hideWhenMenuOpen }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="repo-links-fixed">
+    <div className={`repo-links-fixed ${hideWhenMenuOpen ? 'hidden' : ''}`}>
       <button 
         onClick={(e) => {
           onToggleMusic();

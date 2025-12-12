@@ -5,7 +5,6 @@ import IsometricScene from './components/IsometricScene';
 import UI from './components/UI';
 import ControlsUI from './components/ControlsUI';
 import MenuOverlay from './components/MenuOverlay';
-import InfoPanel from './components/InfoPanel';
 import MenuIcon from './components/MenuIcon';
 import Content from './components/Content';
 import TopHUD from './components/TopHUD';
@@ -1313,10 +1312,17 @@ function App() {
             />
 
             {/* Menu Overlay - hidden when loading screen is visible */}
-            {!showLoadingScreen && <MenuOverlay isVisible={showMenu} onNavigateToLocation={handleNavigateToLocation} onClose={handleCloseMenu} />}
-
-            {/* Info Panel - hidden when loading screen is visible */}
-            {!showLoadingScreen && <InfoPanel isVisible={showMenu} />}
+            {!showLoadingScreen && (
+              <MenuOverlay 
+                isVisible={showMenu} 
+                onNavigateToLocation={handleNavigateToLocation} 
+                onClose={handleCloseMenu} 
+                isMusicPlaying={isMusicPlaying} 
+                onToggleMusic={toggleMusic}
+                selectedCharacter={selectedCharacter}
+                onCharacterSelect={handleCharacterSelect}
+              />
+            )}
 
             {/* Content Box - hidden when loading screen is visible */}
             {!showLoadingScreen && (
@@ -1435,6 +1441,7 @@ function App() {
               isVisible={introComplete && !showLoadingScreen && !showWebsiteOverlay}
               isMusicPlaying={isMusicPlaying}
               onToggleMusic={toggleMusic}
+              hideWhenMenuOpen={showMenu}
             />
         
           </div>

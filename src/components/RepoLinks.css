@@ -8,6 +8,14 @@
   z-index: 500;
   opacity: 1;
   animation: fadeInSlide 0.6s ease-out;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Hide repo links when menu is visible */
+.repo-links-fixed.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @keyframes fadeInSlide {

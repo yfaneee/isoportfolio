@@ -71,6 +71,25 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     }
   }, [isVisible]);
 
+  // Handle keyboard events for START button 
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if Space or Enter is pressed
+      if (e.key === ' ' || e.key === 'Enter') {
+        // Prevent default behavior 
+        e.preventDefault();
+        onStart();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isVisible, onStart]);
+
   const handleCharacterClick = (character: CharacterOption) => {
     setSelectedCharacter(character);
     onCharacterSelect(character);
