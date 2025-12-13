@@ -4,6 +4,7 @@ import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
 import PlatformDebugger from '../components/PlatformDebugger';
 import TrainSystem from '../components/TrainSystem';
+import GPUPerformanceMonitor from '../components/GPUPerformanceMonitor';
 
 interface IsometricSceneProps {
   onIntroComplete: () => void;
@@ -94,6 +95,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
 
   return (
     <>
+      {/* GPU Performance Monitor */}
+      <GPUPerformanceMonitor />
+      
       {/* Lighting setup */}
       <ambientLight intensity={2} />
       <directionalLight 

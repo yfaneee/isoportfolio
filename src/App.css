@@ -23,6 +23,11 @@ body {
   height: 100vh;
   height: 100dvh;
   overscroll-behavior: none;
+  /* GPU acceleration for body */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .App {
@@ -30,17 +35,35 @@ body {
   width: 100vw;
   height: 100vh;
   height: 100dvh; 
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
-/* Cursor styles for interactivity */
+/* GPU-accelerated cursor styles */
 .cursor-pointer {
   cursor: pointer;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .cursor-grab {
   cursor: grab;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .cursor-grabbing {
   cursor: grabbing;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+canvas {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
 }

@@ -11,9 +11,9 @@ export const BILLBOARD_TEXTURES = {
   billboard4: '/images/spotifyfolio.png',
 } as const;
 
-// Configure texture for optimal performance
-function configureTexture(texture: THREE.Texture): THREE.Texture {
-  // Enable mipmaps for smoother scaling
+// Optimize texture for GPU performance
+function configureTexture(texture: THREE.Texture, isHighPriority: boolean = true): THREE.Texture {
+  // Enable mipmaps for GPU-accelerated filtering
   texture.generateMipmaps = true;
   texture.minFilter = THREE.LinearMipmapLinearFilter; 
   texture.magFilter = THREE.LinearFilter;
@@ -21,12 +21,21 @@ function configureTexture(texture: THREE.Texture): THREE.Texture {
   // Proper wrapping
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
+
+  texture.anisotropy = 16; 
+  texture.format = THREE.RGBAFormat;
+  texture.type = THREE.UnsignedByteType;
   
-  // Anisotropic filtering for better quality at angles
-  texture.anisotropy = 4; 
+  // Enable GPU-side color space conversion
+  texture.colorSpace = THREE.SRGBColorSpace;
   
   texture.flipY = true;
   texture.needsUpdate = true;
+  
+  // For high-priority textures, mark for immediate GPU upload
+  if (isHighPriority) {
+    texture.matrixAutoUpdate = false; 
+  }
   
   return texture;
 }
@@ -48,7 +57,6 @@ export function preloadBillboardTextures(): Promise<void> {
         (texture) => {
           configureTexture(texture);
           textureCache.set(key, texture);
-          console.log(`✓ Preloaded texture: ${key}`);
           resolve();
         },
         undefined,
@@ -63,7 +71,7 @@ export function preloadBillboardTextures(): Promise<void> {
   });
 
   return Promise.all(promises).then(() => {
-    console.log('✓ All billboard textures preloaded');
+    // All billboard textures preloaded successfully
   });
 }
 
@@ -77,7 +85,6 @@ export function getBillboardTexture(billboardKey: string): THREE.Texture | null 
   // Fallback: load on-demand if preloading failed
   const path = BILLBOARD_TEXTURES[billboardKey as keyof typeof BILLBOARD_TEXTURES];
   if (!path) {
-    console.warn(`No texture path found for ${billboardKey}`);
     return null;
   }
 
@@ -91,9 +98,8 @@ export function getBillboardTexture(billboardKey: string): THREE.Texture | null 
 
 // Dispose all cached textures (for cleanup)
 export function disposeBillboardTextures(): void {
-  textureCache.forEach((texture, key) => {
+  textureCache.forEach((texture) => {
     texture.dispose();
-    console.log(`Disposed texture: ${key}`);
   });
   textureCache.clear();
 }

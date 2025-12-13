@@ -1227,6 +1227,24 @@ function App() {
             position: [10, 10, 10],
             fov: 50
           }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance', 
+            stencil: false, 
+            depth: true,
+            preserveDrawingBuffer: false, 
+            failIfMajorPerformanceCaveat: false,
+            precision: 'highp', 
+            logarithmicDepthBuffer: false,
+            outputColorSpace: 'srgb'
+          }}
+          dpr={[1, 2]}
+          performance={{
+            min: 0.5, 
+            max: 1.0, 
+            debounce: 200
+          }}
           style={{ 
             position: 'relative',
             zIndex: 1,

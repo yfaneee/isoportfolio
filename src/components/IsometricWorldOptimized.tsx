@@ -81,12 +81,19 @@ const SkyscraperFoundation: React.FC<{
     }
   }, [windowPositions]);
   
-  // Animate windows
+  // Animate windows 
   useFrame((_, delta) => {
-    windowMaterialsRef.current.forEach((material, index) => {
-      if (!material || !windowStatesRef.current[index]) return;
+    const materials = windowMaterialsRef.current;
+    const states = windowStatesRef.current;
+    
+    // Early exit if not initialized
+    if (materials.length === 0 || states.length === 0) return;
+    
+    for (let index = 0; index < materials.length; index++) {
+      const material = materials[index];
+      const state = states[index];
       
-      const state = windowStatesRef.current[index];
+      if (!material || !state) continue;
       
       // Update timer
       state.timer -= delta;
@@ -111,9 +118,13 @@ const SkyscraperFoundation: React.FC<{
       // Smooth interpolation
       state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
       
-      // Update material emissive
-      material.emissiveIntensity = state.brightness * 3;
-    });
+      // GPU optimization: Only update if change is significant
+      const newIntensity = state.brightness * 3;
+      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.01) {
+        material.emissiveIntensity = newIntensity;
+        material.needsUpdate = true;
+      }
+    }
   });
   
   return (
@@ -275,12 +286,20 @@ const RampFoundationsWithWindows: React.FC<{
     }
   }, [windowPositions]);
   
-  // Animate windows
+  // Animate windows - OPTIMIZED
   useFrame((_, delta) => {
-    windowMaterialsRef.current.forEach((material, index) => {
-      if (!material || !windowStatesRef.current[index]) return;
+    const materials = windowMaterialsRef.current;
+    const states = windowStatesRef.current;
+    
+    if (materials.length === 0 || states.length === 0) return;
+    
+    // Batch updates for GPU efficiency
+    for (let index = 0; index < materials.length; index++) {
+      const material = materials[index];
+      const state = states[index];
       
-      const state = windowStatesRef.current[index];
+      if (!material || !state) continue;
+      
       state.timer -= delta;
       
       if (state.timer <= 0) {
@@ -292,8 +311,14 @@ const RampFoundationsWithWindows: React.FC<{
       }
       
       state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
-      material.emissiveIntensity = state.brightness * 3;
-    });
+      
+      // Only update GPU if change is significant
+      const newIntensity = state.brightness * 3;
+      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.01) {
+        material.emissiveIntensity = newIntensity;
+        material.needsUpdate = true;
+      }
+    }
   });
   
   return (
@@ -330,7 +355,7 @@ const RampFoundationsWithWindows: React.FC<{
 };
 
 // ============================================================================
-// INSTANCED MESH COMPONENT 
+// INSTANCED MESH COMPONENT - GPU-OPTIMIZED
 // ============================================================================
 interface InstanceData {
   position: [number, number, number];
@@ -399,10 +424,33 @@ const InstancedBoxes: React.FC<{
     
     // Disable frustum culling entirely to prevent any visual glitches
     meshRef.current.frustumCulled = false;
+    
+    // GPU optimization
+    meshRef.current.geometry.computeBoundingSphere();
+    meshRef.current.geometry.computeBoundingBox();
   }, [instances, args]);
 
-  const geometry = useMemo(() => new THREE.BoxGeometry(...args), [args]);
-  const material = useMemo(() => new THREE.MeshStandardMaterial({ color }), [color]);
+  // Memoize geometry and material to prevent recreation (GPU efficiency)
+  const geometry = useMemo(() => {
+    const geo = new THREE.BoxGeometry(...args);
+    geo.computeBoundingBox();
+    geo.computeBoundingSphere();
+    return geo;
+  }, [args]);
+  
+  const material = useMemo(() => {
+    const mat = new THREE.MeshStandardMaterial({ 
+      color,
+      // GPU-friendly material settings
+      flatShading: false, 
+      metalness: 0.0,
+      roughness: 1.0,
+      transparent: false,
+      depthWrite: true,
+      depthTest: true
+    });
+    return mat;
+  }, [color]);
 
   return (
     <instancedMesh ref={meshRef} args={[geometry, material, instances.length]} />

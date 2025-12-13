@@ -45,21 +45,37 @@ const Character: React.FC<CharacterProps> = ({
       }
       
       if (child instanceof THREE.Mesh) {
+        // Optimize mesh for GPU
+        if (child.geometry) {
+          child.geometry.computeVertexNormals();
+          (child.geometry as any).computeBoundsTree?.();
+        }
+        
         if (child.material) {
           // Clone material to avoid sharing and cache it
           if (Array.isArray(child.material)) {
             child.material = child.material.map(mat => {
               const clonedMat = mat.clone();
               clonedMat.transparent = true;
+              clonedMat.side = THREE.FrontSide; 
+              clonedMat.depthWrite = true;
+              clonedMat.depthTest = true;
               materials.push(clonedMat);
               return clonedMat;
             });
           } else {
             child.material = child.material.clone();
             child.material.transparent = true;
+            child.material.side = THREE.FrontSide;
+            child.material.depthWrite = true;
+            child.material.depthTest = true;
             materials.push(child.material);
           }
         }
+        
+        // GPU optimization: disable unnecessary updates
+        child.matrixAutoUpdate = true; 
+        child.frustumCulled = true; 
       }
     });
     
