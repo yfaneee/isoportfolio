@@ -821,10 +821,14 @@
   }
   
   .menu-content {
-    min-height: 620px !important;
-    height: 620px !important;
-    max-height: 620px;
-    flex: 0 0 620px;
+    min-height: 640px !important;
+    height: 640px !important;
+    max-height: 640px;
+    flex: 0 0 640px;
+  }
+
+  .reset-achievements-button {
+    max-width: clamp(250px, 10vw, 150px);
   }
 
   .achievement-icon {
@@ -1747,7 +1751,19 @@
   }
   
   .character-description {
-    font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+    font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+  }
+
+  .achievements-description {
+    font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+  }
+
+  .learning-outcomes-links {
+    max-width: 360px;
+  }
+
+  .reset-achievements-button {
+    max-width: clamp(250px, 10vw, 150px);
   }
 
   .info-section p {
@@ -1995,7 +2011,7 @@
   }
   
   .info-section p {
-    font-size: clamp(0.58rem, 1vw, 0.72rem);
+    font-size: clamp(0.58rem, 1.2vw, 0.72rem);
     line-height: 1.3;
   }
   
@@ -2127,6 +2143,12 @@
     min-height: 410px !important;
     height: auto !important;
     max-height: calc(100vh - 5rem) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .menu-overlay {
+    bottom: clamp(1.8rem, 6vh, 3.8rem);
   }
 }
 
