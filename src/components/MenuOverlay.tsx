@@ -58,7 +58,13 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
   onCharacterSelect 
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('menu');
-  const { achievements } = useAchievements();
+  const { achievements, resetAchievements } = useAchievements();
+  
+  const handleResetAchievements = () => {
+    if (window.confirm('Are you sure you want to reset all achievements? This cannot be undone.')) {
+      resetAchievements();
+    }
+  };
   
   // Reset to menu tab whenever the menu opens
   React.useEffect(() => {
@@ -294,6 +300,15 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
               )}
             </div>
           ))}
+          
+          {/* Reset Achievements Button */}
+          <button 
+            className="reset-achievements-button"
+            onClick={handleResetAchievements}
+            title="Reset all achievements"
+          >
+            Reset All Achievements
+          </button>
         </div>
       </div>
     </>

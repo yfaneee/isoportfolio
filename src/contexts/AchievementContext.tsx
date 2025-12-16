@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 
 export interface Achievement {
   id: string;
@@ -19,6 +19,7 @@ interface AchievementContextType {
   trackSongPlayed: (songIndex: number) => void;
   newlyUnlockedAchievement: string | null;
   clearNewlyUnlocked: () => void;
+  resetAchievements: () => void;
 }
 
 const AchievementContext = createContext<AchievementContextType | undefined>(undefined);
@@ -36,26 +37,81 @@ interface AchievementProviderProps {
 }
 
 export const AchievementProvider: React.FC<AchievementProviderProps> = ({ children }) => {
+  // Load saved progress from localStorage
+  const loadFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Convert arrays back to Sets
+        if (Array.isArray(parsed)) {
+          return new Set(parsed) as T;
+        }
+        return parsed as T;
+      }
+    } catch (error) {
+      console.error(`Error loading ${key} from localStorage:`, error);
+    }
+    return defaultValue;
+  };
+
   // Track visited locations 
-  const [visitedLocations, setVisitedLocations] = useState<Set<string>>(new Set());
+  const [visitedLocations, setVisitedLocations] = useState<Set<string>>(() => 
+    loadFromLocalStorage('achievement_visitedLocations', new Set())
+  );
   
   // Track opened content tabs
-  const [openedContentTabs, setOpenedContentTabs] = useState<Set<string>>(new Set());
+  const [openedContentTabs, setOpenedContentTabs] = useState<Set<string>>(() =>
+    loadFromLocalStorage('achievement_openedContentTabs', new Set())
+  );
   
   // Track gsplat viewer usage
-  const [hasUsedGSplat, setHasUsedGSplat] = useState(false);
+  const [hasUsedGSplat, setHasUsedGSplat] = useState(() =>
+    loadFromLocalStorage('achievement_hasUsedGSplat', false)
+  );
   
   // Track opened billboards 
-  const [openedBillboards, setOpenedBillboards] = useState<Set<string>>(new Set());
+  const [openedBillboards, setOpenedBillboards] = useState<Set<string>>(() =>
+    loadFromLocalStorage('achievement_openedBillboards', new Set())
+  );
   
   // Track played songs 
-  const [playedSongs, setPlayedSongs] = useState<Set<number>>(new Set());
+  const [playedSongs, setPlayedSongs] = useState<Set<number>>(() =>
+    loadFromLocalStorage('achievement_playedSongs', new Set())
+  );
   
   // Track newly unlocked achievements
   const [newlyUnlockedAchievement, setNewlyUnlockedAchievement] = useState<string | null>(null);
   
   // Track previously unlocked achievements to detect new unlocks
-  const [previouslyUnlocked, setPreviouslyUnlocked] = useState<Set<string>>(new Set());
+  const [previouslyUnlocked, setPreviouslyUnlocked] = useState<Set<string>>(() =>
+    loadFromLocalStorage('achievement_previouslyUnlocked', new Set())
+  );
+
+  // Save to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('achievement_visitedLocations', JSON.stringify(Array.from(visitedLocations)));
+  }, [visitedLocations]);
+
+  useEffect(() => {
+    localStorage.setItem('achievement_openedContentTabs', JSON.stringify(Array.from(openedContentTabs)));
+  }, [openedContentTabs]);
+
+  useEffect(() => {
+    localStorage.setItem('achievement_hasUsedGSplat', JSON.stringify(hasUsedGSplat));
+  }, [hasUsedGSplat]);
+
+  useEffect(() => {
+    localStorage.setItem('achievement_openedBillboards', JSON.stringify(Array.from(openedBillboards)));
+  }, [openedBillboards]);
+
+  useEffect(() => {
+    localStorage.setItem('achievement_playedSongs', JSON.stringify(Array.from(playedSongs)));
+  }, [playedSongs]);
+
+  useEffect(() => {
+    localStorage.setItem('achievement_previouslyUnlocked', JSON.stringify(Array.from(previouslyUnlocked)));
+  }, [previouslyUnlocked]);
 
   const trackLocationVisit = useCallback((location: string) => {
     setVisitedLocations(prev => {
@@ -97,8 +153,27 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     setNewlyUnlockedAchievement(null);
   }, []);
 
-  // Define achievements
-  const achievements: Achievement[] = [
+  const resetAchievements = useCallback(() => {
+    // Clear all achievement data
+    setVisitedLocations(new Set());
+    setOpenedContentTabs(new Set());
+    setHasUsedGSplat(false);
+    setOpenedBillboards(new Set());
+    setPlayedSongs(new Set());
+    setPreviouslyUnlocked(new Set());
+    setNewlyUnlockedAchievement(null);
+    
+    // Clear localStorage
+    localStorage.removeItem('achievement_visitedLocations');
+    localStorage.removeItem('achievement_openedContentTabs');
+    localStorage.removeItem('achievement_hasUsedGSplat');
+    localStorage.removeItem('achievement_openedBillboards');
+    localStorage.removeItem('achievement_playedSongs');
+    localStorage.removeItem('achievement_previouslyUnlocked');
+  }, []);
+
+  // Define achievements 
+  const achievements: Achievement[] = useMemo(() => [
     {
       id: 'location-explorer',
       title: 'Location Explorer',
@@ -144,7 +219,7 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
       maxProgress: 3,
       iconPath: '/images/menu/music.svg'
     }
-  ];
+  ], [visitedLocations.size, openedContentTabs.size, hasUsedGSplat, openedBillboards.size, playedSongs.size]);
 
   // Detect newly unlocked achievements
   useEffect(() => {
@@ -177,7 +252,8 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
         trackBillboardOpen,
         trackSongPlayed,
         newlyUnlockedAchievement,
-        clearNewlyUnlocked
+        clearNewlyUnlocked,
+        resetAchievements
       }}
     >
       {children}
