@@ -10,9 +10,10 @@ const DEFAULT_CAMERA_LOOK_AT = new THREE.Vector3(3, 1, 3);
 interface GSplatViewerProps {
   plyUrl: string;
   className?: string;
+  onLoad?: () => void;
 }
 
-const GSplatViewer: React.FC<GSplatViewerProps> = ({ plyUrl, className = '' }) => {
+const GSplatViewer: React.FC<GSplatViewerProps> = ({ plyUrl, className = '', onLoad }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,12 +68,17 @@ const GSplatViewer: React.FC<GSplatViewerProps> = ({ plyUrl, className = '' }) =
       
       setIsLoaded(true);
       setIsLoading(false);
+      
+      // Call onLoad callback after a short delay for smooth experience
+      setTimeout(() => {
+        onLoad?.();
+      }, 1000);
     } catch (err) {
       console.error('Failed to load GSplat model:', err);
       setError('Failed to load 3D model. Please try again.');
       setIsLoading(false);
     }
-  }, [plyUrl, isLoading, isLoaded]);
+  }, [plyUrl, isLoading, isLoaded, onLoad]);
 
   // Cleanup on unmount
   useEffect(() => {

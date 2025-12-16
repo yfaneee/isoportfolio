@@ -10,6 +10,7 @@ import Content from './components/Content';
 import TopHUD from './components/TopHUD';
 import CharacterSelection, { CharacterOption } from './components/CharacterSelection';
 import LocationDiscovery from './components/LocationDiscovery';
+import AchievementNotification from './components/AchievementNotification';
 import InteractionOverlay from './components/InteractionOverlay';
 import WebsiteOverlay from './components/WebsiteOverlay';
 import ClickSpark from './components/ClickSpark';
@@ -23,11 +24,15 @@ import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { shiftElevator, isOnElevator, triggerElevator } from './utils/elevatorSystem';
 import { preloadCharacterModels } from './components/Character';
 import { preloadBillboardTextures, disposeBillboardTextures } from './utils/texturePreloader';
+import { AchievementProvider, useAchievements } from './contexts/AchievementContext';
 import './App.css';
 import './styles/fonts.css';
 
-function App() {
+function AppContent() {
   const [introComplete, setIntroComplete] = useState(false);
+  const { trackLocationVisit, trackContentTabOpen, trackGSplatViewerUsage, trackBillboardOpen, trackSongPlayed, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
+  const [showAchievementNotification, setShowAchievementNotification] = useState(false);
+  const [currentAchievementTitle, setCurrentAchievementTitle] = useState('');
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [showCharacterSelection, setShowCharacterSelection] = useState(true);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
@@ -50,8 +55,6 @@ function App() {
   const [hasVisitedArtwork, setHasVisitedArtwork] = useState(false);
   const [showWorkDiscovery, setShowWorkDiscovery] = useState(false);
   const [hasVisitedWork, setHasVisitedWork] = useState(false);
-  const [showAllLocationsDiscovered, setShowAllLocationsDiscovered] = useState(false);
-  const [hasShownAllLocationsDiscovered, setHasShownAllLocationsDiscovered] = useState(false);
   const [showInteractionOverlay, setShowInteractionOverlay] = useState(false);
   const [interactionText, setInteractionText] = useState('Menu');
   const [overlayPosition, setOverlayPosition] = useState({ x: 0, y: 0 });
@@ -200,6 +203,8 @@ function App() {
           setCurrentSlabKey(contentKey);
           setShowContent(true);
           setIsSlabClickAnimating(false);
+          // Track content tab opening for achievements
+          trackContentTabOpen(slabId);
         }, 1200);
       }
     } else if (slabId.startsWith('github-')) {
@@ -283,7 +288,7 @@ function App() {
         }, 1200);
       }
     }
-  }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection]);
+  }, [isBillboardFullscreen, showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection, trackContentTabOpen]);
 
   // Mobile D-pad handlers
   const handleMobileDpadDirection = useCallback((direction: { x: number; y: number } | null) => {
@@ -318,10 +323,6 @@ function App() {
     setShowWorkDiscovery(false);
   }, []);
 
-  const handleAllLocationsDiscoveredComplete = useCallback(() => {
-    setShowAllLocationsDiscovered(false);
-  }, []);
-
   const handleBillboardFullscreenStart = useCallback(() => {
     setIsBillboardFullscreen(true);
   }, []);
@@ -337,12 +338,16 @@ function App() {
   }, []);
 
   const handleHideWebsite = useCallback(() => {
+    // Track billboard opening for achievements when user exits
+    if (currentBillboardKey) {
+      trackBillboardOpen(currentBillboardKey);
+    }
     setShowWebsiteOverlay(false);
     setCurrentWebsiteUrl('');
     setCurrentBillboardKey('');
     // Trigger billboard exit animation
     setTriggerBillboardExit(true);
-  }, []);
+  }, [currentBillboardKey, trackBillboardOpen]);
 
   // Check if character is in specific areas for location discovery
   const handlePositionUpdate = useCallback((position: { x: number; z: number }) => {
@@ -359,6 +364,7 @@ function App() {
           position.z >= grid5x5MinZ && position.z <= grid5x5MaxZ) {
         setHasVisitedProjectStudio(true);
         setShowProjectStudioDiscovery(true);
+        trackLocationVisit('project-studio');
       }
     }
 
@@ -374,6 +380,7 @@ function App() {
           position.z >= learningOutcomesMinZ && position.z <= learningOutcomesMaxZ) {
         setHasVisitedLearningOutcomes(true);
         setShowLearningOutcomesDiscovery(true);
+        trackLocationVisit('learning-outcomes');
       }
     }
 
@@ -389,6 +396,7 @@ function App() {
           position.z >= artworkMinZ && position.z <= artworkMaxZ) {
         setHasVisitedArtwork(true);
         setShowArtworkDiscovery(true);
+        trackLocationVisit('artwork');
       }
     }
 
@@ -404,22 +412,23 @@ function App() {
           position.z >= workMinZ && position.z <= workMaxZ) {
         setHasVisitedWork(true);
         setShowWorkDiscovery(true);
+        trackLocationVisit('work');
       }
     }
-  }, [hasVisitedProjectStudio, showProjectStudioDiscovery, hasVisitedLearningOutcomes, showLearningOutcomesDiscovery, hasVisitedArtwork, showArtworkDiscovery, hasVisitedWork, showWorkDiscovery]);
+  }, [hasVisitedProjectStudio, showProjectStudioDiscovery, hasVisitedLearningOutcomes, showLearningOutcomesDiscovery, hasVisitedArtwork, showArtworkDiscovery, hasVisitedWork, showWorkDiscovery, trackLocationVisit]);
 
-  // Check if all locations have been discovered
+  // Watch for newly unlocked achievements
   useEffect(() => {
-    if (hasVisitedProjectStudio && hasVisitedLearningOutcomes && hasVisitedArtwork && hasVisitedWork && !hasShownAllLocationsDiscovered) {
-      // delay before showing the congratulations
-      const timer = setTimeout(() => {
-        setShowAllLocationsDiscovered(true);
-        setHasShownAllLocationsDiscovered(true);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
+    if (newlyUnlockedAchievement) {
+      setCurrentAchievementTitle(newlyUnlockedAchievement);
+      setShowAchievementNotification(true);
     }
-  }, [hasVisitedProjectStudio, hasVisitedLearningOutcomes, hasVisitedArtwork, hasVisitedWork, hasShownAllLocationsDiscovered]);
+  }, [newlyUnlockedAchievement]);
+
+  const handleAchievementNotificationComplete = useCallback(() => {
+    setShowAchievementNotification(false);
+    clearNewlyUnlocked();
+  }, [clearNewlyUnlocked]);
 
   // Handle slab interaction overlay
   const handleSlabInteraction = useCallback((isOnSlab: boolean, slabType?: string, githubUrl?: string) => {
@@ -660,13 +669,20 @@ function App() {
         setCurrentContent(content);
         setCurrentSlabKey(slabKey);
         setShowContent(true);
+        // Track content tab opening for achievements
+        if (slabKey) {
+          const slabIdMatch = slabKey.match(/staircase-slab-(\d)/);
+          if (slabIdMatch) {
+            trackContentTabOpen(`lo${slabIdMatch[1]}`);
+          }
+        }
       } else if (isOnMiddleSlab) {
         setShowMenu(true);
       } else {
         setShowMenu(true);
       }
     }
-  }, [showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection]);
+  }, [showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection, trackContentTabOpen]);
 
   // Mobile interact button handler (must be after handleSpacePress)
   const handleMobileInteract = useCallback((isPressed: boolean) => {
@@ -760,10 +776,17 @@ function App() {
           setCurrentContent(content);
           setCurrentSlabKey(slabKey);
           setShowContent(true);
+          // Track content tab opening for achievements
+          if (slabKey) {
+            const slabIdMatch = slabKey.match(/staircase-slab-(\d)/);
+            if (slabIdMatch) {
+              trackContentTabOpen(`lo${slabIdMatch[1]}`);
+            }
+          }
         }
       }, 1200); 
     }
-  }, []);
+  }, [trackContentTabOpen]);
 
   // Navigate to next slab with magic transition
   const handleNavigateNext = useCallback(() => {
@@ -821,6 +844,14 @@ function App() {
           // Update content immediately
           setCurrentContent(nextContent);
           setCurrentSlabKey(nextSlabKey);
+          
+          // Track content tab opening for achievements (Q/E navigation)
+          if (nextSlabKey) {
+            const slabIdMatch = nextSlabKey.match(/staircase-slab-(\d)/);
+            if (slabIdMatch) {
+              trackContentTabOpen(`lo${slabIdMatch[1]}`);
+            }
+          }
           
           setTimeout(() => {
             shiftElevator.wasOnElevator = false;
@@ -880,7 +911,7 @@ function App() {
     };
     
     magicalFadeOut();
-  }, [currentSlabKey, isNavigatingSlabs]);
+  }, [currentSlabKey, isNavigatingSlabs, trackContentTabOpen]);
 
   // Navigate to previous slab with magic transition
   const handleNavigatePrev = useCallback(() => {
@@ -938,6 +969,14 @@ function App() {
           // Update content immediately
           setCurrentContent(prevContent);
           setCurrentSlabKey(prevSlabKey);
+          
+          // Track content tab opening for achievements (Q/E navigation)
+          if (prevSlabKey) {
+            const slabIdMatch = prevSlabKey.match(/staircase-slab-(\d)/);
+            if (slabIdMatch) {
+              trackContentTabOpen(`lo${slabIdMatch[1]}`);
+            }
+          }
           
           setTimeout(() => {
             shiftElevator.wasOnElevator = false;
@@ -997,7 +1036,7 @@ function App() {
     };
     
     magicalFadeOut();
-  }, [currentSlabKey, isNavigatingSlabs]);
+  }, [currentSlabKey, isNavigatingSlabs, trackContentTabOpen]);
 
   // Cleanup timer on unmount
   React.useEffect(() => {
@@ -1031,12 +1070,14 @@ function App() {
         playPromise.then(() => {
           setIsMusicPlaying(true);
           isMusicPlayingRef.current = true;
+          // Track first song
+          trackSongPlayed(0);
         }).catch((error) => {
           console.log('Audio playback failed:', error);
         });
       }
     }
-  }, []);
+  }, [trackSongPlayed]);
 
   // Toggle music handler
   const toggleMusic = useCallback(() => {
@@ -1066,7 +1107,12 @@ function App() {
         audioRef.current.src = playlist[currentSongIndexRef.current];
         // Use ref to get current playing state
         if (isMusicPlayingRef.current) {
-          audioRef.current.play();
+          audioRef.current.play().then(() => {
+            // Track song when it starts playing
+            trackSongPlayed(currentSongIndexRef.current);
+          }).catch(() => {
+            // Ignore play errors
+          });
         }
       }
     };
@@ -1077,6 +1123,8 @@ function App() {
     audioRef.current.play().then(() => {
       setIsMusicPlaying(true);
       isMusicPlayingRef.current = true;
+      // Track first song
+      trackSongPlayed(0);
     }).catch(() => {
       // music will start when user clicks START button
       setIsMusicPlaying(false);
@@ -1090,7 +1138,7 @@ function App() {
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [trackSongPlayed]);
 
   // Preload collision system, character models, and billboard textures on app start
   useEffect(() => {
@@ -1146,13 +1194,18 @@ function App() {
     return () => clearInterval(checkInterval);
   }, [introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay]);
 
-  // Handle ESC key to close menu or content
+  // Handle ESC key to open/close menu or content
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && !isTransitioning) {
+        // Disable ESC during intro/loading/character selection
+        if (!introComplete || showLoadingScreen || showCharacterSelection) return;
+        
         if (showContent) {
           handleCloseContent();
         } else if (showMenu) {
+          handleCloseMenu();
+        } else {
           handleMenuIconClick();
         }
       }
@@ -1162,7 +1215,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [showMenu, showContent, isTransitioning, handleMenuIconClick, handleCloseContent]);
+  }, [showMenu, showContent, isTransitioning, handleMenuIconClick, handleCloseContent, handleCloseMenu, introComplete, showLoadingScreen, showCharacterSelection]);
 
   // Auto-rotate character when menu or content opens for better presentation
   useEffect(() => {
@@ -1352,6 +1405,7 @@ function App() {
                 canNavigatePrev={!!currentSlabKey}
                 canNavigateNext={!!currentSlabKey}
                 onClose={handleCloseContent}
+                onGSplatLoad={trackGSplatViewerUsage}
               />
             )}
 
@@ -1401,12 +1455,11 @@ function App() {
               locationName="Work"
             />
 
-            {/* All Locations Discovered Notification */}
-            <LocationDiscovery
-              isVisible={showAllLocationsDiscovered}
-              onComplete={handleAllLocationsDiscoveredComplete}
-              locationName="Congratulations!|All Locations Discovered"
-              isCongratulatoryMessage={true}
+            {/* Achievement Notification */}
+            <AchievementNotification
+              isVisible={showAchievementNotification}
+              onComplete={handleAchievementNotificationComplete}
+              achievementTitle={currentAchievementTitle}
             />
 
             {/* Interaction Overlay */}
@@ -1466,6 +1519,14 @@ function App() {
         </ClickSpark>
       </div>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <AchievementProvider>
+      <AppContent />
+    </AchievementProvider>
   );
 }
 

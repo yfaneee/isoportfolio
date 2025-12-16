@@ -62,6 +62,7 @@ interface ContentProps {
   canNavigatePrev?: boolean;
   canNavigateNext?: boolean;
   onClose?: () => void;
+  onGSplatLoad?: () => void;
 }
 
 const Content: React.FC<ContentProps> = React.memo(({ 
@@ -71,7 +72,8 @@ const Content: React.FC<ContentProps> = React.memo(({
   onNavigateNext,
   canNavigatePrev = true,
   canNavigateNext = true,
-  onClose
+  onClose,
+  onGSplatLoad
 }) => {
   const examplesContainerRef = useRef<HTMLDivElement>(null);
   const contentBoxBodyRef = useRef<HTMLDivElement>(null);
@@ -266,7 +268,10 @@ const Content: React.FC<ContentProps> = React.memo(({
 
               {/* GSplat Viewer */}
               <div className="project-viewer-section">
-                <GSplatViewer plyUrl={content.projectContent.gsplatUrl} />
+                <GSplatViewer 
+                  plyUrl={content.projectContent.gsplatUrl} 
+                  onLoad={onGSplatLoad}
+                />
               </div>
 
               {/* Project Process / Notes */}

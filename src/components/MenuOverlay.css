@@ -203,7 +203,7 @@
 
 .info-section p {
   margin: 0 auto;
-  font-size: clamp(0.85rem, 1.6vw, 1rem);
+  font-size: clamp(0.85rem, 1.6vw, 1.2rem);
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
@@ -253,7 +253,7 @@
 
 .control-desc {
   color: rgba(255, 255, 255, 0.9);
-  font-size: clamp(0.68rem, 1.3vw, 0.88rem);
+  font-size: clamp(0.68rem, 1.3vw, 1rem);
 }
 
 /* Info section repo links */
@@ -497,6 +497,177 @@
 }
 
 
+/* ==================== ACHIEVEMENTS SECTION ==================== */
+
+.achievements-section {
+  width: 100%;
+  margin-top: 1rem;
+  opacity: 1;
+  transition: opacity 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.achievements-description {
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  font-size: clamp(0.9rem, 1.4vw, 1.2rem);
+  margin: 0 auto clamp(1.2rem, 2.5vh, 1.8rem);
+  max-width: 85%;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.8rem, 1.5vh, 1.2rem);
+  width: 100%;
+  padding: 0 clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vh, 1.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for achievements list */
+.achievements-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.achievements-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.achievements-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.achievements-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.achievement-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: clamp(10px, 1.5vw, 14px);
+  padding: clamp(0.8rem, 1.5vh, 1.2rem);
+  gap: clamp(0.8rem, 1.5vw, 1.2rem);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.achievement-card.unlocked {
+  background: rgba(155, 220, 155, 0.2);
+  border-color: rgba(155, 220, 155, 0.5);
+}
+
+.achievement-card.locked {
+  opacity: 0.7;
+}
+
+.achievement-icon {
+  flex-shrink: 0;
+  width: clamp(50px, 8vw, 70px);
+  height: clamp(50px, 8vw, 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: clamp(8px, 1.2vw, 12px);
+  padding: clamp(10px, 1.5vw, 14px);
+}
+
+.achievement-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(2) contrast(1.2);
+}
+
+.achievement-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.3rem, 0.6vh, 0.5rem);
+}
+
+.achievement-title {
+  margin: 0;
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  font-family: 'Satoshi-Medium', sans-serif;
+  color: rgba(255, 255, 255, 1);
+  font-weight: 600;
+}
+
+.achievement-description {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.3;
+}
+
+.achievement-progress {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1vw, 0.8rem);
+  margin-top: clamp(0.2rem, 0.4vh, 0.3rem);
+}
+
+.progress-bar {
+  flex: 1;
+  height: clamp(6px, 1vh, 8px);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: clamp(3px, 0.5vh, 4px);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9B5DE5, #E6E0FF);
+  transition: width 0.5s ease;
+  border-radius: clamp(3px, 0.5vh, 4px);
+}
+
+.progress-text {
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Satoshi-Medium', sans-serif;
+  min-width: clamp(35px, 6vw, 45px);
+  text-align: right;
+}
+
+.achievement-check {
+  position: absolute;
+  top: clamp(0.5rem, 1vh, 0.8rem);
+  right: clamp(0.5rem, 1vw, 0.8rem);
+  width: clamp(24px, 4vw, 32px);
+  height: clamp(24px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-check img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(1.3) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Hide achievements section fast when menu closes */
+.menu-overlay:not(.visible) .achievements-section {
+  opacity: 0;
+  transition: opacity 0.08s ease;
+}
+
 /* ==================== CHARACTER SELECTION IN MENU ==================== */
 
 .character-section {
@@ -623,6 +794,20 @@
     height: 620px !important;
     max-height: 620px;
     flex: 0 0 620px;
+  }
+
+  .achievement-icon {
+    width: clamp(45px, 7vw, 60px);
+    height: clamp(45px, 7vw, 60px);
+    padding: clamp(9px, 1.3vw, 12px);
+  }
+
+  .achievement-title {
+    font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+  }
+
+  .achievement-description {
+    font-size: clamp(0.72rem, 1.25vw, 0.9rem);
   }
 }
 
@@ -846,6 +1031,31 @@
   .info-repo-icon {
     width: clamp(15px, 2.2vw, 20px);
     height: clamp(15px, 2.2vw, 20px);
+  }
+
+  /* Achievement responsive - tablets */
+  .achievement-icon {
+    width: clamp(40px, 6.5vw, 55px);
+    height: clamp(40px, 6.5vw, 55px);
+    padding: clamp(8px, 1.2vw, 11px);
+  }
+
+  .achievement-title {
+    font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+  }
+
+  .achievement-description {
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  }
+
+  .achievement-card {
+    padding: clamp(0.7rem, 1.3vh, 1rem);
+    gap: clamp(0.7rem, 1.3vw, 1rem);
+  }
+
+  .achievements-list {
+    gap: clamp(0.7rem, 1.3vh, 1rem);
+    padding: 0 clamp(0.5rem, 1vw, 1rem) clamp(0.9rem, 1.8vh, 1.3rem);
   }
 }
 
@@ -1207,6 +1417,48 @@
   
   .current-name {
     font-size: clamp(0.68rem, 1.15vw, 0.82rem);
+  }
+
+  /* Achievement responsive - mobile */
+  .achievement-icon {
+    width: clamp(35px, 6vw, 48px);
+    height: clamp(35px, 6vw, 48px);
+    padding: clamp(7px, 1.1vw, 10px);
+  }
+
+  .achievement-title {
+    font-size: clamp(0.8rem, 1.45vw, 0.98rem);
+  }
+
+  .achievement-description {
+    font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+  }
+
+  .achievement-card {
+    padding: clamp(0.6rem, 1.1vh, 0.9rem);
+    gap: clamp(0.6rem, 1.1vw, 0.9rem);
+  }
+
+  .achievements-list {
+    gap: clamp(0.6rem, 1.1vh, 0.9rem);
+    padding: 0 clamp(0.3rem, 0.8vw, 0.8rem) clamp(0.8rem, 1.5vh, 1.2rem);
+  }
+
+  .achievements-description {
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+    margin-bottom: clamp(0.9rem, 1.8vh, 1.4rem);
+  }
+
+  .progress-text {
+    font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+    min-width: clamp(30px, 5.5vw, 40px);
+  }
+
+  .achievement-check {
+    width: clamp(20px, 3.5vw, 28px);
+    height: clamp(20px, 3.5vw, 28px);
+    top: clamp(0.4rem, 0.8vh, 0.6rem);
+    right: clamp(0.4rem, 0.8vw, 0.6rem);
   }
 }
 

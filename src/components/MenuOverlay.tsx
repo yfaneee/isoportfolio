@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './MenuOverlay.css';
+import { useAchievements } from '../contexts/AchievementContext';
 
 export interface CharacterOption {
   id: string;
@@ -18,7 +19,7 @@ interface MenuOverlayProps {
   onCharacterSelect?: (character: CharacterOption) => void;
 }
 
-type TabType = 'menu' | 'info' | 'character';
+type TabType = 'menu' | 'info' | 'character' | 'achievements';
 
 const characterOptions: CharacterOption[] = [
   {
@@ -57,6 +58,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
   onCharacterSelect 
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('menu');
+  const { achievements } = useAchievements();
   
   // Reset to menu tab whenever the menu opens
   React.useEffect(() => {
@@ -245,6 +247,58 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
     </>
   );
 
+  const renderAchievementsContent = () => (
+    <>
+      <div className="achievements-section">
+        <div className="section-title-with-dividers">
+          <div className="divider-left">
+            <img src="/images/divider-003.png" alt="" />
+          </div>
+          <h3>Achievements</h3>
+          <div className="divider-right">
+            <img src="/images/divider-003.png" alt="" />
+          </div>
+        </div>
+        <p className="achievements-description">
+          Track your progress exploring this portfolio
+        </p>
+        
+        <div className="achievements-list">
+          {achievements.map((achievement) => (
+            <div 
+              key={achievement.id} 
+              className={`achievement-card ${achievement.isUnlocked ? 'unlocked' : 'locked'}`}
+            >
+              <div className="achievement-icon">
+                <img src={achievement.iconPath} alt={achievement.title} />
+              </div>
+              <div className="achievement-content">
+                <h4 className="achievement-title">{achievement.title}</h4>
+                <p className="achievement-description">{achievement.description}</p>
+                <div className="achievement-progress">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
+                    />
+                  </div>
+                  <span className="progress-text">
+                    {achievement.progress}/{achievement.maxProgress}
+                  </span>
+                </div>
+              </div>
+              {achievement.isUnlocked && (
+                <div className="achievement-check">
+                  <img src="/images/menu/Done.svg" alt="Completed" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <>
       {/* Full-screen backdrop for click-outside detection */}
@@ -291,6 +345,13 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
             aria-label="Character"
           >
             <img src="/images/menu/Charact.svg" alt="Character" />
+          </button>
+          <button 
+            className={`menu-tab ${activeTab === 'achievements' ? 'active' : ''}`}
+            onClick={() => setActiveTab('achievements')}
+            aria-label="Achievements"
+          >
+            <img src="/images/menu/Star.svg" alt="Achievements" />
           </button>
         </div>
 
@@ -348,6 +409,11 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
                 </div>
                 
               </div>
+            </div>
+          )}
+          {activeTab === 'achievements' && (
+            <div className="menu-sections">
+              {renderAchievementsContent()}
             </div>
           )}
         </div>
