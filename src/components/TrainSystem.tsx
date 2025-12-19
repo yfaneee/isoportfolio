@@ -4,9 +4,15 @@ import AnimatedTrain from './AnimatedTrain';
 
 interface TrainSystemProps {
   isVisible?: boolean;
+  onTrainStateUpdate?: (state: {
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }) => void;
+  isOnTrain?: boolean;
 }
 
-const TrainSystem: React.FC<TrainSystemProps> = ({ isVisible = true }) => {
+const TrainSystem: React.FC<TrainSystemProps> = ({ isVisible = true, onTrainStateUpdate, isOnTrain = false }) => {
   // Load track models at component level
   const cornerLarge = useGLTF('/train/railroad-rail-corner-large.glb');
   const cornerSmall = useGLTF('/train/railroad-rail-corner-small.glb');
@@ -52,7 +58,7 @@ const TrainSystem: React.FC<TrainSystemProps> = ({ isVisible = true }) => {
   return (
     <group name="train-system">
       {/* Animated electric train */}
-      <AnimatedTrain speed={5} showTrain={isVisible} />
+      <AnimatedTrain speed={5} showTrain={isVisible} onTrainStateUpdate={onTrainStateUpdate} isOnTrain={isOnTrain} />
       
       {/* Northwest corner */}
       <primitive 

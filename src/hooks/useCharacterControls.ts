@@ -137,16 +137,21 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             const isOnWebsiteButton3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
             const isOnWebsiteButton4 = x >= -1.45 && x <= -0.55 && z >= 31.2 && z <= 32.1; 
             
-            if ((isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
+            const isOnInteractableSlab = isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
                  isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4 ||
-                 isOnWebsiteButton1 || isOnWebsiteButton2 || isOnWebsiteButton3 || isOnWebsiteButton4) && onSpacePressRef.current) {
+                 isOnWebsiteButton1 || isOnWebsiteButton2 || isOnWebsiteButton3 || isOnWebsiteButton4;
+            
+            if (isOnInteractableSlab && onSpacePressRef.current) {
               centerOnSlab();
               onSpacePressRef.current();
               if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) {
                 keysRef.current.space = false;
               }
+            } else if (onSpacePressRef.current) {
+              // Not on a slab, but still call onSpacePress for other interactions 
+              onSpacePressRef.current();
             }
           }
         }
@@ -520,8 +525,8 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       }
     };
 
-    // Check every 100ms for content visibility changes
-    const interval = setInterval(checkContentVisibility, 100);
+    // Check every 250ms for content visibility changes (optimized)
+    const interval = setInterval(checkContentVisibility, 250);
     
     return () => clearInterval(interval);
   }, []);

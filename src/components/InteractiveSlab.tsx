@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@react-three/drei';
 
 interface InteractiveSlabProps {
@@ -26,6 +26,23 @@ const InteractiveSlab: React.FC<InteractiveSlabProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const activeColor = '#E8A200';
+
+  // Clear hover state when movement keys are pressed 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (key === 'w' || key === 'a' || key === 's' || key === 'd' || 
+          key === 'arrowup' || key === 'arrowdown' || key === 'arrowleft' || key === 'arrowright') {
+        if (isHovered) {
+          setIsHovered(false);
+          document.body.style.cursor = 'default';
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isHovered]);
 
   const handlePointerOver = (e: any) => {
     if (!introComplete) return; 

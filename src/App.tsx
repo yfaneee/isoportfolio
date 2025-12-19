@@ -89,8 +89,30 @@ function AppContent() {
   const [hoveredSlabId, setHoveredSlabId] = useState<string | null>(null);
   const [hoveredSlabPosition, setHoveredSlabPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isSlabClickAnimating, setIsSlabClickAnimating] = useState(false);
+  const [isOnTrain, setIsOnTrain] = useState(false);
+  const [trainState, setTrainState] = useState<{
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }>({
+    isStopped: false,
+    position: [0, 0, 0],
+    rotation: 0
+  });
+  // Ref to track latest train state for synchronous access 
+  const trainStateRef = useRef<{
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }>({
+    isStopped: false,
+    position: [0, 0, 0],
+    rotation: 0
+  });
   const menuTimerRef = useRef<NodeJS.Timeout | null>(null);
   const characterControllerRef = useRef<any>(null);
+  // Store position where character boarded the train
+  const trainBoardingPositionRef = useRef<[number, number, number]>([0, 0, 0]);
   
   // Billboard refs for programmatic triggering
   const billboardRefs = useRef<{[key: string]: any}>({});
@@ -563,6 +585,65 @@ function AppContent() {
     }
   }, [canInteract, introComplete, showLoadingScreen]);
 
+  // Handle train state updates
+  const handleTrainStateUpdate = useCallback((state: {
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }) => {
+    const prevStopped = trainStateRef.current.isStopped;
+    // Update ref immediately 
+    trainStateRef.current = state;
+    // Update state for React re-renders
+    setTrainState(state);
+    
+    // If on train and it stopped, show exit prompt
+    if (isOnTrain && state.isStopped) {
+      setInteractionText('Exit Train');
+      setInteractionKeyText('SPACE');
+      setShowInteractionOverlay(true);
+      setCanInteract(true);
+      return;
+    }
+    
+    // If on train and moving, hide prompt
+    if (isOnTrain && !state.isStopped) {
+      setShowInteractionOverlay(false);
+      setCanInteract(false);
+      return;
+    }
+    
+    // Only check for boarding when train JUST stopped (not every frame)
+    if (state.isStopped && !prevStopped && !isOnTrain) {
+      const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      
+      // Only check if character is in the train zone 
+      const isInTrainZone = characterPos[2] > 15 && characterPos[2] < 25 && 
+                            characterPos[0] > -10 && characterPos[0] < 10;
+      
+      if (isInTrainZone) {
+        const distanceToTrain = Math.sqrt(
+          Math.pow(characterPos[0] - state.position[0], 2) +
+          Math.pow(characterPos[2] - state.position[2], 2)
+        );
+        
+        // If character is within 4 units of stopped train, show boarding prompt
+        if (distanceToTrain < 4) {
+          setInteractionText('Board Train');
+          setInteractionKeyText('SPACE');
+          setShowInteractionOverlay(true);
+          setCanInteract(true);
+        }
+      }
+    }
+    
+    // Clear prompt when train starts moving again
+    if (!state.isStopped && prevStopped && !isOnTrain) {
+      setShowInteractionOverlay(false);
+      setCanInteract(false);
+    }
+  }, [isOnTrain]);
+
   const handleMovementStart = useCallback(() => {
     if (showMenu) {
       setShowMenu(false);
@@ -585,6 +666,42 @@ function AppContent() {
     
     if (!showMenu && !showContent) {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      
+      // Handle train boarding/exiting 
+      const currentTrainState = trainStateRef.current;
+      
+      if (isOnTrain) {
+        // Exit train (only when stopped)
+        if (currentTrainState.isStopped) {
+          // First set isOnTrain to false so character re-renders
+          setIsOnTrain(false);
+          // Then teleport character back to boarding position 
+          setTimeout(() => {
+            if (characterControllerRef.current?.teleportTo) {
+              characterControllerRef.current.teleportTo(trainBoardingPositionRef.current);
+            }
+          }, 10);
+          setShowInteractionOverlay(false);
+          setCanInteract(false);
+        }
+        return;
+      } else if (currentTrainState.isStopped) {
+        // Check if near train
+        const distanceToTrain = Math.sqrt(
+          Math.pow(characterPos[0] - currentTrainState.position[0], 2) +
+          Math.pow(characterPos[2] - currentTrainState.position[2], 2)
+        );
+        
+        if (distanceToTrain < 4) {
+          // Store boarding position before hiding character
+          trainBoardingPositionRef.current = [...characterPos] as [number, number, number];
+          // Board the train 
+          setIsOnTrain(true);
+          setShowInteractionOverlay(false);
+          setCanInteract(false);
+          return;
+        }
+      }
       
       // Check interaction conditions directly here (don't rely on canInteract state)
       const contentCheck = getContentForSlab(characterPos[0], characterPos[2]);
@@ -682,7 +799,7 @@ function AppContent() {
         setShowMenu(true);
       }
     }
-  }, [showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection, trackContentTabOpen]);
+  }, [showMenu, showContent, triggerBillboardClick, introComplete, showLoadingScreen, showCharacterSelection, trackContentTabOpen, isOnTrain]);
 
   // Mobile interact button handler (must be after handleSpacePress)
   const handleMobileInteract = useCallback((isPressed: boolean) => {
@@ -1150,13 +1267,40 @@ function AppContent() {
   // Check if character is on an interactable slab and update position (optimized with 150ms interval)
   useEffect(() => {
     if (!introComplete || showMenu || showContent || isBillboardFullscreen || showWebsiteOverlay) {
-      setCanInteract(false);
+      // Don't clear canInteract if on train
+      if (!isOnTrain) {
+        setCanInteract(false);
+      }
       return;
     }
 
     const checkInterval = setInterval(() => {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
       setCurrentCharacterPosition(characterPos);
+      
+      // If on train, don't check other interactions
+      if (isOnTrain) {
+        return;
+      }
+      
+      const isInTrainZone = characterPos[2] > 15 && characterPos[2] < 25 && 
+                            characterPos[0] > -10 && characterPos[0] < 10;
+      
+      if (isInTrainZone) {
+        const currentTrainState = trainStateRef.current;
+        if (currentTrainState.isStopped) {
+          const distanceToTrain = Math.sqrt(
+            Math.pow(characterPos[0] - currentTrainState.position[0], 2) +
+            Math.pow(characterPos[2] - currentTrainState.position[2], 2)
+          );
+          
+          if (distanceToTrain < 4) {
+            // Near train 
+            return;
+          }
+        }
+      }
+      
       const content = getContentForSlab(characterPos[0], characterPos[2]);
       const isOnMiddleSlab = characterPos[0] >= -0.45 && characterPos[0] <= 0.45 && 
                             characterPos[2] >= -0.45 && characterPos[2] <= 0.45;
@@ -1189,14 +1333,24 @@ function AppContent() {
       );
       
       setCanInteract(!!(content || isOnMiddleSlab || isOnElevatorPressurePlate || isOnGithubSlab || isOnWebsiteButtonSlab));
-    }, 150); // Increased from 100ms to 150ms for better performance
+    }, 200); 
 
     return () => clearInterval(checkInterval);
-  }, [introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay]);
+  }, [introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay, isOnTrain]);
 
-  // Handle ESC key to open/close menu or content
+  // Handle ESC key to open/close menu or content, and clear hover on movement
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      
+      // Clear hover state when movement keys are pressed 
+      if (key === 'w' || key === 'a' || key === 's' || key === 'd' || 
+          key === 'arrowup' || key === 'arrowdown' || key === 'arrowleft' || key === 'arrowright') {
+        setHoveredSlabId(null);
+        setIsHoveringBillboard(false);
+        document.body.style.cursor = 'default';
+      }
+      
       if (event.key === 'Escape' && !isTransitioning) {
         // Disable ESC during intro/loading/character selection
         if (!introComplete || showLoadingScreen || showCharacterSelection) return;
@@ -1369,6 +1523,10 @@ function AppContent() {
                   activeSlabId={activeSlabId}
                   onIntroProgress={setIntroProgress}
                   introProgress={introProgress}
+                  onTrainStateUpdate={handleTrainStateUpdate}
+                  isOnTrain={isOnTrain}
+                  trainPosition={trainState.position}
+                  trainRotation={trainState.rotation}
                 />
             </Canvas>
             

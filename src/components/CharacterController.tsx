@@ -18,6 +18,9 @@ interface CharacterControllerProps {
   onPositionUpdate?: (position: { x: number; z: number }) => void;
   onSlabInteraction?: (isOnSlab: boolean, slabType?: string, githubUrl?: string) => void;
   disableMovement?: boolean;
+  isOnTrain?: boolean;
+  trainPosition?: [number, number, number];
+  trainRotation?: number;
 }
 
 const CharacterController = React.forwardRef<any, CharacterControllerProps>(({ 
@@ -33,7 +36,10 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   modelPath,
   onPositionUpdate,
   onSlabInteraction,
-  disableMovement = false
+  disableMovement = false,
+  isOnTrain = false,
+  trainPosition = [0, 0, 0],
+  trainRotation = 0
 }, ref) => {
   const { updateCharacter, positionRef, rotationRef, isMovingRef, teleportToLocation, handleTouch, stopMovement, resetMovementState, handleMobileInput } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
   const lastMoving = useRef(false);
@@ -56,6 +62,11 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
         teleportToLocation(location);
       }
     },
+    teleportTo: (position: [number, number, number]) => {
+      // Directly set position to specific coordinates
+      positionRef.current = position;
+      resetMovementState();
+    },
     handleTouch: (touch: Touch) => handleTouch(touch),
     stopMovement: () => stopMovement(),
     resetMovementState: () => resetMovementState(),
@@ -64,14 +75,27 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
   useFrame((state, delta) => {
     // Early return if not ready
-    if (!introComplete || disableMovement) return;
+    if (!introComplete || (disableMovement && !isOnTrain)) return;
     
     // No need to add visual offset
     introCompletedRef.current = true;
       
       const oldPos = position;
       const oldMoving = isMoving;
-      updateCharacter(delta);
+      
+      // If on train, lock character position to train
+      if (isOnTrain) {
+        const trainCharacterPos: [number, number, number] = [
+          trainPosition[0],
+          trainPosition[1] + 0.8,
+          trainPosition[2]
+        ];
+        positionRef.current = trainCharacterPos;
+        rotationRef.current = trainRotation;
+        isMovingRef.current = false;
+      } else {
+        updateCharacter(delta);
+      }
       
       const newPos = positionRef.current;
       const newMoving = isMovingRef.current;
@@ -178,6 +202,11 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
         lastMoving.current = isMovingRef.current;
       }
   });
+
+  // Hide character completely when on train
+  if (isOnTrain) {
+    return null;
+  }
 
   return (
     <Character

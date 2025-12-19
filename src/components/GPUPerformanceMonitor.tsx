@@ -1,11 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { useThree, useFrame } from '@react-three/fiber';
+import { useEffect } from 'react';
+import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const GPUPerformanceMonitor: React.FC = () => {
   const { gl, scene } = useThree();
-  const lastLogRef = useRef<number>(0);
-  const lastFrameRef = useRef<number>(0);
 
   // Configure renderer for maximum GPU utilization
   useEffect(() => {
@@ -28,19 +26,6 @@ const GPUPerformanceMonitor: React.FC = () => {
     };
   }, [gl, scene]);
 
-  // Monitor GPU performance 
-  useFrame(() => {
-    scene.updateMatrixWorld();
-    
-    // Performance monitoring active 
-    if (process.env.NODE_ENV === 'development') {
-      const now = Date.now();
-      if (!lastLogRef.current || now - lastLogRef.current > 5000) {
-        lastLogRef.current = now;
-        lastFrameRef.current = performance.now();
-      }
-    }
-  });
 
   return null;
 };

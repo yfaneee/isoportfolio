@@ -41,6 +41,14 @@ interface IsometricSceneProps {
   activeSlabId?: string | null;
   onIntroProgress?: (value: number) => void;
   introProgress?: number;
+  onTrainStateUpdate?: (state: {
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }) => void;
+  isOnTrain?: boolean;
+  trainPosition?: [number, number, number];
+  trainRotation?: number;
 }
 
 const IsometricScene: React.FC<IsometricSceneProps> = ({
@@ -77,7 +85,11 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   onSlabClick,
   activeSlabId,
   onIntroProgress,
-  introProgress = 0
+  introProgress = 0,
+  onTrainStateUpdate,
+  isOnTrain = false,
+  trainPosition = [0, 0, 0],
+  trainRotation = 0
 }) => {
   const [isCharacterMoving, setIsCharacterMoving] = useState(false);
 
@@ -123,6 +135,8 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
                isTransitioning={isTransitioning}
                showLoadingScreen={showLoadingScreen}
                isNavigatingSlabs={isNavigatingSlabs}
+               isOnTrain={isOnTrain}
+               trainPosition={trainPosition}
              />
       
       {/* The isometric world */}
@@ -144,7 +158,7 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
       />
       
       {/* Animated train system circling the scene */}
-      <TrainSystem isVisible={introComplete} />
+      <TrainSystem isVisible={introComplete} onTrainStateUpdate={onTrainStateUpdate} isOnTrain={isOnTrain} />
       
       {/* Debug platform boundaries (red lines) */}
       <PlatformDebugger enabled={false} />
@@ -165,6 +179,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onPositionUpdate={onPositionUpdate}
         onSlabInteraction={onSlabInteraction}
         disableMovement={showWebsiteOverlay}
+        isOnTrain={isOnTrain}
+        trainPosition={trainPosition}
+        trainRotation={trainRotation}
       />
     </>
   );

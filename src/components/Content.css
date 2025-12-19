@@ -1,10 +1,12 @@
-t.content-backdrop {
+.content-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 999;
+  background: transparent;
+  cursor: default;
 }
 
 .content-box {
@@ -582,7 +584,7 @@ t.content-backdrop {
   font-size: 1.1rem;
   line-height: 1.6;
   color: rgba(255, 255, 255);
-  text-align: center;
+  text-align: left;
 }
 
 .studio-brand-guide-container {
@@ -950,7 +952,7 @@ t.content-backdrop {
   line-height: 1.6;
   color: rgba(255, 255, 255, 1);
   margin: 0 3rem;
-  text-align: center;
+  text-align: left;
 }
 
 .project-viewer-section {

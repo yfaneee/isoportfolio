@@ -6,6 +6,12 @@ import * as THREE from 'three';
 interface AnimatedTrainProps {
   speed?: number;
   showTrain?: boolean;
+  onTrainStateUpdate?: (state: {
+    isStopped: boolean;
+    position: [number, number, number];
+    rotation: number;
+  }) => void;
+  isOnTrain?: boolean; 
 }
 
 const WAYPOINTS: [number, number, number][] = [
@@ -179,8 +185,23 @@ const _pitchQuat = new THREE.Quaternion();
 const _yAxis = new THREE.Vector3(0, 1, 0);
 const _xAxis = new THREE.Vector3(1, 0, 0);
 
-const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = true }) => {
+  const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = true, onTrainStateUpdate, isOnTrain = false }) => {
   const distanceTraveled = useRef(0);
+  const isStopped = useRef(false);
+  const stopTimer = useRef(0);
+  const hasStoppedThisCycle = useRef(false);
+  const currentSpeed = useRef(speed);
+  const isDecelerating = useRef(false);
+  const isAccelerating = useRef(false);
+  
+  // Track last sent state to avoid unnecessary updates
+  const lastSentState = useRef<{
+    isStopped: boolean;
+    position: [number, number, number];
+  }>({
+    isStopped: false,
+    position: [0, 0, 0]
+  });
   
   // Refs for all train cars 
   const car1Ref = useRef<THREE.Group>(null);
@@ -223,21 +244,94 @@ const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = tr
   }, []);
   
   const yOffset = -1; 
-  const carSpacing = 1.3;
+  const carSpacing = 1.8;
   
   // Single useFrame for ALL cars 
   useFrame((_, delta) => {
     if (!showTrain) return;
     
+    // Calculate distance along path for stop detection
+    let stopSegmentStart = 0;
+    
+    // Find distance to waypoint 
+    const stopWaypoint = 42;
+    for (let i = 0; i < stopWaypoint; i++) {
+      stopSegmentStart += segmentLengths[i];
+    }
+    
+    // Train stop area
+    const stopDistance = stopSegmentStart;
+    const decelerationDistance = 3.5; 
+    const stopRange = 0.5; 
+    
+    const distanceToStop = stopDistance - distanceTraveled.current;
+    
+    // Handle negative wrap-around (when train passes waypoint 0)
+    const effectiveDistanceToStop = distanceToStop < -totalLength/2 ? distanceToStop + totalLength : distanceToStop;
+    
+    // Deceleration phase
+    if (!isStopped.current && !hasStoppedThisCycle.current && effectiveDistanceToStop > 0 && effectiveDistanceToStop < decelerationDistance) {
+      isDecelerating.current = true;
+      // Smooth deceleration curve (quadratic easing)
+      const decelerationProgress = 1 - (effectiveDistanceToStop / decelerationDistance);
+      currentSpeed.current = speed * (1 - decelerationProgress * 0.85); 
+    }
+    // Check if train should stop
+    else if (!isStopped.current && !hasStoppedThisCycle.current && Math.abs(effectiveDistanceToStop) < stopRange) {
+      isStopped.current = true;
+      stopTimer.current = 0;
+      currentSpeed.current = 0;
+      isDecelerating.current = false;
+      hasStoppedThisCycle.current = true;
+    }
+    // Stopped state
+    else if (isStopped.current) {
+      stopTimer.current += delta;
+      currentSpeed.current = 0;
+      
+      // Stop for 5.5 seconds
+      if (stopTimer.current >= 5.5) {
+        isStopped.current = false;
+        isAccelerating.current = true;
+        stopTimer.current = 0;
+      }
+    }
+    // Acceleration phase after stop
+    else if (isAccelerating.current) {
+      const accelerationTime = 1.5; 
+      stopTimer.current += delta;
+      
+      if (stopTimer.current < accelerationTime) {
+        // Smooth acceleration curve (quadratic easing)
+        const progress = stopTimer.current / accelerationTime;
+        currentSpeed.current = speed * (progress * progress);
+      } else {
+        currentSpeed.current = speed;
+        isAccelerating.current = false;
+        stopTimer.current = 0;
+      }
+    }
+    // Normal operation
+    else {
+      currentSpeed.current = speed;
+      isDecelerating.current = false;
+    }
+    
     // Update distance
-    distanceTraveled.current += delta * speed;
+    distanceTraveled.current += delta * currentSpeed.current;
+    
+    // Reset cycle when completing the loop
     if (distanceTraveled.current >= totalLength) {
       distanceTraveled.current = 0;
+      hasStoppedThisCycle.current = false;
     }
     
     // Update all cars in one loop
     const carRefs = [car1Ref, car2Ref, car3Ref, car4Ref, car5Ref];
     const offsets = [0, carSpacing, carSpacing * 2, carSpacing * 3, carSpacing * 4];
+    
+    let thirdCarPos: [number, number, number] = [0, 0, 0];
+    let thirdCarYaw = 0;
     
     for (let i = 0; i < carRefs.length; i++) {
       const carRef = carRefs[i];
@@ -254,6 +348,28 @@ const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = tr
       _yawQuat.setFromAxisAngle(_yAxis, yaw);
       _pitchQuat.setFromAxisAngle(_xAxis, pitch);
       carRef.current.quaternion.multiplyQuaternions(_yawQuat, _pitchQuat);
+      
+      // Store 3rd car position for callback (index 2)
+      if (i === 2) {
+        thirdCarPos = [pos[0], pos[1] + yOffset, pos[2]];
+        thirdCarYaw = yaw;
+      }
+    }
+    
+    // Send train state to parent
+    if (onTrainStateUpdate) {
+      const stoppedStateChanged = lastSentState.current.isStopped !== isStopped.current;
+      
+      if (stoppedStateChanged || isStopped.current || isOnTrain) {
+        lastSentState.current.isStopped = isStopped.current;
+        lastSentState.current.position = thirdCarPos;
+        
+        onTrainStateUpdate({
+          isStopped: isStopped.current,
+          position: thirdCarPos,
+          rotation: thirdCarYaw
+        });
+      }
     }
   });
   
@@ -264,27 +380,27 @@ const AnimatedTrain: React.FC<AnimatedTrainProps> = ({ speed = 1, showTrain = tr
         <>
           {/* Front car */}
           <group ref={car1Ref}>
-            <primitive object={clonedModels.front} scale={0.5} />
+            <primitive object={clonedModels.front} scale={0.7} />
           </group>
           
           {/* Car 2 */}
           <group ref={car2Ref}>
-            <primitive object={clonedModels.middle} scale={0.5} />
+            <primitive object={clonedModels.middle} scale={0.7} />
           </group>
           
           {/* Car 3 */}
           <group ref={car3Ref}>
-            <primitive object={clonedModels.rear1} scale={0.5} />
+            <primitive object={clonedModels.rear1} scale={0.7} />
           </group>
           
           {/* Car 4 */}
           <group ref={car4Ref}>
-            <primitive object={clonedModels.rear2} scale={0.5} />
+            <primitive object={clonedModels.rear2} scale={0.7} />
           </group>
           
           {/* Car 5 */}
           <group ref={car5Ref}>
-            <primitive object={clonedModels.rear3} scale={0.5} />
+            <primitive object={clonedModels.rear3} scale={0.7} />
           </group>
         </>
       )}

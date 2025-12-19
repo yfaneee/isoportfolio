@@ -1,10 +1,163 @@
-import React, { useRef, useEffect, useMemo } from 'react';
-import { Box, Plane } from '@react-three/drei';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
+import { Box, Plane, useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import InteractiveBillboard from './InteractiveBillboard';
 import InteractiveSlab from './InteractiveSlab';
 import InteractiveOutlineButton from './InteractiveOutlineButton';
+
+// ============================================================================
+// INTERACTIVE GIT MODEL
+// ============================================================================
+interface InteractiveGitModelProps {
+  position: [number, number, number];
+  slabId: string;
+  onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
+  onSlabClick?: (slabId: string) => void;
+  introComplete: boolean;
+  isActive?: boolean;
+}
+
+// Global movement key listener - shared by all InteractiveGitModel instances
+let gitModelHoverClearCallbacks: (() => void)[] = [];
+let gitModelKeyListenerAttached = false;
+
+const setupGitModelKeyListener = () => {
+  if (gitModelKeyListenerAttached) return;
+  gitModelKeyListenerAttached = true;
+  
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    const key = e.key.toLowerCase();
+    if (key === 'w' || key === 'a' || key === 's' || key === 'd' || 
+        key === 'arrowup' || key === 'arrowdown' || key === 'arrowleft' || key === 'arrowright') {
+      gitModelHoverClearCallbacks.forEach(cb => cb());
+    }
+  });
+};
+
+const InteractiveGitModel: React.FC<InteractiveGitModelProps> = ({
+  position,
+  slabId,
+  onSlabHover,
+  onSlabClick,
+  introComplete,
+  isActive = false
+}) => {
+  const { scene } = useGLTF('/models/git.glb');
+  const [isHovered, setIsHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Register hover clear callback once on mount
+  useEffect(() => {
+    setupGitModelKeyListener();
+    
+    const clearHover = () => {
+      setIsHovered(false);
+      document.body.style.cursor = 'default';
+    };
+    
+    gitModelHoverClearCallbacks.push(clearHover);
+    return () => {
+      gitModelHoverClearCallbacks = gitModelHoverClearCallbacks.filter(cb => cb !== clearHover);
+    };
+  }, []);
+
+  const handlePointerOver = (e: any) => {
+    if (!introComplete) return;
+    
+    e.stopPropagation();
+    setIsHovered(true);
+    document.body.style.cursor = 'pointer';
+    
+    if (onSlabHover) {
+      const screenX = (e.clientX || window.innerWidth / 2);
+      const screenY = (e.clientY || window.innerHeight / 2);
+      onSlabHover(slabId, { x: screenX, y: screenY });
+    }
+  };
+
+  const handlePointerOut = (e: any) => {
+    if (!introComplete) return;
+    
+    e.stopPropagation();
+    setIsHovered(false);
+    document.body.style.cursor = 'default';
+    
+    if (onSlabHover) {
+      onSlabHover(null);
+    }
+  };
+
+  const handleClick = (e: any) => {
+    if (!introComplete) return;
+    
+    e.stopPropagation();
+    if (onSlabClick) {
+      onSlabClick(slabId);
+    }
+  };
+
+  // Clone the scene and its materials to avoid sharing
+  const clonedScene = useMemo(() => {
+    const cloned = scene.clone();
+    
+    // Deep clone materials so each instance has its own
+    cloned.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material) {
+          if (Array.isArray(mesh.material)) {
+            mesh.material = mesh.material.map(mat => mat.clone());
+          } else {
+            mesh.material = mesh.material.clone();
+          }
+        }
+      }
+    });
+    
+    return cloned;
+  }, [scene]);
+
+  // Apply emissive effect when hovered or active
+  useEffect(() => {
+    if (!clonedScene) return;
+    
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material) {
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach((material: any) => {
+            if (material.emissive !== undefined) {
+              if (isHovered || isActive) {
+                material.emissive = new THREE.Color('#E8A200');
+                material.emissiveIntensity = 0.4;
+              } else {
+                material.emissive = new THREE.Color('#000000');
+                material.emissiveIntensity = 0;
+              }
+            }
+          });
+        }
+      }
+    });
+  }, [isHovered, isActive, clonedScene]);
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={[0.3, 0.3, 0.3]}
+      onClick={handleClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      onPointerMove={handlePointerOver}
+    >
+      <primitive object={clonedScene} />
+    </group>
+  );
+};
 
 // ============================================================================
 // SKYSCRAPER FOUNDATION WITH ANIMATED WINDOWS
@@ -81,13 +234,21 @@ const SkyscraperFoundation: React.FC<{
     }
   }, [windowPositions]);
   
-  // Animate windows 
+  // Animate windows - THROTTLED to every 3rd frame for performance
+  const frameCountRef = useRef(0);
   useFrame((_, delta) => {
+    // Skip 2 out of every 3 frames for performance
+    frameCountRef.current++;
+    if (frameCountRef.current % 3 !== 0) return;
+    
     const materials = windowMaterialsRef.current;
     const states = windowStatesRef.current;
     
     // Early exit if not initialized
     if (materials.length === 0 || states.length === 0) return;
+    
+    // Use adjusted delta for skipped frames
+    const adjustedDelta = delta * 3;
     
     for (let index = 0; index < materials.length; index++) {
       const material = materials[index];
@@ -96,7 +257,7 @@ const SkyscraperFoundation: React.FC<{
       if (!material || !state) continue;
       
       // Update timer
-      state.timer -= delta;
+      state.timer -= adjustedDelta;
       
       // When timer expires, change state
       if (state.timer <= 0) {
@@ -105,24 +266,17 @@ const SkyscraperFoundation: React.FC<{
         // 60% chance to toggle state
         if (Math.random() < 0.6) {
           const isCurrentlyOn = state.targetBrightness > 0.5;
-          if (isCurrentlyOn) {
-            // Turn off
-            state.targetBrightness = 0.05 + Math.random() * 0.1;
-          } else {
-            // Turn on
-            state.targetBrightness = 0.7 + Math.random() * 0.3;
-          }
+          state.targetBrightness = isCurrentlyOn ? 0.05 + Math.random() * 0.1 : 0.7 + Math.random() * 0.3;
         }
       }
       
       // Smooth interpolation
-      state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
+      state.brightness += (state.targetBrightness - state.brightness) * adjustedDelta * 3;
       
       // GPU optimization: Only update if change is significant
       const newIntensity = state.brightness * 3;
-      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.01) {
+      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.02) {
         material.emissiveIntensity = newIntensity;
-        material.needsUpdate = true;
       }
     }
   });
@@ -286,21 +440,27 @@ const RampFoundationsWithWindows: React.FC<{
     }
   }, [windowPositions]);
   
-  // Animate windows - OPTIMIZED
+  // Animate windows - THROTTLED to every 3rd frame for performance
+  const rampFrameCountRef = useRef(0);
   useFrame((_, delta) => {
+    // Skip 2 out of every 3 frames for performance
+    rampFrameCountRef.current++;
+    if (rampFrameCountRef.current % 3 !== 0) return;
+    
     const materials = windowMaterialsRef.current;
     const states = windowStatesRef.current;
     
     if (materials.length === 0 || states.length === 0) return;
     
-    // Batch updates for GPU efficiency
+    const adjustedDelta = delta * 3;
+    
     for (let index = 0; index < materials.length; index++) {
       const material = materials[index];
       const state = states[index];
       
       if (!material || !state) continue;
       
-      state.timer -= delta;
+      state.timer -= adjustedDelta;
       
       if (state.timer <= 0) {
         state.timer = 1.5 + Math.random() * 8;
@@ -310,13 +470,12 @@ const RampFoundationsWithWindows: React.FC<{
         }
       }
       
-      state.brightness += (state.targetBrightness - state.brightness) * delta * 3;
+      state.brightness += (state.targetBrightness - state.brightness) * adjustedDelta * 3;
       
       // Only update GPU if change is significant
       const newIntensity = state.brightness * 3;
-      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.01) {
+      if (Math.abs(material.emissiveIntensity - newIntensity) > 0.02) {
         material.emissiveIntensity = newIntensity;
-        material.needsUpdate = true;
       }
     }
   });
@@ -1384,24 +1543,21 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         color={floorColor}
       />
       
-      {/* Project slabs on 18x3 platform - Interactive GitHub buttons */}
+      {/* Project slabs on 18x3 platform - Interactive GitHub Git models */}
       {[
         { index: 2, key: 'project-slab-1', slabId: 'github-castle' },
         { index: 7, key: 'project-slab-2', slabId: 'github-holleman' },
         { index: 12, key: 'project-slab-3', slabId: 'github-space' },
         { index: 17, key: 'project-slab-4', slabId: 'github-spotify' }
       ].map((slab) => (
-        <InteractiveSlab
+        <InteractiveGitModel
           key={slab.key}
           position={[1.2, platform18x3Y + floorHeight/2 + 0.07, platform18x3StartZ + slab.index * spacing - 1.5]}
-          args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-          color="#F5F5DC"
-          hoverColor="#FFE4B5"
           slabId={slab.slabId}
           onSlabHover={onSlabHover}
           onSlabClick={onSlabClick}
           introComplete={introComplete}
-        isActive={activeSlabId === slab.slabId}
+          isActive={activeSlabId === slab.slabId}
         />
       ))}
 

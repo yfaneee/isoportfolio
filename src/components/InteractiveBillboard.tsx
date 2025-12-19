@@ -80,6 +80,24 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     // No cleanup needed - texture is managed by the preloader
   }, [billboardKey]);
 
+  // Clear hover state when movement keys are pressed 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (key === 'w' || key === 'a' || key === 's' || key === 'd' || 
+          key === 'arrowup' || key === 'arrowdown' || key === 'arrowleft' || key === 'arrowright') {
+        if (isHovered) {
+          setIsHovered(false);
+          document.body.style.cursor = 'default';
+          onBillboardInteraction?.(false, billboardKey);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isHovered, billboardKey, onBillboardInteraction]);
+
   // Target camera position 
   const targetCameraPosition = useMemo(() => new THREE.Vector3(
     position[0] + 1.5,
@@ -152,13 +170,12 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
           easedProgress
         );
         
-        // Interpolate camera target
-        const currentTarget = new THREE.Vector3().lerpVectors(
-          originalCameraTarget.current,
-          targetCameraTarget,
-          easedProgress
+        // Interpolate camera target - create once and reuse
+        camera.lookAt(
+          originalCameraTarget.current.x + (targetCameraTarget.x - originalCameraTarget.current.x) * easedProgress,
+          originalCameraTarget.current.y + (targetCameraTarget.y - originalCameraTarget.current.y) * easedProgress,
+          originalCameraTarget.current.z + (targetCameraTarget.z - originalCameraTarget.current.z) * easedProgress
         );
-        camera.lookAt(currentTarget);
         
         if (animationProgress.current <= 0) {
           setIsAnimating(false);

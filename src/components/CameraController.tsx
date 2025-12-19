@@ -13,6 +13,8 @@ interface CameraControllerProps {
   isTransitioning: boolean;
   showLoadingScreen: boolean;
   isNavigatingSlabs?: boolean;
+  isOnTrain?: boolean;
+  trainPosition?: [number, number, number];
 }
 
 const CameraController: React.FC<CameraControllerProps> = ({
@@ -25,7 +27,9 @@ const CameraController: React.FC<CameraControllerProps> = ({
   showContent,
   isTransitioning,
   showLoadingScreen,
-  isNavigatingSlabs = false
+  isNavigatingSlabs = false,
+  isOnTrain = false,
+  trainPosition = [0, 0, 0]
 }) => {
   const { camera } = useThree();
   const introTimeRef = useRef(0);
@@ -50,6 +54,11 @@ const CameraController: React.FC<CameraControllerProps> = ({
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const cameraPanOffsetRef = useRef(new THREE.Vector3(0, 0, 0));
+  
+  // Reusable Vector3 objects to avoid GC pressure in useFrame
+  const targetPosRef = useRef(new THREE.Vector3());
+  const targetLookAtRef = useRef(new THREE.Vector3());
+  const tempLookAtRef = useRef(new THREE.Vector3());
 
   // Reset intro time when loading screen changes
   useEffect(() => {
@@ -376,15 +385,20 @@ const CameraController: React.FC<CameraControllerProps> = ({
         introCompleteTimeRef.current = Date.now();
       }
       
-      const actualCharacterPosition = characterControllerRef.current?.getPosition() || [0, 0.22, 0];
+      // If on train, follow train position instead of character
+      const actualCharacterPosition = isOnTrain 
+        ? trainPosition 
+        : (characterControllerRef.current?.getPosition() || [0, 0.22, 0]);
       
       // Detect teleportation and trigger smooth camera animation
+      // BUT skip this when on train 
       const dx = actualCharacterPosition[0] - prevCharacterPosRef.current[0];
       const dz = actualCharacterPosition[2] - prevCharacterPosRef.current[2];
       const distanceMoved = Math.sqrt(dx * dx + dz * dz);
       
       // If character moved more than 3 units, trigger smooth camera animation
-      if (distanceMoved > 3 && !cameraAnimationRef.current.isAnimating && !isNavigatingSlabs) {
+      // Skip this check when on train to allow smooth train following
+      if (distanceMoved > 3 && !cameraAnimationRef.current.isAnimating && !isNavigatingSlabs && !isOnTrain) {
         // Reset zoom and pan when teleporting
         targetZoomRef.current = 1.0;
         cameraPanOffsetRef.current.set(0, 0, 0);
@@ -440,12 +454,13 @@ const CameraController: React.FC<CameraControllerProps> = ({
       cameraDistance *= zoomFactorRef.current;
       cameraHeight *= zoomFactorRef.current;
       
-             const targetPos = new THREE.Vector3(
+             // Reuse vectors instead of creating new ones every frame (GC optimization)
+             const targetPos = targetPosRef.current.set(
                characterPosition[0] + cameraDistance + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
                characterPosition[1] + cameraHeight + menuOffsetY + contentOffsetY,
                characterPosition[2] + cameraDistance + menuOffsetZ + contentOffsetZ + cameraPanOffsetRef.current.z
              );
-             const targetLookAt = new THREE.Vector3(
+             const targetLookAt = targetLookAtRef.current.set(
               characterPosition[0] + menuOffsetX + contentOffsetX + cameraPanOffsetRef.current.x,
               characterPosition[1] + menuOffsetY + contentOffsetY,
               characterPosition[2] + menuOffsetZ + contentOffsetZ + cameraPanOffsetRef.current.z
@@ -463,8 +478,8 @@ const CameraController: React.FC<CameraControllerProps> = ({
         // Interpolate camera position
         camera.position.lerpVectors(cameraAnimationRef.current.startPos, targetPos, easedT);
         
-        // Interpolate look at position
-        const currentLookAt = cameraAnimationRef.current.startLookAt.clone();
+        // Interpolate look at position - reuse temp vector instead of clone()
+        const currentLookAt = tempLookAtRef.current.copy(cameraAnimationRef.current.startLookAt);
         currentLookAt.lerp(targetLookAt, easedT);
         camera.lookAt(currentLookAt);
         

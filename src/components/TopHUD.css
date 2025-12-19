@@ -81,8 +81,7 @@
 .location-name-top-hud{
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #E8A200;
 }
 
 .suggestion-name {
@@ -92,10 +91,9 @@
 }
 
 .content-name {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #9006ac;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 

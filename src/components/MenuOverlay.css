@@ -23,13 +23,13 @@
   transform: translateX(0);
 }
 
-/* Tab Bar Styles - Bookmark Design */
+/* Tab Bar Styles - Folder Tab Design */
 .menu-tabs {
   position: absolute;
   bottom: calc(100% - 62px);
   left: clamp(0.8rem, 2vw, 1.5rem);
   display: flex;
-  gap: 4px;
+  gap: 6px;
   z-index: 10;
   flex-shrink: 0;
   align-items: flex-end;
@@ -44,25 +44,31 @@
 }
 
 .menu-tab {
-  background: rgba(135, 73, 209, 0.9);
-  border: 2px solid rgba(200, 180, 255, 0.25);
+  background: linear-gradient(to bottom, rgba(135, 73, 209, 0.95), rgba(135, 73, 209, 0.9));
+  border: 2px solid rgba(200, 180, 255, 0.3);
   border-bottom: none;
-  border-top-left-radius: clamp(10px, 2vw, 14px);
-  border-top-right-radius: clamp(10px, 2vw, 14px);
-  padding: clamp(0.4rem, 0.9vw, 0.55rem);
+  padding: clamp(0.4rem, 0.9vw, 0.55rem) clamp(0.6rem, 1.2vw, 0.8rem);
   cursor: pointer;
-  transition: height 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  min-width: 58px;
-  max-width: 58px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
   height: 44px;
   min-height: 44px;
   max-height: 44px;
   position: relative;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.15);
+  clip-path: polygon(
+    8px 0%, 
+    calc(100% - 8px) 0%, 
+    100% 8px, 
+    100% 100%, 
+    0% 100%, 
+    0% 8px
+  );
 }
 
 /* Ensure all inactive tabs have exactly the same dimensions */
@@ -82,11 +88,19 @@
 }
 
 .menu-tab:hover:not(.active) {
-  background: rgba(155, 93, 229, 0.95);
+  background: linear-gradient(to bottom, rgba(145, 83, 219, 0.98), rgba(145, 83, 219, 0.95));
   height: 50px !important;
   min-height: 50px !important;
   max-height: 50px !important;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.2);
+  clip-path: polygon(
+    8px 0%, 
+    calc(100% - 8px) 0%, 
+    100% 8px, 
+    100% 100%, 
+    0% 100%, 
+    0% 8px
+  );
 }
 
 .menu-tab:hover:not(.active) img {
@@ -94,13 +108,22 @@
 }
 
 .menu-tab.active {
-  background: rgba(155, 93, 229, 0.9);
+  background: linear-gradient(to bottom, rgba(155, 93, 229, 0.95), rgba(155, 93, 229, 0.9));
   height: 62px !important;
   min-height: 62px !important;
   max-height: 62px !important;
   box-shadow: none;
-  border-color: rgba(230, 224, 255, 0.4);
+  border-color: rgba(230, 224, 255, 0.5);
+  border-width: 2px;
   z-index: 11;
+  clip-path: polygon(
+    8px 0%, 
+    calc(100% - 8px) 0%, 
+    100% 8px, 
+    100% 100%, 
+    0% 100%, 
+    0% 8px
+  );
 }
 
 .menu-tab.active img {
@@ -122,10 +145,14 @@
   min-height: 680px;
   height: 680px;
   max-height: 680px;
-  background: rgba(155, 93, 229, 0.9);
-  border-radius: clamp(12px, 2vw, 18px);
+  background: linear-gradient(to bottom, rgba(155, 93, 229, 0.92), rgba(155, 93, 229, 0.9));
+  border-radius: 0 clamp(12px, 2vw, 18px) clamp(12px, 2vw, 18px) clamp(12px, 2vw, 18px);
+  border: 2px solid rgba(230, 224, 255, 0.2);
+  border-top: 2px solid rgba(230, 224, 255, 0.5);
   position: relative;
   box-sizing: border-box;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .menu-content::before {
@@ -135,7 +162,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: inherit;
+  border-radius: 0 clamp(12px, 2vw, 18px) clamp(12px, 2vw, 18px) clamp(12px, 2vw, 18px);
   padding: 3px;
   background: linear-gradient(45deg, #E6E0FF, #9B5DE5, #E6E0FF, #9B5DE5, #E6E0FF);
   background-size: 400% 400%;
@@ -194,7 +221,7 @@
 
 .info-section h3 {
   margin: 0;
-  font-size: clamp(1.3rem, 2.8vw, 1.6rem);
+  font-size: clamp(1.3rem, 2.8vw, 1.45rem);
   font-family: 'Satoshi-Medium', sans-serif;
   font-weight: normal;
   color: rgba(255, 255, 255, 1);
@@ -206,9 +233,9 @@
   font-size: clamp(0.85rem, 1.6vw, 1.2rem);
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.85);
-  text-align: center;
+  text-align: left;
   padding: 0;
-  max-width: 70%;
+  max-width: 80%;
 }
 
 .controls-list {
@@ -384,7 +411,7 @@
 
 .menu-section h3 {
   margin: 0;
-  font-size: clamp(1.3rem, 2.8vw, 1.6rem);
+  font-size: clamp(1.3rem, 2.8vw, 1.45rem);
   font-family: 'Satoshi-Medium', sans-serif;
   font-weight: normal;
   color: rgba(255, 255, 255, 1);
@@ -401,6 +428,10 @@
   flex-direction: column;
   width: 100%;
   max-width: 470px;
+}
+
+.section-title-with-dividers h3 {
+  font-size: clamp(1.3rem, 2.8vw, 1.45rem);
 }
 
 .project-links {
@@ -470,7 +501,7 @@
   padding: clamp(0.3rem, 1vw, 0.7rem);
   border-radius: 8px;
   transition: color 0.3s ease;
-  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
   font-family: 'Satoshi-Medium', sans-serif;
   font-weight: normal;
   text-align: center;
