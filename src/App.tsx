@@ -601,6 +601,9 @@ function AppContent() {
     if (isOnTrain && state.isStopped) {
       setInteractionText('Exit Train');
       setInteractionKeyText('SPACE');
+      const centerX = window.innerWidth / 2;
+      const bottomY = window.innerHeight - 250;
+      setOverlayPosition({ x: centerX, y: bottomY });
       setShowInteractionOverlay(true);
       setCanInteract(true);
       return;
@@ -631,6 +634,9 @@ function AppContent() {
         if (distanceToTrain < 4) {
           setInteractionText('Board Train');
           setInteractionKeyText('SPACE');
+          const centerX = window.innerWidth / 2;
+          const bottomY = window.innerHeight - 250;
+          setOverlayPosition({ x: centerX, y: bottomY });
           setShowInteractionOverlay(true);
           setCanInteract(true);
         }
@@ -1295,7 +1301,14 @@ function AppContent() {
           );
           
           if (distanceToTrain < 4) {
-            // Near train 
+            // Near stopped train
+            setInteractionText('Board Train');
+            setInteractionKeyText('SPACE');
+            const centerX = window.innerWidth / 2;
+            const bottomY = window.innerHeight - 250;
+            setOverlayPosition({ x: centerX, y: bottomY });
+            setShowInteractionOverlay(true);
+            setCanInteract(true);
             return;
           }
         }

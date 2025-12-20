@@ -432,6 +432,8 @@
 
 .section-title-with-dividers h3 {
   font-size: clamp(1.3rem, 2.8vw, 1.45rem);
+  font-weight: 400;
+  font-family: 'Satoshi-Medium', sans-serif;
 }
 
 .project-links {
