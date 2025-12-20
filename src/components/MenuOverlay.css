@@ -486,7 +486,7 @@
   padding: clamp(0.3rem, 1vw, 0.7rem);
   border-radius: 8px;
   transition: color 0.3s ease;
-  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-size: clamp(1.2rem, 2.5vw, 1.3rem);
   font-family: 'Satoshi-Medium', sans-serif;
   font-weight: normal;
   text-align: center;
