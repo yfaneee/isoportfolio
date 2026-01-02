@@ -2,24 +2,25 @@
 
 Welcome to my interactive 3D portfolio! Navigate through my work and projects using the menu to quickly jump to different sections, or explore by walking around the world. Each platform contains information about my work.
 
-## Features
+## ✨ Features
 
-- Interactive layout with collision system
-- Rideable animated train system
-- Full achievement system with persistence
-- 4 playable characters
-- Interactive billboards with full website
-- Isometric world with dynamic camera
-- Location discovery system
-- Dual Mobile Control System + WASD for PC
-- Elevator physics system
-- Gaussian Splatting 3D viewer
-- Masonry Artwork grid
-- Animated skyscraper
-- Music playlist
+- **Interactive 3D World** - Full isometric layout with collision system
+- **Rideable Train System** - Board and ride an animated 3-car train through the world
+- **Achievement System** - 5 unlockable achievements with progress tracking and persistence
+- **4 Playable Characters** - Choose your avatar with unique models and animations
+- **Interactive Billboards** - Click to view embedded websites in full-screen overlay
+- **Dynamic Camera** - Smooth transitions and intelligent following system
+- **Location Discovery** - Explore 4 unique areas with discovery notifications
+- **Cross-Platform Controls** - WASD/Arrow keys on PC, custom D-pad on mobile
+- **Elevator Physics** - Functional elevator with pressure plate mechanics
+- **Gaussian Splat 3D Viewer** - Cutting-edge photogrammetry technology
+- **Masonry Artwork Grid** - Beautiful portfolio gallery layout
+- **Animated Architecture** - Living skyscraper with individual window lighting
+- **Music Playlist** - Background soundtrack with 3 curated songs
 
-## Project Structure
+## 📁 Project Structure
 
+```
 isoportfolio/
 │
 ├── 📂 public/                          # Static assets
@@ -127,74 +128,196 @@ isoportfolio/
 │
 ├── 📄 package.json                     # Dependencies
 ├── 📄 tsconfig.json                    # TypeScript config
-└── 📄 README.md                        # You're writing this! 🎉
+└── 📄 README.md
+```
 
-## Installation 
+### **Key Architecture Highlights:**
 
-Prerequisites
-Node.js (v16 or higher)
-npm 
+- 🎯 **Component Organization** - Grouped by functionality (Character, World, UI, Mobile)
+- 🧩 **State Management** - Context API + Reducers for complex state
+- ⚡ **Performance** - Custom collision system, frame optimizer, texture preloading
+- 📱 **Mobile-First** - Dedicated mobile components and PWA support
+- 🎮 **Game Systems** - Train, elevator, achievements, physics all modular
 
-Getting Started
-Clone the repository
-   git clone https://github.com/yourusername/isoportfolio.git   cd isoportfolio
-Install dependencies
-   npm install
-Start the development server
-   npm start
-Open in browser
-   http://localhost:3000
+### **Tech Stack:**
 
-## Roadmap
+- **Framework:** React 19 + TypeScript
+- **3D Engine:** Three.js + React Three Fiber
+- **3D Tech:** Gaussian Splats 3D (photogrammetry)
+- **Animation:** GSAP + Framer Motion
+- **State:** Context API + Custom Reducers
 
-✅ Completed (Current Version)
-Core Systems
-✅ Full 3D isometric world with React Three Fiber
-✅ Physics-based collision detection system
-✅ Dynamic camera controller with smooth transitions
-✅ Performance optimization (frame rate optimizer, texture preloading)
-✅ Mobile-responsive design with custom touch controls
-Character System
-✅ 4 playable characters with unique models
-✅ Character selection screen
-✅ Smooth character animations (idle, walk, run)
-✅ WASD + Arrow key controls
-✅ Character teleportation between locations
-Interactive Features
-✅ Rideable train system with boarding/exit mechanics
-✅ Functional elevator with pressure plates
-✅ Interactive billboards with website overlay
-✅ Clickable platforms for content navigation
-✅ Q/E navigation with magic teleport effects
-✅ GitHub repository integration (3D models)
-Content & UI
-✅ 5 Learning Outcome content sections
-✅ Gaussian Splat 3D viewer (photogrammetry)
-✅ Menu system with navigation
-✅ Achievement system (5 achievements)
-✅ Location discovery notifications
-✅ Top HUD with location tracking
-✅ Interaction prompts (SPACE to interact)
-Mobile Experience
-✅ Custom D-pad controls
-✅ Mobile interact button
-✅ PWA support (Add to Home Screen)
-✅ Portrait mode rotation prompt
-✅ Touch-optimized UI
-Audio & Polish
-✅ Background music system (3-song playlist)
-✅ Music toggle controls
-✅ Click spark particle effects
-✅ Animated skyscraper with window lighting
-✅ Custom fonts and styling
-✅ Loading screen with progress
+## ⚙️ Installation
 
-🚧 In Progress / Planned
-📚 Phase 1: Documentation (Priority: High)
+### **Prerequisites**
 
-🏃 Phase 2: Parkour System (Priority: High)
+- Node.js (v16 or higher)
+- npm
 
-🎵 Phase 3: Enhanced Music System (Priority: Medium)
+### **Getting Started**
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/isoportfolio.git
+cd isoportfolio
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Start the development server**
+
+```bash
+npm start
+```
+
+4. **Open in browser**
+
+```
+http://localhost:3000
+```
+
+### **Available Scripts**
+
+| Command | Description |
+|---------|-------------|
+| `npm start` | Runs the app in development mode |
+| `npm run build` | Builds the app for production |
+| `npm test` | Launches the test runner |
+
+### **Production Build**
+
+```bash
+npm run build
+```
+
+Creates an optimized production build in the `build/` folder, ready for deployment.
+
+---
+
+**💡 Pro Tips:**
+- Use Chrome/Edge for best performance (WebGL optimizations)
+- First load might take a moment (preloading 3D assets)
+- Mobile works best in landscape mode
+
+## 🗺️ Roadmap
+
+### **✅ Completed (Current Version)**
+
+#### **Core Systems**
+
+- ✅ Full 3D isometric world with React Three Fiber
+- ✅ Physics-based collision detection system
+- ✅ Dynamic camera controller with smooth transitions
+- ✅ Performance optimization (frame rate optimizer, texture preloading)
+- ✅ Mobile-responsive design with custom touch controls
+
+#### **Character System**
+
+- ✅ 4 playable characters with unique models
+- ✅ Character selection screen
+- ✅ Smooth character animations (idle, walk, run)
+- ✅ WASD + Arrow key controls
+- ✅ Character teleportation between locations
+
+#### **Interactive Features**
+
+- ✅ Rideable train system with boarding/exit mechanics
+- ✅ Functional elevator with pressure plates
+- ✅ Interactive billboards with website overlay
+- ✅ Clickable platforms for content navigation
+- ✅ Q/E navigation with magic teleport effects
+- ✅ GitHub repository integration (3D models)
+
+#### **Content & UI**
+
+- ✅ 5 Learning Outcome content sections
+- ✅ Gaussian Splat 3D viewer (photogrammetry)
+- ✅ Menu system with navigation
+- ✅ Achievement system (5 achievements)
+- ✅ Location discovery notifications
+- ✅ Top HUD with location tracking
+- ✅ Interaction prompts (SPACE to interact)
+
+#### **Mobile Experience**
+
+- ✅ Custom D-pad controls
+- ✅ Mobile interact button
+- ✅ PWA support (Add to Home Screen)
+- ✅ Portrait mode rotation prompt
+- ✅ Touch-optimized UI
+
+#### **Audio & Polish**
+
+- ✅ Background music system (3-song playlist)
+- ✅ Music toggle controls
+- ✅ Click spark particle effects
+- ✅ Animated skyscraper with window lighting
+- ✅ Custom fonts and styling
+- ✅ Loading screen with progress
+
+---
+
+### **🚧 In Progress / Planned**
+
+#### **📚 Phase 1: Documentation** *(Priority: High)*
+
+- [ ] Complete README with all features documented
+- [ ] Code architecture documentation
+- [ ] API/Component usage guide
+- [ ] Contribution guidelines
+- [ ] Performance optimization notes
+
+#### **🏃 Phase 2: Parkour System** *(Priority: High)*
+
+- [ ] Jump mechanics (spacebar/button)
+- [ ] Double jump ability
+- [ ] Wall climbing/scaling
+- [ ] Ledge grabbing
+- [ ] Parkour platforms/obstacles in world
+- [ ] Speed boost pads
+- [ ] Vertical level design elements
+- [ ] Air control physics
+- [ ] Landing animations
+
+#### **🎵 Phase 3: Enhanced Music System** *(Priority: Medium)*
+
+- [ ] Character-specific music themes:
+  - [ ] **Ninja** (character-r) - Epic/stealthy beats
+  - [ ] **Hero** (character-h) - Heroic orchestral
+  - [ ] **Casual** (character-l) - Chill/lo-fi vibes
+  - [ ] **Dancer** (character-d) - Upbeat/energetic tracks
+- [ ] Dynamic music switching on character change
+- [ ] Music fading/crossfading transitions
+- [ ] Volume control slider
+- [ ] Extended playlist (12-15 songs total)
+
+---
+
+### **💡 Future Considerations** *(Backlog)*
+
+- [ ] Multiplayer support (show other visitors' characters)
+- [ ] Day/night cycle with lighting changes
+- [ ] Weather effects (rain, snow)
+- [ ] More interactive NPCs
+- [ ] Mini-games/challenges for achievements
+- [ ] VR support exploration
+- [ ] Save system for character positions
+- [ ] Social sharing features
+- [ ] More Gaussian Splat scenes
+- [ ] Seasonal themes/events
+
+---
+
+**📊 Progress Tracker:**
+- **Core Features:** 100% ✅
+- **Documentation:** 60% 🚧
+- **Parkour System:** 0% 📋
+- **Music Expansion:** 0% 📋
 
 ## Screenshot
 
