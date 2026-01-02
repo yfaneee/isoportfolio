@@ -1,142 +1,203 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# Isometric Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to my interactive 3D portfolio! Navigate through my work and projects using the menu to quickly jump to different sections, or explore by walking around the world. Each platform contains information about my work.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Interactive layout with collision system
+- Rideable animated train system
+- Full achievement system with persistence
+- 4 playable characters
+- Interactive billboards with full website
+- Isometric world with dynamic camera
+- Location discovery system
+- Dual Mobile Control System + WASD for PC
+- Elevator physics system
+- Gaussian Splatting 3D viewer
+- Masonry Artwork grid
+- Animated skyscraper
+- Music playlist
 
-### `npm start`
+## Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+isoportfolio/
+│
+├── 📂 public/                          # Static assets
+│   ├── 📂 models/                      # 3D character models (.glb)
+│   │   ├── character-d/h/l/r.glb      # 4 playable characters
+│   │   ├── git.glb                     # Interactive GitHub icon
+│   │   └── Textures/                   # Character textures
+│   │
+│   ├── 📂 train/                       # Train system assets
+│   │   ├── railroad-rail-*.glb         # Track pieces (curves, ramps, etc.)
+│   │   └── train-electric-bullet-*.glb # 3-car train models
+│   │
+│   ├── 📂 gsplat/                      # Gaussian Splat 3D data
+│   │   └── Achterom/point_cloud.ply    # Photogrammetry model
+│   │
+│   ├── 📂 images/                      # UI & content images
+│   │   ├── artwork/                    # Portfolio artwork gallery
+│   │   ├── examples/                   # Learning outcome examples
+│   │   ├── menu/                       # SVG icons for UI
+│   │   └── meshpics/                   # 3D render previews
+│   │
+│   ├── 📂 pdfs/                        # Learning outcome documents
+│   │   ├── lo1/ lo2/ lo3/ lo4/ lo5/   # Organized by outcome
+│   │   └── CV documents
+│   │
+│   ├── 📂 music/                       # Background music playlist
+│   │   └── Baguira.mp3, Boy.mp3, Sudo.mp3
+│   │
+│   ├── 📂 fonts/                       # Custom typography
+│   └── 📂 docs/                        # Research & workflow docs
+│
+├── 📂 src/
+│   ├── 📂 components/                  # React components
+│   │   ├── 🎮 Character System
+│   │   │   ├── Character.tsx           # Character rendering & animation
+│   │   │   ├── CharacterController.tsx # Movement & physics
+│   │   │   ├── CharacterSelection.tsx  # Character picker UI
+│   │   │   └── CameraController.tsx    # Camera follow system
+│   │   │
+│   │   ├── 🌍 World & Scene
+│   │   │   ├── IsometricScene.tsx      # Main 3D scene setup
+│   │   │   ├── IsometricWorldOptimized.tsx # World geometry & platforms
+│   │   │   ├── TrainSystem.tsx         # Rideable train logic
+│   │   │   └── AnimatedTrain.tsx       # Train animation
+│   │   │
+│   │   ├── 🎯 Interactables
+│   │   │   ├── InteractiveBillboard.tsx    # Project showcase billboards
+│   │   │   ├── InteractiveSlab.tsx         # Clickable platforms
+│   │   │   └── InteractiveOutlineButton.tsx # Hover effects
+│   │   │
+│   │   ├── 💬 UI & Overlays
+│   │   │   ├── MenuOverlay.tsx         # Main navigation menu
+│   │   │   ├── Content.tsx             # Learning outcome viewer
+│   │   │   ├── WebsiteOverlay.tsx      # Embedded website viewer
+│   │   │   ├── InteractionOverlay.tsx  # "Press SPACE" prompts
+│   │   │   ├── TopHUD.tsx              # Location/navigation HUD
+│   │   │   └── UI.tsx                  # Base UI container
+│   │   │
+│   │   ├── 🏆 Notifications
+│   │   │   ├── AchievementNotification.tsx # Achievement popups
+│   │   │   └── LocationDiscovery.tsx       # "Area discovered" alerts
+│   │   │
+│   │   ├── 📱 Mobile Controls
+│   │   │   ├── MobileDpad.tsx          # Touch D-pad
+│   │   │   ├── MobileInteractButton.tsx # Mobile interact button
+│   │   │   ├── RotatePhoneScreen.tsx   # Portrait mode warning
+│   │   │   └── AddToHomeScreenPrompt.tsx # PWA install prompt
+│   │   │
+│   │   ├── 🎨 Special Effects
+│   │   │   ├── GSplatViewer.tsx        # Gaussian Splat 3D viewer
+│   │   │   ├── ClickSpark.tsx          # Click particle effects
+│   │   │   ├── LoadingScreen.tsx       # Initial loader
+│   │   │   └── StarBorder.tsx          # Animated borders
+│   │   │
+│   │   └── 🛠️ Utilities
+│   │       ├── GPUPerformanceMonitor.tsx # Performance tracking
+│   │       ├── PlatformDebugger.tsx      # Dev tools
+│   │       └── ControlsUI.tsx            # Keyboard help overlay
+│   │
+│   ├── 📂 contexts/
+│   │   └── AchievementContext.tsx      # Achievement state management
+│   │
+│   ├── 📂 hooks/
+│   │   └── useCharacterControls.ts     # Character control logic
+│   │
+│   ├── 📂 reducers/                    # State reducers
+│   │   ├── billboardReducer.ts         # Billboard state
+│   │   ├── characterAnimationReducer.ts # Animation state
+│   │   └── discoveryReducer.ts         # Location discovery
+│   │
+│   ├── 📂 utils/                       # Core systems
+│   │   ├── collisionSystem.ts          # Physics & collision detection
+│   │   ├── elevatorSystem.ts           # Elevator mechanics
+│   │   ├── frameRateOptimizer.ts       # Performance optimization
+│   │   └── texturePreloader.ts         # Asset preloading
+│   │
+│   ├── 📂 data/
+│   │   └── ContentData.ts              # Content configuration
+│   │
+│   ├── 📂 styles/
+│   │   └── fonts.css                   # Font imports
+│   │
+│   └── 📂 types/
+│       └── gaussian-splats-3d.d.ts     # TypeScript definitions
+│
+├── 📄 package.json                     # Dependencies
+├── 📄 tsconfig.json                    # TypeScript config
+└── 📄 README.md                        # You're writing this! 🎉
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation 
 
-### `npm test`
+Prerequisites
+Node.js (v16 or higher)
+npm 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-=======
-# IsometricPortfolio
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.fhict.nl/I503826/isometricportfolio.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.fhict.nl/I503826/isometricportfolio/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Getting Started
+Clone the repository
+   git clone https://github.com/yourusername/isoportfolio.git   cd isoportfolio
+Install dependencies
+   npm install
+Start the development server
+   npm start
+Open in browser
+   http://localhost:3000
 
 ## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+✅ Completed (Current Version)
+Core Systems
+✅ Full 3D isometric world with React Three Fiber
+✅ Physics-based collision detection system
+✅ Dynamic camera controller with smooth transitions
+✅ Performance optimization (frame rate optimizer, texture preloading)
+✅ Mobile-responsive design with custom touch controls
+Character System
+✅ 4 playable characters with unique models
+✅ Character selection screen
+✅ Smooth character animations (idle, walk, run)
+✅ WASD + Arrow key controls
+✅ Character teleportation between locations
+Interactive Features
+✅ Rideable train system with boarding/exit mechanics
+✅ Functional elevator with pressure plates
+✅ Interactive billboards with website overlay
+✅ Clickable platforms for content navigation
+✅ Q/E navigation with magic teleport effects
+✅ GitHub repository integration (3D models)
+Content & UI
+✅ 5 Learning Outcome content sections
+✅ Gaussian Splat 3D viewer (photogrammetry)
+✅ Menu system with navigation
+✅ Achievement system (5 achievements)
+✅ Location discovery notifications
+✅ Top HUD with location tracking
+✅ Interaction prompts (SPACE to interact)
+Mobile Experience
+✅ Custom D-pad controls
+✅ Mobile interact button
+✅ PWA support (Add to Home Screen)
+✅ Portrait mode rotation prompt
+✅ Touch-optimized UI
+Audio & Polish
+✅ Background music system (3-song playlist)
+✅ Music toggle controls
+✅ Click spark particle effects
+✅ Animated skyscraper with window lighting
+✅ Custom fonts and styling
+✅ Loading screen with progress
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+🚧 In Progress / Planned
+📚 Phase 1: Documentation (Priority: High)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+🏃 Phase 2: Parkour System (Priority: High)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+🎵 Phase 3: Enhanced Music System (Priority: Medium)
 
-## License
-For open source projects, say how it is licensed.
+## Screenshot
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
->>>>>>> origin/main
+<img width="1331" height="620" alt="Screenshot (173)" src="https://github.com/user-attachments/assets/8f80691a-eebc-4793-a4f7-9621e2ef4468" />
+
+
