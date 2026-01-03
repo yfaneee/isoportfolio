@@ -2,7 +2,7 @@
 
 Welcome to my interactive 3D portfolio! Navigate through my work and projects using the menu to quickly jump to different sections, or explore by walking around the world. Each platform contains information about my work.
 
-## ✨ Features
+##  Features
 
 - **Interactive 3D World** - Full isometric layout with collision system
 - **Rideable Train System** - Board and ride an animated 3-car train through the world
@@ -18,60 +18,60 @@ Welcome to my interactive 3D portfolio! Navigate through my work and projects us
 - **Animated Architecture** - Living skyscraper with individual window lighting
 - **Music Playlist** - Background soundtrack with 3 curated songs
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 isoportfolio/
 │
-├── 📂 public/                          # Static assets
-│   ├── 📂 models/                      # 3D character models (.glb)
+├──  public/                          # Static assets
+│   ├──  models/                      # 3D character models (.glb)
 │   │   ├── character-d/h/l/r.glb      # 4 playable characters
 │   │   ├── git.glb                     # Interactive GitHub icon
 │   │   └── Textures/                   # Character textures
 │   │
-│   ├── 📂 train/                       # Train system assets
+│   ├──  train/                       # Train system assets
 │   │   ├── railroad-rail-*.glb         # Track pieces (curves, ramps, etc.)
 │   │   └── train-electric-bullet-*.glb # 3-car train models
 │   │
-│   ├── 📂 gsplat/                      # Gaussian Splat 3D data
+│   ├──  gsplat/                      # Gaussian Splat 3D data
 │   │   └── Achterom/point_cloud.ply    # Photogrammetry model
 │   │
-│   ├── 📂 images/                      # UI & content images
+│   ├──  images/                      # UI & content images
 │   │   ├── artwork/                    # Portfolio artwork gallery
 │   │   ├── examples/                   # Learning outcome examples
 │   │   ├── menu/                       # SVG icons for UI
 │   │   └── meshpics/                   # 3D render previews
 │   │
-│   ├── 📂 pdfs/                        # Learning outcome documents
+│   ├──  pdfs/                        # Learning outcome documents
 │   │   ├── lo1/ lo2/ lo3/ lo4/ lo5/   # Organized by outcome
 │   │   └── CV documents
 │   │
-│   ├── 📂 music/                       # Background music playlist
+│   ├──  music/                       # Background music playlist
 │   │   └── Baguira.mp3, Boy.mp3, Sudo.mp3
 │   │
-│   ├── 📂 fonts/                       # Custom typography
-│   └── 📂 docs/                        # Research & workflow docs
+│   ├──  fonts/                       # Custom typography
+│   └──  docs/                        # Research & workflow docs
 │
-├── 📂 src/
-│   ├── 📂 components/                  # React components
-│   │   ├── 🎮 Character System
+├──  src/
+│   ├──  components/                  # React components
+│   │   ├── Character System
 │   │   │   ├── Character.tsx           # Character rendering & animation
 │   │   │   ├── CharacterController.tsx # Movement & physics
 │   │   │   ├── CharacterSelection.tsx  # Character picker UI
 │   │   │   └── CameraController.tsx    # Camera follow system
 │   │   │
-│   │   ├── 🌍 World & Scene
+│   │   ├── World & Scene
 │   │   │   ├── IsometricScene.tsx      # Main 3D scene setup
 │   │   │   ├── IsometricWorldOptimized.tsx # World geometry & platforms
 │   │   │   ├── TrainSystem.tsx         # Rideable train logic
 │   │   │   └── AnimatedTrain.tsx       # Train animation
 │   │   │
-│   │   ├── 🎯 Interactables
+│   │   ├── Interactables
 │   │   │   ├── InteractiveBillboard.tsx    # Project showcase billboards
 │   │   │   ├── InteractiveSlab.tsx         # Clickable platforms
 │   │   │   └── InteractiveOutlineButton.tsx # Hover effects
 │   │   │
-│   │   ├── 💬 UI & Overlays
+│   │   ├── UI & Overlays
 │   │   │   ├── MenuOverlay.tsx         # Main navigation menu
 │   │   │   ├── Content.tsx             # Learning outcome viewer
 │   │   │   ├── WebsiteOverlay.tsx      # Embedded website viewer
@@ -79,65 +79,65 @@ isoportfolio/
 │   │   │   ├── TopHUD.tsx              # Location/navigation HUD
 │   │   │   └── UI.tsx                  # Base UI container
 │   │   │
-│   │   ├── 🏆 Notifications
+│   │   ├── Notifications
 │   │   │   ├── AchievementNotification.tsx # Achievement popups
 │   │   │   └── LocationDiscovery.tsx       # "Area discovered" alerts
 │   │   │
-│   │   ├── 📱 Mobile Controls
+│   │   ├── Mobile Controls
 │   │   │   ├── MobileDpad.tsx          # Touch D-pad
 │   │   │   ├── MobileInteractButton.tsx # Mobile interact button
 │   │   │   ├── RotatePhoneScreen.tsx   # Portrait mode warning
 │   │   │   └── AddToHomeScreenPrompt.tsx # PWA install prompt
 │   │   │
-│   │   ├── 🎨 Special Effects
+│   │   ├── Special Effects
 │   │   │   ├── GSplatViewer.tsx        # Gaussian Splat 3D viewer
 │   │   │   ├── ClickSpark.tsx          # Click particle effects
 │   │   │   ├── LoadingScreen.tsx       # Initial loader
 │   │   │   └── StarBorder.tsx          # Animated borders
 │   │   │
-│   │   └── 🛠️ Utilities
+│   │   └── Utilities
 │   │       ├── GPUPerformanceMonitor.tsx # Performance tracking
 │   │       ├── PlatformDebugger.tsx      # Dev tools
 │   │       └── ControlsUI.tsx            # Keyboard help overlay
 │   │
-│   ├── 📂 contexts/
+│   ├──  contexts/
 │   │   └── AchievementContext.tsx      # Achievement state management
 │   │
-│   ├── 📂 hooks/
+│   ├──  hooks/
 │   │   └── useCharacterControls.ts     # Character control logic
 │   │
-│   ├── 📂 reducers/                    # State reducers
+│   ├──  reducers/                    # State reducers
 │   │   ├── billboardReducer.ts         # Billboard state
 │   │   ├── characterAnimationReducer.ts # Animation state
 │   │   └── discoveryReducer.ts         # Location discovery
 │   │
-│   ├── 📂 utils/                       # Core systems
+│   ├──  utils/                       # Core systems
 │   │   ├── collisionSystem.ts          # Physics & collision detection
 │   │   ├── elevatorSystem.ts           # Elevator mechanics
 │   │   ├── frameRateOptimizer.ts       # Performance optimization
 │   │   └── texturePreloader.ts         # Asset preloading
 │   │
-│   ├── 📂 data/
+│   ├──  data/
 │   │   └── ContentData.ts              # Content configuration
 │   │
-│   ├── 📂 styles/
+│   ├──  styles/
 │   │   └── fonts.css                   # Font imports
 │   │
-│   └── 📂 types/
+│   └──  types/
 │       └── gaussian-splats-3d.d.ts     # TypeScript definitions
 │
-├── 📄 package.json                     # Dependencies
-├── 📄 tsconfig.json                    # TypeScript config
-└── 📄 README.md
+├──  package.json                     # Dependencies
+├──  tsconfig.json                    # TypeScript config
+└──  README.md
 ```
 
 ### **Key Architecture Highlights:**
 
-- 🎯 **Component Organization** - Grouped by functionality (Character, World, UI, Mobile)
-- 🧩 **State Management** - Context API + Reducers for complex state
-- ⚡ **Performance** - Custom collision system, frame optimizer, texture preloading
-- 📱 **Mobile-First** - Dedicated mobile components and PWA support
-- 🎮 **Game Systems** - Train, elevator, achievements, physics all modular
+- **Component Organization** - Grouped by functionality (Character, World, UI, Mobile)
+- **State Management** - Context API + Reducers for complex state
+- **Performance** - Custom collision system, frame optimizer, texture preloading
+- **Mobile-First** - Dedicated mobile components and PWA support
+- **Game Systems** - Train, elevator, achievements, physics all modular
 
 ### **Tech Stack:**
 
@@ -147,7 +147,7 @@ isoportfolio/
 - **Animation:** GSAP + Framer Motion
 - **State:** Context API + Custom Reducers
 
-## ⚙️ Installation
+## Installation
 
 ### **Prerequisites**
 
@@ -191,12 +191,12 @@ Creates an optimized production build in the `build/` folder, ready for deployme
 
 ---
 
-**💡 Pro Tips:**
+** Pro Tips:**
 - Use Chrome/Edge for best performance (WebGL optimizations)
 - First load might take a moment (preloading 3D assets)
 - Mobile works best in landscape mode
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### **✅ Completed (Current Version)**
 
@@ -254,17 +254,17 @@ Creates an optimized production build in the `build/` folder, ready for deployme
 
 ---
 
-### **🚧 In Progress / Planned**
+### ** In Progress / Planned**
 
-#### **📚 Phase 1: Documentation** *(Priority: High)*
+#### ** Phase 1: Documentation** *(Priority: High)*
 
-#### **🏃 Phase 2: Parkour System** *(Priority: High)*
+#### ** Phase 2: Parkour System** *(Priority: High)*
 
-#### **🎵 Phase 3: Enhanced Music System** *(Priority: Medium)*
+#### ** Phase 3: Enhanced Music System** *(Priority: Medium)*
 
 ---
 
-### **💡 Future Considerations** *(Backlog)*
+### ** Future Considerations** *(Backlog)*
 
 - [ ] Multiplayer support (show other visitors' characters)
 - [ ] Day/night cycle with lighting changes
