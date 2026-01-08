@@ -1,7 +1,7 @@
 # Isometric Portfolio
 
 Welcome to my interactive 3D portfolio! Navigate through my work and projects using the menu to quickly jump to different sections, or explore by walking around the world. Each platform contains information about my work. 
-[Portfolio Link](isoportfolio.vercel.app)
+[Portfolio Link](https://isoportfolio.vercel.app)
 
 ##  Features
 
