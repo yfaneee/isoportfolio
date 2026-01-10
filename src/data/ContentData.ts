@@ -205,6 +205,13 @@ export const contentData: Record<string, ContentItem> = {
         description: 'I improved my scans through multiple iterations, adjusting camera settings, lighting, and capture techniques. Each test revealed weaknesses, guiding me toward better textures, cleaner data, and stronger results. This process taught me how methodical iteration leads to measurable quality improvements.',
         image: '/images/examples/lo3ex5.png',
         pdfUrl: '/pdfs/lo3/LO3.5.pdf'
+      },
+      {
+        id: 'creative-example-6',
+        title: 'Portfolio iterations',
+        description: 'I iterated to match the immersive experience of the project. Feedback showed the PDF felt disconnected and too plain, so I designed a new template, simplified it after review, and improved visuals. Later feedback highlighted the portfolio felt static, so I added an interactive train system to bring life and movement.',
+        image: '/images/examples/lo3ex6.png',
+        pdfUrl: '/pdfs/lo3/LO3.6.pdf'
       }
     ],
     color: '#F5F5DC'
