@@ -160,6 +160,13 @@ export const contentData: Record<string, ContentItem> = {
         description: 'I compared photogrammetry, NeRF, and Gaussian Splatting to meet the client’s real-time rendering needs. Feedback pushed me to justify each technical choice and switch to a more suitable pipeline. This showed me how research-based decisions and clear communication shape a professional development process.',
         image: '/images/examples/lo2ex4.png',
         pdfUrl: '/pdfs/lo2/LO2.4.pdf'
+      },
+      {
+        id: 'transferable-example-5',
+        title: 'GitHub vs GitLab',
+        description: 'I selected GitHub and Vercel to ensure reliable version control, automatic deployment, smooth collaboration, and stress-free presentation, improving workflow efficiency and long-term accessibility for the SeaMonkeys project.',
+        image: '/images/examples/lo2.5.png',
+        pdfUrl: '/pdfs/lo2/LO2.5.pdf'
       }
     ],
     color: '#F5F5DC'
