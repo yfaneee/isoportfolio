@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import Character from './Character';
 import { useCharacterControls } from '../hooks/useCharacterControls';
 import { isOnElevator } from '../utils/elevatorSystem';
-import { GITHUB_SLABS, WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
+import { WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
 
 interface CharacterControllerProps {
   onMovementChange: (moving: boolean) => void;
@@ -17,7 +17,7 @@ interface CharacterControllerProps {
   positionOffset?: [number, number, number];
   modelPath: string;
   onPositionUpdate?: (position: { x: number; z: number }) => void;
-  onSlabInteraction?: (isOnSlab: boolean, slabType?: string, githubUrl?: string) => void;
+  onSlabInteraction?: (isOnSlab: boolean, slabType?: string) => void;
   disableMovement?: boolean;
   isOnTrain?: boolean;
   trainPosition?: [number, number, number];
@@ -144,8 +144,7 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[0] >= 10.05 && newPos[0] <= 10.95 && 
             newPos[2] >= -0.46 && newPos[2] <= 0.44;
 
-          // Check GitHub project slabs and website button slabs on the 18x3 platform
-          const currentGithubSlab = findSlabAt(GITHUB_SLABS, newPos[0], newPos[2]);
+          // Check billboard button slabs on the work platform
           const currentWebsiteButtonSlab = findSlabAt(WEBSITE_SLABS, newPos[0], newPos[2]);
           
           // Check if on elevator
@@ -159,10 +158,8 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             onSlabInteraction?.(true, currentProjectStudioSlab.id);
           } else if (isOnArtworkSlab) {
             onSlabInteraction?.(true, 'artwork');
-          } else if (currentGithubSlab) {
-            onSlabInteraction?.(true, currentGithubSlab.id, currentGithubSlab.url);
           } else if (currentWebsiteButtonSlab) {
-            onSlabInteraction?.(true, currentWebsiteButtonSlab.id, currentWebsiteButtonSlab.url);
+            onSlabInteraction?.(true, currentWebsiteButtonSlab.id);
           } else if (isOnElevatorPressurePlate) {
             onSlabInteraction?.(true, 'elevator');
           } else {

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 const SPACING = 1.5;
 const GRID_5X5_CENTER_Z = -1 * SPACING - SPACING * 3 - (2 * SPACING);
@@ -12,7 +13,7 @@ const AREAS = {
   },
   learningOutcomes: { minX: -14, maxX: -7, minZ: -2, maxZ: 2, trackId: 'learning-outcomes' },
   artwork: { minX: 6, maxX: 12, minZ: -2, maxZ: 2, trackId: 'artwork' },
-  work: { minX: -2, maxX: 2, minZ: 7, maxZ: 33, trackId: 'work' }
+  work: { minX: -2, maxX: 2, minZ: 7, maxZ: WORK_PLATFORM_END_Z + 1, trackId: 'work' }
 };
 
 type AreaKey = keyof typeof AREAS;

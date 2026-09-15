@@ -1,5 +1,6 @@
 // Collision and boundary system for the isometric world
 import { isOnElevator, getElevatorHeight } from './elevatorSystem';
+import { WEBSITE_SLABS, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 const GRID_SIZE = 1.5; 
 const spatialGrid: Map<string, Platform[]> = new Map();
@@ -245,20 +246,13 @@ export const platforms: Platform[] = [
   { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 6.975 - 0.75, maxZ: 5.975 + 0.75, y: -2.45, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
   { minX: 0 - 0.75, maxX: 0 + 0.75, minZ: 7.2 - 0.75, maxZ: 6.2 + 0.75, y: -2.6, type: 'stair', stairDirection: 'south', staircaseId: 'downward' },
   
-  // PROJECT SLABS on 18x3 platform (4 interactive slabs) - MOVED SOUTH towards platform edge
-  { minX: 1.2 - 0.45, maxX: 1.2 + 0.45, minZ: 7.65 + 2 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 2 * 1.5 - 1.5 + 0.45, y: -2.47, type: 'floor' },  
-  { minX: 1.2 - 0.45, maxX: 1.2 + 0.45, minZ: 7.65 + 7 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 7 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' }, 
-  { minX: 1.2 - 0.45, maxX: 1.2 + 0.45, minZ: 7.65 + 12 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 12 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
-  { minX: 1.2 - 0.45, maxX: 1.2 + 0.45, minZ: 7.65 + 17 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 17 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
-  
-  // NEW OUTLINE BUTTON SLABS for website interaction - positioned in front of billboards
-  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 2 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 2 * 1.5 - 1.5 + 0.45, y: -2.47, type: 'floor' },  
-  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 7 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 7 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' }, 
-  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 12 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 12 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
-  { minX: -1 - 0.45, maxX: -1 + 0.45, minZ: 7.65 + 17 * 1.5 - 1.5 - 0.45, maxZ: 7.65 + 17 * 1.5 - 1.5 + 0.45, y: -2.48, type: 'floor' },
-  
-  // 18x3 PLATFORM -
-  { minX: -1.5 - 0.75, maxX: 1.5 + 0.75, minZ: 7.7 - 0.75, maxZ: 33.1 + 0.75, y: -2.6, type: 'floor' }, 
+  // OUTLINE BUTTON SLABS - one in front of each billboard
+  ...WEBSITE_SLABS.map((slab): Platform => (
+    { minX: slab.x - 0.45, maxX: slab.x + 0.45, minZ: slab.z - 0.45, maxZ: slab.z + 0.45, y: -2.48, type: 'floor' }
+  )),
+
+  // WORK PLATFORM - collision length follows WORK_PLATFORM_ROWS
+  { minX: -1.5 - 0.75, maxX: 1.5 + 0.75, minZ: 7.7 - 0.75, maxZ: WORK_PLATFORM_END_Z - 0.05 + 0.75, y: -2.6, type: 'floor' },
   
 ];
 

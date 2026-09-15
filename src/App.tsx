@@ -19,16 +19,15 @@ import AddToHomeScreenPrompt from './components/AddToHomeScreenPrompt';
 import RepoLinks from './components/RepoLinks';
 import { getContentForSlab, ContentItem, getSlabKeyFromPosition, contentData } from './data/ContentData';
 import {
-  GITHUB_SLABS,
   WEBSITE_SLABS,
-  BILLBOARD_PROMPT_TEXT,
+  getBillboard,
+  openInNewTab,
   LO_SLAB_TARGETS,
   CONTENT_SLAB_TARGETS,
   findSlabAt,
   isOnMiddleSlab,
   getSlabHoverText,
-  getSlabPromptText,
-  openExternalUrl
+  getSlabPromptText
 } from './data/InteractionZones';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { isOnElevator, triggerElevator } from './utils/elevatorSystem';
@@ -155,6 +154,15 @@ function AppContent() {
     }
   }, []);
 
+  // Floor button in front of a billboard: websites open in a new tab, docs zoom into the billboard
+  const activateWebsiteButton = useCallback((slab: { url?: string; billboardKey: string }) => {
+    if (slab.url) {
+      openInNewTab(slab.url);
+    } else {
+      triggerBillboardClick(slab.billboardKey);
+    }
+  }, [triggerBillboardClick]);
+
   // ---------------------------------------------------------------------------
   // Callbacks passed into the 3D scene. They're stable (useStableCallback) so the
   // memoized SceneCanvas only re-renders when real scene props change.
@@ -204,13 +212,9 @@ function AppContent() {
     if (LO_SLAB_TARGETS[slabId]) {
       const { location, contentKey } = LO_SLAB_TARGETS[slabId];
       teleportAndOpenContent(location, contentKey);
-    } else if (slabId.startsWith('github-')) {
-      const slab = GITHUB_SLABS.find(s => s.id === slabId);
-      if (slab) openExternalUrl(slab.url);
     } else if (slabId.startsWith('website-')) {
-      // Website button slabs trigger their billboard
       const slab = WEBSITE_SLABS.find(s => s.id === slabId);
-      if (slab) triggerBillboardClick(slab.billboardKey);
+      if (slab) activateWebsiteButton(slab);
     } else if (slabId === 'main-slab') {
       if (characterControllerRef.current) {
         setIsSlabClickAnimating(true);
@@ -280,7 +284,7 @@ function AppContent() {
     }
 
     if (isHovering && billboardKey) {
-      showPrompt(BILLBOARD_PROMPT_TEXT[billboardKey] || 'View Portfolio', 'CLICK');
+      showPrompt(getBillboard(billboardKey)?.label || 'View Project', 'CLICK');
       setIsHoveringBillboard(true);
     } else {
       setIsHoveringBillboard(false);
@@ -395,22 +399,15 @@ function AppContent() {
     // Check interaction conditions directly here (don't rely on canInteract state)
     const content = getContentForSlab(x, z);
     const isOnElevatorPressurePlate = isOnElevator(x, z);
-    const currentGithubSlab = findSlabAt(GITHUB_SLABS, x, z);
     const currentWebsiteButtonSlab = findSlabAt(WEBSITE_SLABS, x, z);
 
-    const canInteractNow = !!(content || isOnMiddleSlab(x, z) || isOnElevatorPressurePlate || currentGithubSlab || currentWebsiteButtonSlab);
+    const canInteractNow = !!(content || isOnMiddleSlab(x, z) || isOnElevatorPressurePlate || currentWebsiteButtonSlab);
     if (!canInteractNow) {
       return;
     }
 
-    if (currentGithubSlab) {
-      openExternalUrl(currentGithubSlab.url);
-      return;
-    }
-
     if (currentWebsiteButtonSlab) {
-      // Trigger billboard animation (same as clicking billboard)
-      triggerBillboardClick(currentWebsiteButtonSlab.billboardKey);
+      activateWebsiteButton(currentWebsiteButtonSlab);
       return;
     }
 
@@ -616,7 +613,6 @@ function AppContent() {
         getContentForSlab(x, z) ||
         isOnMiddleSlab(x, z) ||
         isOnElevator(x, z) ||
-        findSlabAt(GITHUB_SLABS, x, z) ||
         findSlabAt(WEBSITE_SLABS, x, z)
       ));
     }, 200);
@@ -798,6 +794,7 @@ function AppContent() {
             <WebsiteOverlay
               isVisible={showWebsiteOverlay}
               websiteUrl={currentWebsiteUrl}
+              docs={getBillboard(currentBillboardKey)?.docs}
               billboardKey={currentBillboardKey}
               onClose={handleHideWebsite}
             />

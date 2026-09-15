@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TopHUD.css';
+import { WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 interface TopHUDProps {
   characterPosition: [number, number, number];
@@ -40,7 +41,7 @@ const areas: AreaInfo[] = [
   },
   {
     name: 'Work Projects',
-    bounds: { minX: -2, maxX: 2, minZ: 7, maxZ: 33 },
+    bounds: { minX: -2, maxX: 2, minZ: 7, maxZ: WORK_PLATFORM_END_Z + 1 },
     discovered: false
   }
 ];

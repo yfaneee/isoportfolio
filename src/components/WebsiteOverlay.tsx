@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 interface WebsiteOverlayProps {
   isVisible: boolean;
   websiteUrl: string;
+  docs?: string; // shown instead of an embedded site when there's no websiteUrl
   billboardKey: string;
   onClose: () => void;
 }
@@ -10,6 +11,7 @@ interface WebsiteOverlayProps {
 const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
   isVisible,
   websiteUrl,
+  docs,
   billboardKey,
   onClose
 }) => {
@@ -26,6 +28,10 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
         e.preventDefault();
         e.stopPropagation();
         onClose();
+      } else {
+        // The overlay is modal: ESC is the only key the game gets while it's open.
+        // (keyups still pass through so held movement keys don't get stuck)
+        e.stopPropagation();
       }
     };
 
@@ -74,6 +80,9 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
     }
   }, [isVisible]);
 
+  // The game listens for drag/zoom/touch on window; stop those events at the overlay so the world stays put
+  const stopEvent = (e: React.SyntheticEvent) => e.stopPropagation();
+
   // Hide instructions after 5 seconds
   useEffect(() => {
     if (isVisible) {
@@ -121,11 +130,21 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
           outline: 'none'
         }}
         onMouseDown={(e) => {
+          e.stopPropagation();
           // Prevent iframe from losing focus when clicking outside
           if (e.target === e.currentTarget) {
             e.preventDefault();
           }
         }}
+        onMouseMove={stopEvent}
+        onMouseUp={stopEvent}
+        onClick={stopEvent}
+        onWheel={stopEvent}
+        onPointerDown={stopEvent}
+        onPointerMove={stopEvent}
+        onTouchStart={stopEvent}
+        onTouchMove={stopEvent}
+        onTouchEnd={stopEvent}
       >
       <div style={{ 
         width: '90%', 
@@ -135,7 +154,21 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
         overflow: 'hidden',
         boxShadow: '0 0 50px rgba(165, 128, 255, 0.5)'
       }}>
-        {!iframeError ? (
+        {!websiteUrl ? (
+          <div style={{
+            width: '100%',
+            height: '100%',
+            overflowY: 'auto',
+            background: 'linear-gradient(135deg, #3a1040 0%, #641E68 100%)',
+            color: 'white',
+            padding: '80px 40px 40px',
+            boxSizing: 'border-box'
+          }}>
+            <p style={{ margin: '0 auto', maxWidth: '800px', fontSize: '1.2rem', lineHeight: 1.6 }}>
+              {docs}
+            </p>
+          </div>
+        ) : !iframeError ? (
           <iframe
             src={websiteUrl}
             style={{

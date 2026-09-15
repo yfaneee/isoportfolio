@@ -3,13 +3,35 @@ import * as THREE from 'three';
 // Texture cache for preloaded textures
 const textureCache = new Map<string, THREE.Texture>();
 
-// Billboard texture paths
-export const BILLBOARD_TEXTURES = {
-  billboard1: '/images/castleportfolio.webp',
-  billboard2: '/images/hollemanproj.webp',
-  billboard3: '/images/spaceportfolio.webp',
-  billboard4: '/images/spotifyfolio.webp',
-} as const;
+// Billboard screen images, keyed by billboard key (order matches BILLBOARDS in InteractionZones).
+// Billboards without an entry show a blank screen.
+export const BILLBOARD_TEXTURES: Record<string, string> = {
+  billboard1: '/images/billboards/SideSkin.webp',
+  billboard2: '/images/billboards/Omnival.webp',
+  billboard3: '/images/billboards/SpookSlot.webp',
+  billboard4: '/images/billboards/RestrictionsMap.webp',
+  billboard5: '/images/billboards/HollemanWeb.webp',
+  billboard6: '/images/billboards/ITL.webp',
+  billboard7: '/images/billboards/HollemanApp.webp',
+};
+
+// Width / height of the billboard screen surface (see InteractiveBillboard)
+const BILLBOARD_SCREEN_ASPECT = (5 - 0.6) / (2.7 - 0.6);
+
+// Scale the image to cover the screen, cropping the overflow instead of stretching
+function coverFitTexture(texture: THREE.Texture): void {
+  const image = texture.image as { width?: number; height?: number } | undefined;
+  if (!image?.width || !image?.height) return;
+
+  const imageAspect = image.width / image.height;
+  if (imageAspect > BILLBOARD_SCREEN_ASPECT) {
+    texture.repeat.set(BILLBOARD_SCREEN_ASPECT / imageAspect, 1);
+  } else {
+    texture.repeat.set(1, imageAspect / BILLBOARD_SCREEN_ASPECT);
+  }
+  texture.offset.set((1 - texture.repeat.x) / 2, (1 - texture.repeat.y) / 2);
+  texture.updateMatrix(); // matrixAutoUpdate is off for billboard textures
+}
 
 // Optimize texture for GPU performance
 function configureTexture(texture: THREE.Texture, isHighPriority: boolean = true): THREE.Texture {
@@ -56,6 +78,7 @@ export function preloadBillboardTextures(): Promise<void> {
         path,
         (texture) => {
           configureTexture(texture);
+          coverFitTexture(texture);
           textureCache.set(key, texture);
           resolve();
         },
@@ -83,13 +106,13 @@ export function getBillboardTexture(billboardKey: string): THREE.Texture | null 
   }
 
   // Fallback: load on-demand if preloading failed
-  const path = BILLBOARD_TEXTURES[billboardKey as keyof typeof BILLBOARD_TEXTURES];
+  const path = BILLBOARD_TEXTURES[billboardKey];
   if (!path) {
     return null;
   }
 
   const loader = new THREE.TextureLoader();
-  const texture = loader.load(path);
+  const texture = loader.load(path, coverFitTexture);
   configureTexture(texture);
   textureCache.set(billboardKey, texture);
   

@@ -3,6 +3,7 @@ import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 import SkyscraperFoundation from './SkyscraperFoundation';
 import RampFoundationsWithWindows from './RampFoundationsWithWindows';
+import { BILLBOARDS, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
 
 // ============================================================================
 // FOUNDATION BLOCKS 
@@ -19,7 +20,7 @@ const FoundationBlocks = React.memo(() => {
   const octBaseX = structureX + spacing * 2;
   const octBaseZ = structureZ;
   const platform18x3Y = -floorHeight * 9;
-  const platform18x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9;
+  const platform18x3StartZ = WORK_PLATFORM_START_Z;
   
   return (
     <>
@@ -102,64 +103,17 @@ const FoundationBlocks = React.memo(() => {
         );
       })}
 
-      {/* FOUNDATION for the 18x3 platform */}
+      {/* FOUNDATION for the work platform */}
       <Box
         key="platform-18x3-foundation-big"
-        position={[0, platform18x3Y - foundationHeight/2 - 0.15, platform18x3StartZ + (18 * spacing) / 2 - spacing/2]}
-        args={[3 * spacing, foundationHeight, 18 * spacing]}
+        position={[0, platform18x3Y - foundationHeight/2 - 0.15, platform18x3StartZ + (WORK_PLATFORM_ROWS * spacing) / 2 - spacing/2]}
+        args={[3 * spacing, foundationHeight, WORK_PLATFORM_ROWS * spacing]}
       >
         <meshStandardMaterial color={floorColor} />
       </Box>
 
-      {/* Foundation for the extension floor */}
-      <Box
-        key="platform-18x3-row2-extension-foundation"
-        position={[-2.5 * spacing, platform18x3Y - foundationHeight/2 - 0.15, platform18x3StartZ + 1 * spacing]}
-        args={[1.5, foundationHeight, 1.5]}
-      >
-        <meshStandardMaterial color={'#C5A3FF'} />
-      </Box>
-
-      {/* Triangular foundation pieces for extensions */}
-      {[
-        { x: -2.5 * spacing + spacing * 0.5, z: platform18x3StartZ + 1 * spacing + spacing * 0.5, rotation: -Math.PI / 2 },
-        { x: -2.5 * spacing + spacing * 0.5, z: platform18x3StartZ + 1 * spacing - spacing * 0.5, rotation: Math.PI / 1 },
-      ].map((tri, index) => {
-        const triFoundationGeometry = new THREE.BufferGeometry();
-        const triFoundationSize = 1.5 * 0.75;
-        const triFoundationVerts = new Float32Array([
-          0, 0, 0, triFoundationSize, 0, 0, 0, 0, triFoundationSize,
-          0, -foundationHeight, 0, triFoundationSize, -foundationHeight, 0, 0, -foundationHeight, triFoundationSize,
-        ]);
-        const triFoundationIndices = [
-          0, 1, 2, 0, 2, 1,
-          3, 5, 4, 3, 4, 5,
-          0, 3, 4, 0, 4, 1, 0, 4, 3, 0, 1, 4,
-          1, 4, 5, 1, 5, 2, 1, 5, 4, 1, 2, 5,
-          2, 5, 3, 2, 3, 0, 2, 3, 5, 2, 0, 3
-        ];
-        triFoundationGeometry.setAttribute('position', new THREE.BufferAttribute(triFoundationVerts, 3));
-        triFoundationGeometry.setIndex(triFoundationIndices);
-        triFoundationGeometry.computeVertexNormals();
-
-        return (
-          <mesh
-            key={`ext-tri-foundation-${index}`}
-            position={[tri.x, platform18x3Y - floorHeight/2, tri.z]}
-            rotation={[0, tri.rotation, 0]}
-          >
-            <primitive object={triFoundationGeometry} attach="geometry" />
-            <meshStandardMaterial color={'#C5A3FF'} flatShading={true} />
-          </mesh>
-        );
-      })}
-
-      {/* Additional billboard extension foundations for rows 7, 12, 17 */}
-      {[
-        { row: 7, key: 'billboard-ext-7' },
-        { row: 12, key: 'billboard-ext-12' },
-        { row: 17, key: 'billboard-ext-17' }
-      ].map(billboard => (
+      {/* Billboard extension foundations */}
+      {BILLBOARDS.map(({ row }) => ({ row, key: `billboard-ext-${row}` })).map(billboard => (
         <React.Fragment key={billboard.key}>
           {/* Main extension floor foundation */}
           <Box

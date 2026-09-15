@@ -3,9 +3,9 @@ import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 import InteractiveBillboard from '../InteractiveBillboard';
 import InteractiveOutlineButton from '../InteractiveOutlineButton';
-import InteractiveGitModel from './InteractiveGitModel';
 import InstancedBoxes from './InstancedBoxes';
 import type { InstanceData } from './InstancedBoxes';
+import { BILLBOARDS, WEBSITE_SLABS, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
 
 // ============================================================================
 // PROJECT PLATFORMS 
@@ -44,17 +44,17 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   const floorHeight = 0.3;
   const spacing = 1.5;
   const platform18x3Y = -floorHeight * 9;
-  const platform18x3StartZ = 1 * spacing + spacing * 1.4 + spacing * 0.3 * 9;
-  
+  const platform18x3StartZ = WORK_PLATFORM_START_Z;
+
   // Billboard/Screen structure dimensions
   const billboardPillarHeight = 2;
 
-  // Generate 18x3 platform instances (54 boxes)
+  // Generate 3-wide work platform instances
   const platform18x3Instances = useMemo(() => {
     const instances: InstanceData[] = [];
-    for (let i = 0; i < 54; i++) {
-      const x = Math.floor(i / 18);
-      const z = i % 18;
+    for (let i = 0; i < WORK_PLATFORM_ROWS * 3; i++) {
+      const x = Math.floor(i / WORK_PLATFORM_ROWS);
+      const z = i % WORK_PLATFORM_ROWS;
       const platformX = (x - 1) * spacing; 
       const platformZ = platform18x3StartZ + z * spacing;
       instances.push({ position: [platformX, platform18x3Y, platformZ] });
@@ -87,37 +87,14 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
         color={floorColor}
       />
       
-      {/* Project slabs on 18x3 platform - Interactive GitHub Git models */}
-      {[
-        { index: 2, key: 'project-slab-1', slabId: 'github-castle' },
-        { index: 7, key: 'project-slab-2', slabId: 'github-holleman' },
-        { index: 12, key: 'project-slab-3', slabId: 'github-space' },
-        { index: 17, key: 'project-slab-4', slabId: 'github-spotify' }
-      ].map((slab) => (
-        <InteractiveGitModel
-          key={slab.key}
-          position={[1.2, platform18x3Y + floorHeight/2 + 0.07, platform18x3StartZ + slab.index * spacing - 1.5]}
-          slabId={slab.slabId}
-          onSlabHover={onSlabHover}
-          onSlabClick={onSlabClick}
-          introComplete={introComplete}
-          isActive={activeSlabId === slab.slabId}
-        />
-      ))}
-
-      {/* NEW OUTLINE BUTTON SLABS for website interaction - with hover effect */}
-      {[
-        { index: 2, key: 'outline-button-1', z: 9.15, slabId: 'website-castle' },
-        { index: 7, key: 'outline-button-2', z: 16.65, slabId: 'website-holleman' },
-        { index: 12, key: 'outline-button-3', z: 24.15, slabId: 'website-space' },
-        { index: 17, key: 'outline-button-4', z: 31.65, slabId: 'website-spotify' }
-      ].map((button) => (
+      {/* Outline buttons in front of each billboard - with hover effect */}
+      {WEBSITE_SLABS.map((button, i) => (
         <InteractiveOutlineButton
-          key={button.key}
+          key={button.id}
           position={[-1, 0, 0]}
-          index={button.index}
+          index={BILLBOARDS[i].row}
           z={button.z}
-          slabId={button.slabId}
+          slabId={button.id}
           platform18x3Y={platform18x3Y}
           platform18x3StartZ={platform18x3StartZ}
           spacing={spacing}
@@ -131,14 +108,9 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
       ))}
 
       {/* Extensions for billboard */}
-      {[
-        { row: 2, key: 'platform-18x3-row2-extension' },
-        { row: 7, key: 'platform-18x3-row7-extension' },
-        { row: 12, key: 'platform-18x3-row12-extension' },
-        { row: 17, key: 'platform-18x3-row17-extension' }
-      ].map(extension => (
+      {BILLBOARDS.map(extension => (
         <Box
-          key={extension.key}
+          key={`platform-row${extension.row}-extension`}
           position={[-2.5 * spacing, platform18x3Y, platform18x3StartZ + (extension.row - 1) * spacing]}
         args={[floorSize, floorHeight, floorSize]}
       >
@@ -149,12 +121,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
       {/* Triangular pieces for all billboard extension rows */}
       {(() => {
         const triSize = floorSize * 0.75;
-        return [
-          { row: 2, keyPrefix: 'ext-tri-row2' },
-          { row: 7, keyPrefix: 'ext-tri-row7' },
-          { row: 12, keyPrefix: 'ext-tri-row12' },
-          { row: 17, keyPrefix: 'ext-tri-row17' }
-        ].map(rowData => [
+        return BILLBOARDS.map(({ row }) => ({ row, keyPrefix: `ext-tri-row${row}` })).map(rowData => [
         // Right triangle 
           { x: -2.5 * spacing + spacing * 0.5, z: platform18x3StartZ + (rowData.row - 1) * spacing + spacing * 0.5, rotation: -Math.PI / 2, key: `${rowData.keyPrefix}-right` },
         // Left triangle 
@@ -189,12 +156,7 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
       })()}
 
       {/* Interactive Billboard/Screen structures */}
-      {[
-        { row: 2, key: 'billboard1', websiteUrl: 'https://castle-portfolio.vercel.app/' },
-        { row: 7, key: 'billboard2', websiteUrl: 'https://holleman.vercel.app/' },
-        { row: 12, key: 'billboard3', websiteUrl: 'https://space-portfolio-one-mu.vercel.app/' },
-        { row: 17, key: 'billboard4', websiteUrl: 'https://spotify-folio.vercel.app/' }
-      ].map(billboard => {
+      {BILLBOARDS.map(billboard => {
         const billboardX = -2.5 * spacing + spacing * 0.5 - 0.7;
         const billboardZ = platform18x3StartZ + (billboard.row - 1) * spacing;
         // EXACT ORIGINAL FORMULA 
@@ -206,7 +168,8 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
             position={[billboardX, billboardY, billboardZ]}
         rotation={[0, Math.PI / 4, 0]} 
             billboardKey={billboard.key}
-            websiteUrl={billboard.websiteUrl}
+            websiteUrl={billboard.url}
+            interactive={!!(billboard.url || billboard.docs)}
             onBillboardInteraction={onBillboardInteraction}
             onCameraAnimationStart={onBillboardFullscreenStart}
             onCameraAnimationEnd={onBillboardFullscreenEnd}

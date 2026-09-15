@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { constrainToPlatform, smoothHeightTransition, getHeightAtPosition } from '../utils/collisionSystem';
 import { isOnElevator, triggerElevator, getElevatorHeight, shiftElevator } from '../utils/elevatorSystem';
+import { WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
 
 interface CharacterState {
   position: [number, number, number];
@@ -125,30 +126,17 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Check artwork platform slab
             const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
             
-            // Check GitHub project slabs on 18x3 platform (MOVED SOUTH)
-            const isOnGithubSlab1 = x >= 0.75 && x <= 1.65 && z >= 8.7 && z <= 9.6;   
-            const isOnGithubSlab2 = x >= 0.75 && x <= 1.65 && z >= 16.2 && z <= 17.1; 
-            const isOnGithubSlab3 = x >= 0.75 && x <= 1.65 && z >= 23.7 && z <= 24.6; 
-            const isOnGithubSlab4 = x >= 0.75 && x <= 1.65 && z >= 31.2 && z <= 32.1; 
-            
-            // Check NEW OUTLINE BUTTON SLABS for website interaction
-            const isOnWebsiteButton1 = x >= -1.45 && x <= -0.55 && z >= 8.7 && z <= 9.6;   
-            const isOnWebsiteButton2 = x >= -1.45 && x <= -0.55 && z >= 16.2 && z <= 17.1; 
-            const isOnWebsiteButton3 = x >= -1.45 && x <= -0.55 && z >= 23.7 && z <= 24.6; 
-            const isOnWebsiteButton4 = x >= -1.45 && x <= -0.55 && z >= 31.2 && z <= 32.1; 
-            
-            const isOnInteractableSlab = isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab || 
-                 isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 || 
+            // Check billboard button slabs on the work platform
+            const isOnWebsiteButton = !!findSlabAt(WEBSITE_SLABS, x, z);
+
+            const isOnInteractableSlab = isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab ||
+                 isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 ||
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
-                 isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4 ||
-                 isOnWebsiteButton1 || isOnWebsiteButton2 || isOnWebsiteButton3 || isOnWebsiteButton4;
-            
+                 isOnWebsiteButton;
+
             if (isOnInteractableSlab && onSpacePressRef.current) {
               centerOnSlab();
               onSpacePressRef.current();
-              if (isOnGithubSlab1 || isOnGithubSlab2 || isOnGithubSlab3 || isOnGithubSlab4) {
-                keysRef.current.space = false;
-              }
             } else if (onSpacePressRef.current) {
               // Not on a slab, but still call onSpacePress for other interactions 
               onSpacePressRef.current();
@@ -177,12 +165,24 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
       }
     };
 
+    // Keyups are lost when focus leaves the page (e.g. a slab opens a new tab), so release everything
+    const handleBlur = () => {
+      keysRef.current.forward = false;
+      keysRef.current.backward = false;
+      keysRef.current.left = false;
+      keysRef.current.right = false;
+      keysRef.current.shift = false;
+      keysRef.current.space = false;
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
     };
   }, []); // Remove dependencies to prevent event listener recreation
 

@@ -2,13 +2,14 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box } from '@react-three/drei';
 import * as THREE from 'three';
-import { getBillboardTextureShared } from '../utils/texturePreloader';
+import { getBillboardTextureShared, BILLBOARD_TEXTURES } from '../utils/texturePreloader';
 
 interface InteractiveBillboardProps {
   position: [number, number, number];
   rotation: [number, number, number];
   billboardKey: string;
   websiteUrl?: string;
+  interactive?: boolean;
   onBillboardInteraction?: (isHovering: boolean, billboardKey?: string) => void;
   onCameraAnimationStart?: () => void;
   onCameraAnimationEnd?: () => void;
@@ -24,7 +25,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   position,
   rotation,
   billboardKey,
-  websiteUrl = "https://your-website.com", 
+  websiteUrl,
+  interactive = false,
   onBillboardInteraction,
   onCameraAnimationStart,
   onCameraAnimationEnd,
@@ -52,11 +54,17 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   const billboardDepth = 0.3;
   const screenRecess = 0.1;
   
+  // Billboards with nothing to show are inert (no hover, no zoom)
+  const isInteractive = interactive;
+
   // Use preloaded texture
   const websiteTexture = useRef<THREE.Texture | null>(null);
   const [textureLoaded, setTextureLoaded] = useState(false);
-  
+  const hasTexture = billboardKey in BILLBOARD_TEXTURES;
+
   useEffect(() => {
+    if (!hasTexture) return;
+
     // Get preloaded texture from cache
     const texture = getBillboardTextureShared(billboardKey);
     
@@ -64,21 +72,21 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       websiteTexture.current = texture;
       setTextureLoaded(true);
     } else {
-      console.warn(`Texture not found for ${billboardKey}, may need to wait for preload`);
-      // Fallback: retry after a delay if preloading hasn't finished yet
-      const retryTimer = setTimeout(() => {
+      // Preloading hasn't finished yet - keep checking until the texture is cached
+      const retryTimer = setInterval(() => {
         const retryTexture = getBillboardTextureShared(billboardKey);
         if (retryTexture) {
           websiteTexture.current = retryTexture;
           setTextureLoaded(true);
+          clearInterval(retryTimer);
         }
-      }, 500);
-      
-      return () => clearTimeout(retryTimer);
+      }, 250);
+
+      return () => clearInterval(retryTimer);
     }
     
     // No cleanup needed - texture is managed by the preloader
-  }, [billboardKey]);
+  }, [billboardKey, hasTexture]);
 
   // Clear hover state when movement keys are pressed 
   useEffect(() => {
@@ -115,8 +123,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
     event.stopPropagation();
     
     // Disable billboard clicks during intro/loading
-    if (!introComplete) return;
-    
+    if (!introComplete || !isInteractive) return;
+
     if (isAnimating) return;
     
     if (!isFullscreen) {
@@ -129,7 +137,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
       onCameraAnimationStart?.();
     }
     // Removed else clause 
-  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart, introComplete]);
+  }, [isAnimating, isFullscreen, camera, onCameraAnimationStart, introComplete, isInteractive]);
 
   useFrame((state, delta) => {
     if (isAnimating) {
@@ -155,7 +163,8 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
           // Show website when zoom-in animation completes
           if (!showWebsite) {
             setShowWebsite(true);
-            onShowWebsite?.(websiteUrl, billboardKey);
+            // Empty url = the overlay shows this billboard's documentation instead of a site
+            onShowWebsite?.(websiteUrl ?? '', billboardKey);
           }
         }
       } else {
@@ -236,7 +245,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
           onPointerOver={(e) => {
             e.stopPropagation();
             // Disable billboard hover during intro/loading
-            if (!introComplete) return;
+            if (!introComplete || !isInteractive) return;
             document.body.style.cursor = 'pointer';
             setIsHovered(true);
             onBillboardInteraction?.(true, billboardKey);
@@ -244,13 +253,13 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
           onPointerOut={(e) => {
             e.stopPropagation();
             // Disable billboard hover during intro/loading
-            if (!introComplete) return;
+            if (!introComplete || !isInteractive) return;
             document.body.style.cursor = 'default';
             setIsHovered(false);
             onBillboardInteraction?.(false, billboardKey);
           }}
         >
-          {(billboardKey === 'billboard1' || billboardKey === 'billboard2' || billboardKey === 'billboard3' || billboardKey === 'billboard4') && textureLoaded ? (
+          {hasTexture && textureLoaded ? (
             <meshStandardMaterial 
               key="textured-material"
               map={websiteTexture.current}

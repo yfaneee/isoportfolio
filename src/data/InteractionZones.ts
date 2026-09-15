@@ -11,28 +11,57 @@ export const findSlabAt = <T extends { x: number; z: number }>(slabs: readonly T
 
 export const isOnMiddleSlab = (x: number, z: number): boolean => isWithinSlab(x, z, 0, 0);
 
-// GitHub project slabs on the 18x3 platform
-export const GITHUB_SLABS = [
-  { id: 'github-castle', x: 1.2, z: 9.15, url: 'https://github.com/yfaneee/CastlePortfolio' },
-  { id: 'github-holleman', x: 1.2, z: 16.65, url: 'https://github.com/yfaneee/holleman' },
-  { id: 'github-space', x: 1.2, z: 24.15, url: 'https://github.com/yfaneee/SpacePortfolio' },
-  { id: 'github-spotify', x: 1.2, z: 31.65, url: 'https://github.com/yfaneee/SpotifyFolio' }
-] as const;
+// Work area platform (3 wide, WORK_PLATFORM_ROWS long), extending south from the downward stairs
+export const WORK_ROW_SPACING = 1.5;
+export const WORK_PLATFORM_START_Z = 7.65;
+export const WORK_PLATFORM_ROWS = 33;
+export const WORK_PLATFORM_END_Z = WORK_PLATFORM_START_Z + (WORK_PLATFORM_ROWS - 1) * WORK_ROW_SPACING;
 
-// Website button slabs, each linked to a billboard
-export const WEBSITE_SLABS = [
-  { id: 'website-castle', x: -1, z: 9.15, url: 'https://castle-portfolio.vercel.app/', billboardKey: 'billboard1', label: 'View Castle Portfolio' },
-  { id: 'website-holleman', x: -1, z: 16.65, url: 'https://holleman.vercel.app/', billboardKey: 'billboard2', label: 'View Holleman Project' },
-  { id: 'website-space', x: -1, z: 24.15, url: 'https://space-portfolio-one-mu.vercel.app/', billboardKey: 'billboard3', label: 'View Space Portfolio' },
-  { id: 'website-spotify', x: -1, z: 31.65, url: 'https://spotify-folio.vercel.app/', billboardKey: 'billboard4', label: 'View Spotify Portfolio' }
-] as const;
+// A project is shown either as a live website or as documentation:
+// - url:  the floor button opens the site in a new tab, clicking the billboard zooms in and embeds the site
+// - docs: the floor button and the billboard both zoom in and show the documentation
+interface WorkProject {
+  label: string;
+  url?: string;
+  docs?: string;
+}
 
-export const BILLBOARD_PROMPT_TEXT: Record<string, string> = {
-  billboard1: 'View Castle Portfolio',
-  billboard2: 'View Holleman Project',
-  billboard3: 'View Space Portfolio',
-  billboard4: 'View Spotify Portfolio'
+export interface BillboardDef extends WorkProject {
+  key: string;
+  row: number;     // platform row the billboard stands on (one every 5 rows)
+}
+
+const WORK_PROJECTS: WorkProject[] = [
+  { label: 'SideSkin Platform', url: 'https://side-skin-next.vercel.app/' },
+  { label: 'Omnival Website', url: 'https://www.omnival.ro/' },
+  { label: 'SpookSlot 3DGS', docs: 'Lorem ipsum' },
+  { label: 'RestrictionsMap', docs: 'Lorem ipsum' },
+  { label: 'Holleman Website', url: 'https://www.holleman.ro/' },
+  { label: 'ITL Website', url: 'https://itl-website-five.vercel.app/en' },
+  { label: 'Holleman App', docs: 'Lorem ipsum' }
+];
+
+export const BILLBOARDS: BillboardDef[] = WORK_PROJECTS.map((project, i) => ({
+  ...project,
+  key: `billboard${i + 1}`,
+  row: 2 + i * 5
+}));
+
+// Floor button in front of each billboard
+export const WEBSITE_SLABS = BILLBOARDS.map((billboard, i) => ({
+  id: `website-${i + 1}`,
+  x: -1,
+  z: WORK_PLATFORM_START_Z + (billboard.row - 1) * WORK_ROW_SPACING,
+  billboardKey: billboard.key,
+  label: billboard.label,
+  url: billboard.url
+}));
+
+export const openInNewTab = (url: string) => {
+  window.open(url, '_blank', 'noopener,noreferrer');
 };
+
+export const getBillboard = (key: string) => BILLBOARDS.find(billboard => billboard.key === key);
 
 // Learning outcome slab id -> teleport location / content key
 export const LO_SLAB_TARGETS: Record<string, { location: string; contentKey: string }> = {
@@ -54,8 +83,6 @@ export const CONTENT_SLAB_TARGETS: Record<string, { location: string; contentKey
 export const getSlabHoverText = (slabId: string): string => {
   if (LO_SLAB_TARGETS[slabId]) {
     return slabId.slice(2);
-  } else if (slabId.startsWith('github-')) {
-    return 'View on GitHub';
   } else if (slabId.startsWith('website-')) {
     return WEBSITE_SLABS.find(slab => slab.id === slabId)?.label || 'View Portfolio';
   } else if (slabId === 'main-slab') {
@@ -84,19 +111,9 @@ export const getSlabPromptText = (slabType?: string): string => {
     case 'artwork': return 'Artwork Gallery';
     case 'elevator': return 'Use Elevator';
     default:
-      if (slabType?.startsWith('github-')) return 'Open GitHub';
       if (slabType?.startsWith('website-')) {
         return WEBSITE_SLABS.find(slab => slab.id === slabType)?.label || 'Interact';
       }
       return 'Interact';
-  }
-};
-
-export const openExternalUrl = (url: string) => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if (isMobile) {
-    window.location.href = url;
-  } else {
-    window.open(url, '_blank');
   }
 };
