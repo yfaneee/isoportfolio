@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { WORK_PLATFORM_END_Z } from '../data/InteractionZones';
+import { SOCIAL_WALL_EXTENSION_DEPTH, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 const SPACING = 1.5;
 const GRID_5X5_CENTER_Z = -1 * SPACING - SPACING * 3 - (2 * SPACING);
@@ -8,7 +8,7 @@ const GRID_5X5_CENTER_Z = -1 * SPACING - SPACING * 3 - (2 * SPACING);
 const AREAS = {
   projectStudio: {
     minX: -2.5 * SPACING, maxX: 2.5 * SPACING,
-    minZ: GRID_5X5_CENTER_Z - 2.5 * SPACING, maxZ: GRID_5X5_CENTER_Z + 2.5 * SPACING,
+    minZ: GRID_5X5_CENTER_Z - 2.5 * SPACING - SOCIAL_WALL_EXTENSION_DEPTH, maxZ: GRID_5X5_CENTER_Z + 2.5 * SPACING,
     trackId: 'project-studio'
   },
   learningOutcomes: { minX: -14, maxX: -7, minZ: -2, maxZ: 2, trackId: 'learning-outcomes' },

@@ -44,13 +44,12 @@ export interface ContentItem {
 }
 
 export const contentData: Record<string, ContentItem> = {
-  // Placeholder slabs (1-7), content to be filled in
+  // Placeholder slabs, content to be filled in
   'staircase-slab-1': { title: '1', description: '', details: [], color: '#F5F5DC' },
   'staircase-slab-2': { title: '2', description: '', details: [], color: '#F5F5DC' },
   'staircase-slab-3': { title: '3', description: '', details: [], color: '#F5F5DC' },
   'staircase-slab-4': { title: '4', description: '', details: [], color: '#F5F5DC' },
   'staircase-slab-5': { title: '5', description: '', details: [], color: '#F5F5DC' },
-  'high-block-slab': { title: '6', description: '', details: [], color: '#F5F5DC' },
   'smaller-block-slab': { title: '7', description: '', details: [], color: '#F5F5DC' },
   'artwork-platform-slab': {
     title: 'Artwork',
@@ -93,16 +92,14 @@ export const slabNavigationOrder = [
   'staircase-slab-2',      
   'staircase-slab-3',      
   'staircase-slab-4',      
-  'staircase-slab-5',      
-  'high-block-slab',       
-  'smaller-block-slab',    
+  'staircase-slab-5',
+  'smaller-block-slab',
   'artwork-platform-slab', 
 ];
 
 // Get position key from coordinates
 export const getSlabKeyFromPosition = (x: number, z: number): string | null => {
   const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
-  const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
   const isOnStaircaseSlab1 = x >= -11.075 && x <= -10.175 && z >= 1.05 && z <= 1.95;
   const isOnStaircaseSlab2 = x >= -14.075 && x <= -13.175 && z >= 1.05 && z <= 1.95;
   const isOnStaircaseSlab3 = x >= -14.075 && x <= -13.175 && z >= -1.95 && z <= -1.05;
@@ -111,7 +108,6 @@ export const getSlabKeyFromPosition = (x: number, z: number): string | null => {
   const isOnArtworkSlab = x >= 10.05 && x <= 10.95 && z >= -0.45 && z <= 0.45;
   
   if (isOnSmallerBlockSlab) return 'smaller-block-slab';
-  if (isOnHighBlockSlab) return 'high-block-slab';
   if (isOnStaircaseSlab1) return 'staircase-slab-1';
   if (isOnStaircaseSlab2) return 'staircase-slab-2';
   if (isOnStaircaseSlab3) return 'staircase-slab-3';
@@ -130,7 +126,6 @@ export const getLocationFromSlabKey = (slabKey: string): string => {
     'staircase-slab-3': 'creative',
     'staircase-slab-4': 'professional',
     'staircase-slab-5': 'leadership',
-    'high-block-slab': 'studio',
     'smaller-block-slab': 'ironfilms',
     'artwork-platform-slab': 'artwork',
   };
@@ -140,10 +135,7 @@ export const getLocationFromSlabKey = (slabKey: string): string => {
 export const getContentForSlab = (x: number, z: number): ContentItem | null => {
   // Check if on smaller-block-slab
   const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
-  
-  // Check if on high-block-slab 
-  const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
-  
+
   // Staircase slabs 1-5 (5 is the highest)
   const isOnStaircaseSlab1 = x >= -11.075 && x <= -10.175 && z >= 1.05 && z <= 1.95;
   const isOnStaircaseSlab2 = x >= -14.075 && x <= -13.175 && z >= 1.05 && z <= 1.95;
@@ -156,8 +148,6 @@ export const getContentForSlab = (x: number, z: number): ContentItem | null => {
   
   if (isOnSmallerBlockSlab) {
     return contentData['smaller-block-slab'];
-  } else if (isOnHighBlockSlab) {
-    return contentData['high-block-slab'];
   } else if (isOnStaircaseSlab1) {
     return contentData['staircase-slab-1'];
   } else if (isOnStaircaseSlab2) {

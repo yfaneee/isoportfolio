@@ -61,6 +61,28 @@ export const openInNewTab = (url: string) => {
   window.open(url, '_blank', 'noopener,noreferrer');
 };
 
+// Social link buttons on top of the tall wall (Socials & Passion area), left corner / center / right corner
+export type SocialKind = 'github' | 'linkedin' | 'email';
+
+export const SOCIAL_WALL_TOP_Y = 3.2 / 1.83 + 3.2 / 2; // top surface of the tall wall blocks (see WallBlocks)
+export const SOCIAL_WALL_EXTENSION_DEPTH = 0.75;       // how far the wall top was extended backwards (-z)
+const SOCIAL_ROW_Z = -12 - SOCIAL_WALL_EXTENSION_DEPTH / 2; // centered on the extended top
+
+export const SOCIAL_SLABS: { id: string; kind: SocialKind; x: number; z: number; label: string; url?: string }[] = [
+  { id: 'social-github', kind: 'github', x: -2.85, z: SOCIAL_ROW_Z, label: 'GitHub', url: 'https://github.com/yfaneee' },
+  { id: 'social-linkedin', kind: 'linkedin', x: 0, z: SOCIAL_ROW_Z, label: 'LinkedIn', url: 'https://www.linkedin.com/in/luca-stefan-tomescu-9513732ba/' },
+  { id: 'social-email', kind: 'email', x: 2.85, z: SOCIAL_ROW_Z, label: 'Email', url: 'mailto:lucastefan.tomescu@gmail.com' }
+];
+
+export const openSocialLink = (url?: string) => {
+  if (!url) return;
+  if (url.startsWith('mailto:')) {
+    window.location.href = url; // hands off to the mail client without leaving a blank tab
+  } else {
+    openInNewTab(url);
+  }
+};
+
 export const getBillboard = (key: string) => BILLBOARDS.find(billboard => billboard.key === key);
 
 // Learning outcome slab id -> teleport location / content key
@@ -74,7 +96,6 @@ export const LO_SLAB_TARGETS: Record<string, { location: string; contentKey: str
 
 // Other clickable slabs that teleport and open content
 export const CONTENT_SLAB_TARGETS: Record<string, { location: string; contentKey: string }> = {
-  'project-studio': { location: 'studio', contentKey: 'high-block-slab' },
   'smaller-block': { location: 'ironfilms', contentKey: 'smaller-block-slab' },
   artwork: { location: 'artwork', contentKey: 'artwork-platform-slab' }
 };
@@ -87,8 +108,8 @@ export const getSlabHoverText = (slabId: string): string => {
     return WEBSITE_SLABS.find(slab => slab.id === slabId)?.label || 'View Portfolio';
   } else if (slabId === 'main-slab') {
     return 'Open Menu';
-  } else if (slabId === 'project-studio') {
-    return '6';
+  } else if (slabId.startsWith('social-')) {
+    return SOCIAL_SLABS.find(slab => slab.id === slabId)?.label || 'Social';
   } else if (slabId === 'smaller-block') {
     return '7';
   } else if (slabId === 'artwork') {
@@ -106,11 +127,13 @@ export const getSlabPromptText = (slabType?: string): string => {
     case 'lo3': return '3';
     case 'lo4': return '4';
     case 'lo5': return '5';
-    case 'project-studio': return '6';
     case 'smaller-block': return '7';
     case 'artwork': return 'Artwork Gallery';
     case 'elevator': return 'Use Elevator';
     default:
+      if (slabType?.startsWith('social-')) {
+        return SOCIAL_SLABS.find(slab => slab.id === slabType)?.label || 'Interact';
+      }
       if (slabType?.startsWith('website-')) {
         return WEBSITE_SLABS.find(slab => slab.id === slabType)?.label || 'Interact';
       }

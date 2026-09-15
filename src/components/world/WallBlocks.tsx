@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box } from '@react-three/drei';
 import InteractiveSlab from '../InteractiveSlab';
+import SocialButton from './SocialButton';
+import { SOCIAL_SLABS, SOCIAL_WALL_EXTENSION_DEPTH, SOCIAL_WALL_TOP_Y } from '../../data/InteractionZones';
 
 // ============================================================================
 // WALL BLOCKS 
@@ -52,20 +54,29 @@ const WallBlocks = React.memo<WallBlocksProps>(({ onSlabHover, onSlabClick, intr
       );
       })}
       
-      {/* High block slab - Interactive Project Studio */}
-      <InteractiveSlab
-        key="high-block-slab"
-        position={[3, wallHeight / 1.83 + wallHeight/2 + 0.07, grid5x5BaseZ - 4 * spacing]}
-        args={[floorSize * 0.6, 0.1, floorSize * 0.6]}
-        color="#F5F5DC"
-        hoverColor="#FFE4B5"
-        slabId="project-studio"
-        onSlabHover={onSlabHover}
-        onSlabClick={onSlabClick}
-        introComplete={introComplete}
-        isActive={activeSlabId === 'project-studio'}
-      />
-      
+      {/* Extension on the back side of the tall wall - room for the social links */}
+      <Box
+        key="wall-outer-extension"
+        position={[0, (SOCIAL_WALL_TOP_Y - 0.15) / 2, grid5x5BaseZ - 4 * spacing - floorSize / 2 - SOCIAL_WALL_EXTENSION_DEPTH / 2]}
+        args={[5 * floorSize, SOCIAL_WALL_TOP_Y + 0.15, SOCIAL_WALL_EXTENSION_DEPTH]}
+      >
+        <meshStandardMaterial color={floorColor} />
+      </Box>
+
+      {/* Social link buttons - left corner, center, right corner */}
+      {SOCIAL_SLABS.map(social => (
+        <SocialButton
+          key={social.id}
+          kind={social.kind}
+          slabId={social.id}
+          position={[social.x, SOCIAL_WALL_TOP_Y, social.z]}
+          onSlabHover={onSlabHover}
+          onSlabClick={onSlabClick}
+          introComplete={introComplete}
+          isActive={activeSlabId === social.id}
+        />
+      ))}
+
       {/* Smaller block slab - Interactive Project */}
       <InteractiveSlab
         key="smaller-block-slab"

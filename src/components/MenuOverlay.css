@@ -324,32 +324,6 @@
   overflow: hidden;
 }
 
-.info-repo-button.music-button {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  padding: 0;
-}
-
-.info-repo-button.music-button.playing {
-  background: rgba(229, 62, 149, 0.85);
-  border-color: rgba(229, 62, 149, 0.5);
-  box-shadow: 0 4px 15px rgba(229, 62, 149, 0.4);
-  animation: pulse-info 2s ease-in-out infinite;
-}
-
-.info-repo-button.music-button.playing:hover {
-  background: rgba(229, 62, 149, 1);
-  box-shadow: 0 6px 20px rgba(229, 62, 149, 0.6);
-}
-
-@keyframes pulse-info {
-  0%, 100% {
-    box-shadow: 0 4px 15px rgba(229, 62, 149, 0.4);
-  }
-  50% {
-    box-shadow: 0 4px 20px rgba(229, 62, 149, 0.6);
-  }
-}
-
 .info-repo-button::before {
   content: '';
   position: absolute;

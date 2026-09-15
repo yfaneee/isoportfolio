@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TopHUD.css';
-import { WORK_PLATFORM_END_Z } from '../data/InteractionZones';
+import { SOCIAL_WALL_EXTENSION_DEPTH, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 interface TopHUDProps {
   characterPosition: [number, number, number];
@@ -31,7 +31,7 @@ const areas: AreaInfo[] = [
   },
   {
     name: 'Socials & Passion',
-    bounds: { minX: -3.75, maxX: 3.75, minZ: -11.25, maxZ: -3.75 },
+    bounds: { minX: -3.75, maxX: 3.75, minZ: -12.75 - SOCIAL_WALL_EXTENSION_DEPTH, maxZ: -3.75 },
     discovered: false
   },
   {

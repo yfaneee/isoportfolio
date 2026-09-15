@@ -22,6 +22,8 @@ import {
   WEBSITE_SLABS,
   getBillboard,
   openInNewTab,
+  openSocialLink,
+  SOCIAL_SLABS,
   LO_SLAB_TARGETS,
   CONTENT_SLAB_TARGETS,
   findSlabAt,
@@ -35,7 +37,6 @@ import { preloadCharacterModels } from './components/Character';
 import { preloadBillboardTextures, disposeBillboardTextures } from './utils/texturePreloader';
 import { AchievementProvider, useAchievements } from './contexts/AchievementContext';
 import { useStableCallback } from './hooks/useStableCallback';
-import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 import { useLocationDiscovery } from './hooks/useLocationDiscovery';
 import { useSlabNavigation } from './hooks/useSlabNavigation';
 import { useInteractionPrompt } from './hooks/useInteractionPrompt';
@@ -51,7 +52,7 @@ type TrainState = {
 const SLAB_CLICK_ANIMATION_MS = 1200;
 
 function AppContent() {
-  const { trackLocationVisit, trackGSplatViewerUsage, trackBillboardOpen, trackSongPlayed, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
+  const { trackLocationVisit, trackGSplatViewerUsage, trackBillboardOpen, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
 
   const [introComplete, setIntroComplete] = useState(false);
   const [introProgress, setIntroProgress] = useState(0);
@@ -107,7 +108,6 @@ function AppContent() {
   // Billboard refs for programmatic triggering
   const billboardRefs = useRef<{ [key: string]: any }>({});
 
-  const { isMusicPlaying, toggleMusic, startMusic } = useBackgroundMusic(trackSongPlayed);
   const { handlePositionUpdate: updateDiscoveredLocations, showInitialDiscovery, ...discoveryBanners } = useLocationDiscovery(trackLocationVisit);
   const {
     showInteractionOverlay,
@@ -215,6 +215,8 @@ function AppContent() {
     } else if (slabId.startsWith('website-')) {
       const slab = WEBSITE_SLABS.find(s => s.id === slabId);
       if (slab) activateWebsiteButton(slab);
+    } else if (slabId.startsWith('social-')) {
+      openSocialLink(SOCIAL_SLABS.find(s => s.id === slabId)?.url);
     } else if (slabId === 'main-slab') {
       if (characterControllerRef.current) {
         setIsSlabClickAnimating(true);
@@ -400,14 +402,20 @@ function AppContent() {
     const content = getContentForSlab(x, z);
     const isOnElevatorPressurePlate = isOnElevator(x, z);
     const currentWebsiteButtonSlab = findSlabAt(WEBSITE_SLABS, x, z);
+    const currentSocialSlab = findSlabAt(SOCIAL_SLABS, x, z);
 
-    const canInteractNow = !!(content || isOnMiddleSlab(x, z) || isOnElevatorPressurePlate || currentWebsiteButtonSlab);
+    const canInteractNow = !!(content || isOnMiddleSlab(x, z) || isOnElevatorPressurePlate || currentWebsiteButtonSlab || currentSocialSlab);
     if (!canInteractNow) {
       return;
     }
 
     if (currentWebsiteButtonSlab) {
       activateWebsiteButton(currentWebsiteButtonSlab);
+      return;
+    }
+
+    if (currentSocialSlab) {
+      openSocialLink(currentSocialSlab.url);
       return;
     }
 
@@ -538,8 +546,7 @@ function AppContent() {
   const handleCharacterSelectionStart = useCallback(() => {
     setShowCharacterSelection(false);
     setShowLoadingScreen(false);
-    startMusic();
-  }, [startMusic]);
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Effects
@@ -613,7 +620,8 @@ function AppContent() {
         getContentForSlab(x, z) ||
         isOnMiddleSlab(x, z) ||
         isOnElevator(x, z) ||
-        findSlabAt(WEBSITE_SLABS, x, z)
+        findSlabAt(WEBSITE_SLABS, x, z) ||
+        findSlabAt(SOCIAL_SLABS, x, z)
       ));
     }, 200);
 
@@ -741,8 +749,6 @@ function AppContent() {
                 isVisible={showMenu}
                 onNavigateToLocation={handleNavigateToLocation}
                 onClose={handleCloseMenu}
-                isMusicPlaying={isMusicPlaying}
-                onToggleMusic={toggleMusic}
                 selectedCharacter={selectedCharacter}
                 onCharacterSelect={handleCharacterSelect}
               />
@@ -831,8 +837,6 @@ function AppContent() {
             {/* Repository Links - Fixed on right side */}
             <RepoLinks
               isVisible={introComplete && !showLoadingScreen && !showWebsiteOverlay}
-              isMusicPlaying={isMusicPlaying}
-              onToggleMusic={toggleMusic}
               hideWhenMenuOpen={showMenu}
             />
 

@@ -15,7 +15,6 @@ interface AchievementContextType {
   trackLocationVisit: (location: string) => void;
   trackGSplatViewerUsage: () => void;
   trackBillboardOpen: (billboardKey: string) => void;
-  trackSongPlayed: (songIndex: number) => void;
   newlyUnlockedAchievement: string | null;
   clearNewlyUnlocked: () => void;
   resetAchievements: () => void;
@@ -69,11 +68,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     loadFromLocalStorage('achievement_openedBillboards', new Set())
   );
   
-  // Track played songs 
-  const [playedSongs, setPlayedSongs] = useState<Set<number>>(() =>
-    loadFromLocalStorage('achievement_playedSongs', new Set())
-  );
-  
   // Track newly unlocked achievements
   const [newlyUnlockedAchievement, setNewlyUnlockedAchievement] = useState<string | null>(null);
   
@@ -94,10 +88,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
   useEffect(() => {
     localStorage.setItem('achievement_openedBillboards', JSON.stringify(Array.from(openedBillboards)));
   }, [openedBillboards]);
-
-  useEffect(() => {
-    localStorage.setItem('achievement_playedSongs', JSON.stringify(Array.from(playedSongs)));
-  }, [playedSongs]);
 
   useEffect(() => {
     localStorage.setItem('achievement_previouslyUnlocked', JSON.stringify(Array.from(previouslyUnlocked)));
@@ -123,14 +113,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     });
   }, []);
 
-  const trackSongPlayed = useCallback((songIndex: number) => {
-    setPlayedSongs(prev => {
-      const newSet = new Set(prev);
-      newSet.add(songIndex);
-      return newSet;
-    });
-  }, []);
-
   const clearNewlyUnlocked = useCallback(() => {
     setNewlyUnlockedAchievement(null);
   }, []);
@@ -140,7 +122,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     setVisitedLocations(new Set());
     setHasUsedGSplat(false);
     setOpenedBillboards(new Set());
-    setPlayedSongs(new Set());
     setPreviouslyUnlocked(new Set());
     setNewlyUnlockedAchievement(null);
     
@@ -181,17 +162,8 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
       progress: openedBillboards.size,
       maxProgress: 4,
       iconPath: '/images/menu/projectview.svg'
-    },
-    {
-      id: 'music-lover',
-      title: 'Music Lover',
-      description: 'Listen to all 3 songs in the playlist',
-      isUnlocked: playedSongs.size >= 3,
-      progress: playedSongs.size,
-      maxProgress: 3,
-      iconPath: '/images/menu/music.svg'
     }
-  ], [visitedLocations.size, hasUsedGSplat, openedBillboards.size, playedSongs.size]);
+  ], [visitedLocations.size, hasUsedGSplat, openedBillboards.size]);
 
   // Detect newly unlocked achievements
   useEffect(() => {
@@ -221,7 +193,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
         trackLocationVisit,
         trackGSplatViewerUsage,
         trackBillboardOpen,
-        trackSongPlayed,
         newlyUnlockedAchievement,
         clearNewlyUnlocked,
         resetAchievements

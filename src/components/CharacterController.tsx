@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import Character from './Character';
 import { useCharacterControls } from '../hooks/useCharacterControls';
 import { isOnElevator } from '../utils/elevatorSystem';
-import { WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
+import { SOCIAL_SLABS, WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
 
 interface CharacterControllerProps {
   onMovementChange: (moving: boolean) => void;
@@ -128,11 +128,13 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
           );
           
-          // Check Project & Studio slabs on 5x5 grid
+          // Check content slabs on the 5x5 grid
           const projectStudioSlabs = [
-            { x: 3, z: -12, id: 'project-studio' },    
-            { x: -1.5, z: -10.4, id: 'smaller-block' } 
+            { x: -1.5, z: -10.4, id: 'smaller-block' }
           ];
+
+          // Check social link buttons on the tall wall
+          const currentSocialSlab = findSlabAt(SOCIAL_SLABS, newPos[0], newPos[2]);
           
           const currentProjectStudioSlab = projectStudioSlabs.find(slab => 
             newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
@@ -156,6 +158,8 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             onSlabInteraction?.(true, currentLOSlab.id);
           } else if (currentProjectStudioSlab) {
             onSlabInteraction?.(true, currentProjectStudioSlab.id);
+          } else if (currentSocialSlab) {
+            onSlabInteraction?.(true, currentSocialSlab.id);
           } else if (isOnArtworkSlab) {
             onSlabInteraction?.(true, 'artwork');
           } else if (currentWebsiteButtonSlab) {

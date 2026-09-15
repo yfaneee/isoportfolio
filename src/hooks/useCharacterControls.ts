@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { constrainToPlatform, smoothHeightTransition, getHeightAtPosition } from '../utils/collisionSystem';
 import { isOnElevator, triggerElevator, getElevatorHeight, shiftElevator } from '../utils/elevatorSystem';
-import { WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
+import { SOCIAL_SLABS, WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
 
 interface CharacterState {
   position: [number, number, number];
@@ -109,11 +109,11 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             positionRef.current = [x, newElevatorY + VISUAL_OFFSET, z];
             targetHeight.current = newElevatorY;
           } else {
-            // Check if on smaller-block-slab 
+            // Check if on smaller-block-slab
             const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
-            // Check if on high-block-slab
-            const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
-            // Check if on middle bone white slab 
+            // Check if on a social link button
+            const isOnSocialButton = !!findSlabAt(SOCIAL_SLABS, x, z);
+            // Check if on middle bone white slab
             const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
             
             // Check staircase slabs
@@ -129,7 +129,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
             // Check billboard button slabs on the work platform
             const isOnWebsiteButton = !!findSlabAt(WEBSITE_SLABS, x, z);
 
-            const isOnInteractableSlab = isOnSmallerBlockSlab || isOnHighBlockSlab || isOnMiddleSlab ||
+            const isOnInteractableSlab = isOnSmallerBlockSlab || isOnSocialButton || isOnMiddleSlab ||
                  isOnStaircaseSlab1 || isOnStaircaseSlab2 || isOnStaircaseSlab3 ||
                  isOnStaircaseSlab4 || isOnStaircaseSlab5 || isOnArtworkSlab ||
                  isOnWebsiteButton;
@@ -325,7 +325,7 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     
     // Determine which slab we're on and center accordingly
     const isOnSmallerBlockSlab = x >= -1.95 && x <= -1.05 && z >= -10.8 && z <= -9.9;
-    const isOnHighBlockSlab = x >= 2.55 && x <= 3.45 && z >= -12.45 && z <= -11.55;
+    const socialSlab = findSlabAt(SOCIAL_SLABS, x, z);
     const isOnMiddleSlab = x >= -0.45 && x <= 0.45 && z >= -0.45 && z <= 0.45;
     
     // Check staircase slabs
@@ -344,9 +344,9 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
     if (isOnSmallerBlockSlab) {
       centerX = -1.5;
       centerZ = -10.35;
-    } else if (isOnHighBlockSlab) {
-      centerX = 3;
-      centerZ = -12;
+    } else if (socialSlab) {
+      centerX = socialSlab.x;
+      centerZ = socialSlab.z;
     } else if (isOnMiddleSlab) {
       centerX = 0;
       centerZ = 0;
@@ -392,9 +392,6 @@ export const useCharacterControls = (initialPosition: [number, number, number] =
         break;
       case 'leadership':
         targetPosition = [-7.625, 5.73, -1.5];
-        break;
-      case 'studio':
-        targetPosition = [3, 3.43, -12];
         break;
       case 'ironfilms':
         targetPosition = [-1.5, 1.78, -10.4];

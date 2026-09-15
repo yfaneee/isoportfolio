@@ -1,6 +1,6 @@
 // Collision and boundary system for the isometric world
 import { isOnElevator, getElevatorHeight } from './elevatorSystem';
-import { WEBSITE_SLABS, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
+import { SOCIAL_SLABS, SOCIAL_WALL_EXTENSION_DEPTH, WEBSITE_SLABS, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
 const GRID_SIZE = 1.5; 
 const spatialGrid: Map<string, Platform[]> = new Map();
@@ -148,8 +148,10 @@ export const platforms: Platform[] = [
   // BONE-WHITE SLAB - Central slab on the 3x3 grid (HIGHER PRIORITY - placed first)
   { minX: 0 - 0.50, maxX: 0 + 0.50, minZ: 0 - 0.50, maxZ: 0 + 0.50, y: 0.22, type: 'floor' },
   
-  // HIGH-BLOCK SLAB - On the high block
-  { minX: 3 - 0.45, maxX: 3 + 0.45, minZ: -12 - 0.45, maxZ: -12 + 0.45, y: 3.43, type: 'floor' },
+  // SOCIAL LINK BUTTONS - On top of the tall wall
+  ...SOCIAL_SLABS.map((slab): Platform => (
+    { minX: slab.x - 0.45, maxX: slab.x + 0.45, minZ: slab.z - 0.45, maxZ: slab.z + 0.45, y: 3.43, type: 'floor' }
+  )),
   
   // 5 STAIRCASE SLABS - On the impossible staircase
   { minX: -10.625 - 0.45, maxX: -10.625 + 0.45, minZ: 1.5 - 0.45, maxZ: 1.5 + 0.45, y: 3.74, type: 'floor' },
@@ -203,8 +205,8 @@ export const platforms: Platform[] = [
   // SECOND WALL BLOCKS - Medium height wall (smaller tall blocks)
   { minX: -3.75, maxX: 3.55, minZ: -10.4, maxZ: -9.6, y: 1.6, type: 'floor' },
   
-  // TALL WALL BLOCKS - Top surface (walkable on top of the highest blocks)
-  { minX: -3.75, maxX: 3.45, minZ: -12.35, maxZ: -11.55, y: 3.25, type: 'floor' },
+  // TALL WALL BLOCKS - Top surface (walkable on top of the highest blocks), including the social links extension
+  { minX: -3.75, maxX: 3.45, minZ: -12.35 - SOCIAL_WALL_EXTENSION_DEPTH, maxZ: -11.55, y: 3.25, type: 'floor' },
   
   // NEW 5x3 RECTANGULAR RAMP PLATFORM - Learning Outcomes 
   // Connecting floor between stairs and platform

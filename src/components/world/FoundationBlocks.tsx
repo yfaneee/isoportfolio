@@ -3,7 +3,7 @@ import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 import SkyscraperFoundation from './SkyscraperFoundation';
 import RampFoundationsWithWindows from './RampFoundationsWithWindows';
-import { BILLBOARDS, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
+import { BILLBOARDS, SOCIAL_WALL_EXTENSION_DEPTH, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
 
 // ============================================================================
 // FOUNDATION BLOCKS 
@@ -33,10 +33,10 @@ const FoundationBlocks = React.memo(() => {
         <meshStandardMaterial color={floorColor} />
       </Box>
       
-      {/* 5x5 foundation - Skyscraper with animated windows */}
+      {/* 5x5 foundation - Skyscraper with animated windows (deepened at the back under the social links extension) */}
       <SkyscraperFoundation
-        position={[0, -foundationHeight/2 - 0.15, -1 * spacing - spacing * 3 - (2 * spacing)]}
-        size={[5 * spacing, foundationHeight, 5 * spacing]}
+        position={[0, -foundationHeight/2 - 0.15, -1 * spacing - spacing * 3 - (2 * spacing) - SOCIAL_WALL_EXTENSION_DEPTH / 2]}
+        size={[5 * spacing, foundationHeight, 5 * spacing + SOCIAL_WALL_EXTENSION_DEPTH]}
         baseColor={floorColor}
       />
 
