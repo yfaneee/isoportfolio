@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { ContentItem, slabNavigationOrder, getLocationFromSlabKey, contentData } from '../data/ContentData';
 import { shiftElevator } from '../utils/elevatorSystem';
-import { getLearningOutcomeIdFromSlabKey } from '../data/InteractionZones';
 
 interface SlabNavigationOptions {
   characterControllerRef: React.MutableRefObject<any>;
   currentSlabKey: string | null;
   setCurrentContent: (content: ContentItem | null) => void;
   setCurrentSlabKey: (slabKey: string | null) => void;
-  trackContentTabOpen: (tabId: string) => void;
 }
 
 /**
@@ -19,8 +17,7 @@ export function useSlabNavigation({
   characterControllerRef,
   currentSlabKey,
   setCurrentContent,
-  setCurrentSlabKey,
-  trackContentTabOpen
+  setCurrentSlabKey
 }: SlabNavigationOptions) {
   const [isNavigatingSlabs, setIsNavigatingSlabs] = useState(false);
   const [characterOpacity, setCharacterOpacity] = useState(1);
@@ -85,12 +82,6 @@ export function useSlabNavigation({
           setCurrentContent(targetContent);
           setCurrentSlabKey(targetSlabKey);
 
-          // Track content tab opening for achievements (Q/E navigation)
-          const loId = getLearningOutcomeIdFromSlabKey(targetSlabKey);
-          if (loId) {
-            trackContentTabOpen(loId);
-          }
-
           setTimeout(() => {
             shiftElevator.wasOnElevator = false;
             shiftElevator.isMoving = false;
@@ -142,7 +133,7 @@ export function useSlabNavigation({
     };
 
     magicalFadeOut();
-  }, [currentSlabKey, isNavigatingSlabs, characterControllerRef, setCurrentContent, setCurrentSlabKey, trackContentTabOpen]);
+  }, [currentSlabKey, isNavigatingSlabs, characterControllerRef, setCurrentContent, setCurrentSlabKey]);
 
   const navigateNext = useCallback(() => navigate(1), [navigate]);
   const navigatePrev = useCallback(() => navigate(-1), [navigate]);

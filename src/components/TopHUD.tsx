@@ -24,12 +24,12 @@ interface AreaInfo {
 // Define areas with their boundaries 
 const areas: AreaInfo[] = [
   {
-    name: 'Learning Outcomes',
+    name: 'Past Portfolios',
     bounds: { minX: -14, maxX: -7, minZ: -2, maxZ: 2 },
     discovered: false
   },
   {
-    name: 'Project Studio',
+    name: 'Socials & Passion',
     bounds: { minX: -3.75, maxX: 3.75, minZ: -11.25, maxZ: -3.75 },
     discovered: false
   },
@@ -103,7 +103,7 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
           direction = '↓';
         } else {
           // Leaning West 
-          suggestedArea = 'Learning Outcomes';
+          suggestedArea = 'Past Portfolios';
           direction = '↑';
         }
       } else {
@@ -114,7 +114,7 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
           direction = '←';
         } else {
           // Leaning North 
-          suggestedArea = 'Project Studio';
+          suggestedArea = 'Socials & Passion';
           direction = '→';
         }
       }
@@ -124,8 +124,8 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
       if (visitedAreas.has(suggestedArea) && unvisitedAreas.length > 0) {
         suggestedArea = unvisitedAreas[0].name;
         switch (suggestedArea) {
-          case 'Learning Outcomes': direction = '↑'; break;
-          case 'Project Studio': direction = '→'; break;
+          case 'Past Portfolios': direction = '↑'; break;
+          case 'Socials & Passion': direction = '→'; break;
           case 'Artwork Gallery': direction = '↓'; break;
           case 'Work Projects': direction = '←'; break;
         }
@@ -135,10 +135,10 @@ const TopHUD: React.FC<TopHUDProps> = React.memo(({
     } else {
       let direction = '';
       switch (foundArea) {
-        case 'Learning Outcomes':
+        case 'Past Portfolios':
           direction = '↓'; 
           break;
-        case 'Project Studio':
+        case 'Socials & Passion':
           direction = '←'; 
           break;
         case 'Artwork Gallery':

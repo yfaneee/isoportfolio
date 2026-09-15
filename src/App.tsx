@@ -28,8 +28,7 @@ import {
   isOnMiddleSlab,
   getSlabHoverText,
   getSlabPromptText,
-  openExternalUrl,
-  getLearningOutcomeIdFromSlabKey
+  openExternalUrl
 } from './data/InteractionZones';
 import { preloadCommonPlatforms } from './utils/collisionSystem';
 import { isOnElevator, triggerElevator } from './utils/elevatorSystem';
@@ -53,7 +52,7 @@ type TrainState = {
 const SLAB_CLICK_ANIMATION_MS = 1200;
 
 function AppContent() {
-  const { trackLocationVisit, trackContentTabOpen, trackGSplatViewerUsage, trackBillboardOpen, trackSongPlayed, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
+  const { trackLocationVisit, trackGSplatViewerUsage, trackBillboardOpen, trackSongPlayed, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
 
   const [introComplete, setIntroComplete] = useState(false);
   const [introProgress, setIntroProgress] = useState(0);
@@ -132,8 +131,7 @@ function AppContent() {
     characterControllerRef,
     currentSlabKey,
     setCurrentContent,
-    setCurrentSlabKey,
-    trackContentTabOpen
+    setCurrentSlabKey
   });
 
   const clearMenuTimer = useCallback(() => {
@@ -182,7 +180,7 @@ function AppContent() {
   });
 
   // Teleport to a slab, then open its content once the camera arrives
-  const teleportAndOpenContent = useCallback((location: string, contentKey: string, onOpened?: () => void) => {
+  const teleportAndOpenContent = useCallback((location: string, contentKey: string) => {
     const content = contentData[contentKey];
     if (!content || !characterControllerRef.current) return;
 
@@ -191,7 +189,6 @@ function AppContent() {
     setTimeout(() => {
       openContent(content, contentKey);
       setIsSlabClickAnimating(false);
-      onOpened?.();
     }, SLAB_CLICK_ANIMATION_MS);
   }, [openContent]);
 
@@ -206,8 +203,7 @@ function AppContent() {
 
     if (LO_SLAB_TARGETS[slabId]) {
       const { location, contentKey } = LO_SLAB_TARGETS[slabId];
-      // Track content tab opening for achievements
-      teleportAndOpenContent(location, contentKey, () => trackContentTabOpen(slabId));
+      teleportAndOpenContent(location, contentKey);
     } else if (slabId.startsWith('github-')) {
       const slab = GITHUB_SLABS.find(s => s.id === slabId);
       if (slab) openExternalUrl(slab.url);
@@ -427,11 +423,6 @@ function AppContent() {
     if (content) {
       const slabKey = getSlabKeyFromPosition(x, z);
       openContent(content, slabKey);
-      // Track content tab opening for achievements
-      const loId = getLearningOutcomeIdFromSlabKey(slabKey);
-      if (loId) {
-        trackContentTabOpen(loId);
-      }
     } else {
       // Middle slab opens the menu
       setShowMenu(true);
@@ -537,15 +528,10 @@ function AppContent() {
 
         if (content) {
           openContent(content, slabKey);
-          // Track content tab opening for achievements
-          const loId = getLearningOutcomeIdFromSlabKey(slabKey);
-          if (loId) {
-            trackContentTabOpen(loId);
-          }
         }
       }, SLAB_CLICK_ANIMATION_MS);
     }
-  }, [trackContentTabOpen, clearMenuTimer, openContent]);
+  }, [clearMenuTimer, openContent]);
 
   // Character selection handlers
   const handleCharacterSelect = useCallback((character: CharacterOption) => {

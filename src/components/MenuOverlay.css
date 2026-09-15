@@ -238,6 +238,11 @@
   max-width: 80%;
 }
 
+.info-section p.info-welcome-text {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
 .controls-list {
   margin-top: clamp(1.2rem, 2.5vh, 2rem);
   display: flex;

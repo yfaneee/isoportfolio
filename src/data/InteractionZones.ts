@@ -52,15 +52,8 @@ export const CONTENT_SLAB_TARGETS: Record<string, { location: string; contentKey
 
 // Text shown when hovering a slab with the mouse
 export const getSlabHoverText = (slabId: string): string => {
-  if (slabId.startsWith('lo')) {
-    const loTexts: { [key: string]: string } = {
-      'lo1': 'LO1: Conceptualize, design, and develop',
-      'lo2': 'LO2: Transferable production',
-      'lo3': 'LO3: Creative iterations',
-      'lo4': 'LO4: Professional standards',
-      'lo5': 'LO5: Personal leadership'
-    };
-    return loTexts[slabId] || 'View Content';
+  if (LO_SLAB_TARGETS[slabId]) {
+    return slabId.slice(2);
   } else if (slabId.startsWith('github-')) {
     return 'View on GitHub';
   } else if (slabId.startsWith('website-')) {
@@ -68,9 +61,9 @@ export const getSlabHoverText = (slabId: string): string => {
   } else if (slabId === 'main-slab') {
     return 'Open Menu';
   } else if (slabId === 'project-studio') {
-    return 'Studio';
+    return '6';
   } else if (slabId === 'smaller-block') {
-    return 'IronFilms Project';
+    return '7';
   } else if (slabId === 'artwork') {
     return 'Artwork';
   }
@@ -81,13 +74,13 @@ export const getSlabHoverText = (slabId: string): string => {
 export const getSlabPromptText = (slabType?: string): string => {
   switch (slabType) {
     case 'main': return 'Menu';
-    case 'lo1': return 'LO 1: Conceptualize & Design';
-    case 'lo2': return 'LO 2: Transferable Production';
-    case 'lo3': return 'LO 3: Creative Iterations';
-    case 'lo4': return 'LO 4: Professional Standards';
-    case 'lo5': return 'LO 5: Personal Leadership';
-    case 'project-studio': return 'Studio SeaMonkeys';
-    case 'smaller-block': return 'IronFilms Project';
+    case 'lo1': return '1';
+    case 'lo2': return '2';
+    case 'lo3': return '3';
+    case 'lo4': return '4';
+    case 'lo5': return '5';
+    case 'project-studio': return '6';
+    case 'smaller-block': return '7';
     case 'artwork': return 'Artwork Gallery';
     case 'elevator': return 'Use Elevator';
     default:
@@ -106,10 +99,4 @@ export const openExternalUrl = (url: string) => {
   } else {
     window.open(url, '_blank');
   }
-};
-
-// Maps a content slab key like "staircase-slab-3" to its achievement id ("lo3")
-export const getLearningOutcomeIdFromSlabKey = (slabKey: string | null): string | null => {
-  const match = slabKey?.match(/staircase-slab-(\d)/);
-  return match ? `lo${match[1]}` : null;
 };

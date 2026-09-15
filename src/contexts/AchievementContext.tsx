@@ -13,7 +13,6 @@ export interface Achievement {
 interface AchievementContextType {
   achievements: Achievement[];
   trackLocationVisit: (location: string) => void;
-  trackContentTabOpen: (tabId: string) => void;
   trackGSplatViewerUsage: () => void;
   trackBillboardOpen: (billboardKey: string) => void;
   trackSongPlayed: (songIndex: number) => void;
@@ -60,11 +59,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     loadFromLocalStorage('achievement_visitedLocations', new Set())
   );
   
-  // Track opened content tabs
-  const [openedContentTabs, setOpenedContentTabs] = useState<Set<string>>(() =>
-    loadFromLocalStorage('achievement_openedContentTabs', new Set())
-  );
-  
   // Track gsplat viewer usage
   const [hasUsedGSplat, setHasUsedGSplat] = useState(() =>
     loadFromLocalStorage('achievement_hasUsedGSplat', false)
@@ -94,10 +88,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
   }, [visitedLocations]);
 
   useEffect(() => {
-    localStorage.setItem('achievement_openedContentTabs', JSON.stringify(Array.from(openedContentTabs)));
-  }, [openedContentTabs]);
-
-  useEffect(() => {
     localStorage.setItem('achievement_hasUsedGSplat', JSON.stringify(hasUsedGSplat));
   }, [hasUsedGSplat]);
 
@@ -117,14 +107,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
     setVisitedLocations(prev => {
       const newSet = new Set(prev);
       newSet.add(location);
-      return newSet;
-    });
-  }, []);
-
-  const trackContentTabOpen = useCallback((tabId: string) => {
-    setOpenedContentTabs(prev => {
-      const newSet = new Set(prev);
-      newSet.add(tabId);
       return newSet;
     });
   }, []);
@@ -156,7 +138,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
   const resetAchievements = useCallback(() => {
     // Clear all achievement data
     setVisitedLocations(new Set());
-    setOpenedContentTabs(new Set());
     setHasUsedGSplat(false);
     setOpenedBillboards(new Set());
     setPlayedSongs(new Set());
@@ -182,15 +163,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
       progress: visitedLocations.size,
       maxProgress: 4,
       iconPath: '/images/menu/location.svg'
-    },
-    {
-      id: 'content-master',
-      title: 'Content Master',
-      description: 'Open all 5 Learning Outcome content tabs',
-      isUnlocked: openedContentTabs.size >= 5,
-      progress: openedContentTabs.size,
-      maxProgress: 5,
-      iconPath: '/images/menu/content.svg'
     },
     {
       id: 'gsplat-enthusiast',
@@ -219,7 +191,7 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
       maxProgress: 3,
       iconPath: '/images/menu/music.svg'
     }
-  ], [visitedLocations.size, openedContentTabs.size, hasUsedGSplat, openedBillboards.size, playedSongs.size]);
+  ], [visitedLocations.size, hasUsedGSplat, openedBillboards.size, playedSongs.size]);
 
   // Detect newly unlocked achievements
   useEffect(() => {
@@ -247,7 +219,6 @@ export const AchievementProvider: React.FC<AchievementProviderProps> = ({ childr
       value={{
         achievements,
         trackLocationVisit,
-        trackContentTabOpen,
         trackGSplatViewerUsage,
         trackBillboardOpen,
         trackSongPlayed,

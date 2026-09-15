@@ -27,18 +27,18 @@ const DiscoveryNotifications: React.FC<DiscoveryNotificationsProps> = React.memo
       onComplete={props.handleLocationDiscoveryComplete}
     />
 
-    {/* Project & Studio Discovery Notification */}
+    {/* Socials & Passion Discovery Notification */}
     <LocationDiscovery
       isVisible={props.showProjectStudioDiscovery}
       onComplete={props.handleProjectStudioDiscoveryComplete}
-      locationName="Project & Studio"
+      locationName="Socials & Passion"
     />
 
-    {/* Learning Outcomes Discovery Notification */}
+    {/* Past Portfolios Discovery Notification */}
     <LocationDiscovery
       isVisible={props.showLearningOutcomesDiscovery}
       onComplete={props.handleLearningOutcomesDiscoveryComplete}
-      locationName="Learning Outcomes"
+      locationName="Past Portfolios"
     />
 
     {/* Artwork Discovery Notification */}
