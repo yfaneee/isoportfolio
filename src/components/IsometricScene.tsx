@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import IsometricWorld from '../components/IsometricWorldOptimized';
+import IsometricWorld from './world/IsometricWorld';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
 import PlatformDebugger from '../components/PlatformDebugger';
@@ -34,7 +34,6 @@ interface IsometricSceneProps {
   showWebsiteOverlay?: boolean;
   triggerBillboardExit?: boolean;
   onBillboardExitComplete?: () => void;
-  currentCharacterPosition?: [number, number, number];
   onBillboardRef?: (key: string, ref: any) => void;
   onSlabHover?: (slabId: string | null, screenPosition?: { x: number; y: number }) => void;
   onSlabClick?: (slabId: string) => void;
@@ -79,7 +78,6 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   showWebsiteOverlay = false,
   triggerBillboardExit = false,
   onBillboardExitComplete,
-  currentCharacterPosition = [0, 0, 0],
   onBillboardRef,
   onSlabHover,
   onSlabClick,
@@ -148,7 +146,6 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
         onHideWebsite={onHideWebsite}
         triggerBillboardExit={triggerBillboardExit}
         onBillboardExitComplete={onBillboardExitComplete}
-        characterPosition={currentCharacterPosition}
         onBillboardRef={onBillboardRef}
         onSlabHover={onSlabHover}
         onSlabClick={onSlabClick}

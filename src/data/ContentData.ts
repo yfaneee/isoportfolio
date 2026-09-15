@@ -51,7 +51,7 @@ export const contentData: Record<string, ContentItem> = {
     projectContent: {
       intro: '3D Gaussian Splatting Capture',
       description: 'This project explores photogrammetry and Gaussian Splatting techniques to create immersive 3D captures of real-world locations. The scan below shows a street corner in Eindhoven featuring urban graffiti art, captured using advanced 3D reconstruction methods.',
-      gsplatUrl: '/gsplat/Achterom/point_cloud.ply',
+      gsplatUrl: '/gsplat/Achterom/point_cloud.ksplat',
       logo: '/images/Logo_IRON_Films_150p.png',
       processPoints: [
         'I built photogrammetry workflows using Meshroom, improving scan quality through iterative testing',
@@ -61,10 +61,10 @@ export const contentData: Record<string, ContentItem> = {
         'Documented full pipeline from photo capture to Unreal Engine import for team use'
       ],
       images: [
-        '/images/meshpics/ChurchRenderA.png',
-        '/images/meshpics/ChurchRenderC.png',
-        '/images/meshpics/CornerV2b.png',
-        '/images/meshpics/CornerV2c.png'
+        '/images/meshpics/ChurchRenderA.webp',
+        '/images/meshpics/ChurchRenderC.webp',
+        '/images/meshpics/CornerV2b.webp',
+        '/images/meshpics/CornerV2c.webp'
       ]
     },
     color: '#F5F5DC'
@@ -76,15 +76,15 @@ export const contentData: Record<string, ContentItem> = {
       ''
     ],
     studioContent: {
-      logo: '/images/studio/logo.png',
+      logo: '/images/studio/logo.webp',
       missionTitle: 'Mission Statement',
       missionText: 'SeaMonkeys is a design studio born from experimentation and driven by imagination. Our mission is to craft original, impactful design that connects people with brands in fresh and memorable ways.',
-      brandGuideImage: '/images/studio/brandguide.png',
+      brandGuideImage: '/images/studio/brandguide.webp',
       brandGuideUrl: 'https://www.figma.com/design/YkB8TVvWoICxUf1IX9NxSQ/SeaMonkeysBrandGuide?node-id=25-63&t=nmeZeYyk4ljRjIXC-0',
       coreValuesTitle: 'Core values',
       coreValues: ['Fun', 'Bold', 'Unconventional'],
       artworkTitle: 'Artwork',
-      artworkImage: '/images/studio/SMartwork.png'
+      artworkImage: '/images/studio/SMartwork.webp'
     },
     color: '#F5F5DC'
   },
@@ -99,28 +99,28 @@ export const contentData: Record<string, ContentItem> = {
         id: 'concept-example-1',
         title: 'Logo Design Process',
         description: 'After naming our studio, I created logo ideas inspired by Sea Monkeys and Razvan\'s sketch. My first versions were too illustrative, but feedback led me to simplify. The new minimal, Mailchimp-inspired logo captures our playful identity and shows the value of iteration and teamwork.',
-        image: '/images/examples/lo1ex1.png',
+        image: '/images/examples/lo1ex1.webp',
         pdfUrl: '/pdfs/lo1/LO1.1.pdf'
       },
       {
         id: 'concept-example-2',
         title: 'Portfolio Development',
         description: 'I designed a gamified isometric portfolio inspired by Pinterest. Early versions looked good but had poor UX. After feedback and user testing, I simplified navigation and redesigned the layout for smoother use, learning to value usability and iteration over visuals.',
-        image: '/images/examples/lo1ex2.png',
+        image: '/images/examples/lo1ex2.webp',
         pdfUrl: '/pdfs/lo1/LO1.2.pdf'
       },
       {
         id: 'concept-example-3',
         title: 'Poster Design Process',
         description: 'I designed an infographic poster for our technical project, focusing on clarity over visuals. Early drafts lacked impact, so I restarted with real materials and expressive design. User testing confirmed clarity, teaching me that strong design balances function and storytelling.',
-        image: '/images/examples/lo1ex3.png',
+        image: '/images/examples/lo1ex3.webp',
         pdfUrl: '/pdfs/lo1/LO1.3.pdf'
       },
       {
         id: 'concept-example-4',
         title: '3D Scan\'s evolution',
         description: 'I documented my 3D scanning workflow from early noisy photogrammetry tests to clean Gaussian Splats. Feedback showed my methods were limiting the results, so I refined my capture techniques and adopted new tools. This process taught me how experimentation and informed decisions directly improve technical quality.',
-        image: '/images/examples/lo1ex4.png',
+        image: '/images/examples/lo1ex4.webp',
         pdfUrl: '/pdfs/lo1/LO1.4.pdf'
       }
     ],
@@ -137,35 +137,35 @@ export const contentData: Record<string, ContentItem> = {
         id: 'transferable-example-1',
         title: 'Figma collaboration',
         description: 'I created our shared Figma workspace to develop the brand guide, color palette, and logo. Constant feedback refined our designs and teamwork. Using comments and version history improved communication, reflection, and creative iteration.',
-        image: '/images/examples/lo2ex1.png',
+        image: '/images/examples/lo2ex1.webp',
         pdfUrl: '/pdfs/lo2/LO2.1.pdf'
       },
       {
         id: 'transferable-example-2',
         title: 'Version Control and Deployment',
         description: 'I used GitHub and Vercel to host my portfolio, enabling fast feedback and version tracking. With 44 commits in under three weeks, I refined the project efficiently. This process strengthened my organization, workflow, and professional development habits.',
-        image: '/images/examples/lo2ex2.png',
+        image: '/images/examples/lo2ex2.webp',
         pdfUrl: '/pdfs/lo2/LO2.2.pdf'
       },
       {
         id: 'transferable-example-3',
         title: 'Brand Guide Development',
         description: 'I led the creation of our studio\'s brand guide, defining our visual identity through multiple iterations. Feedback shaped each version until it reflected our playful, creative values. This process taught me how branding can embody a team\'s true character.',
-        image: '/images/examples/lo2ex3.png',
+        image: '/images/examples/lo2ex3.webp',
         pdfUrl: '/pdfs/lo2/LO2.3.pdf'
       },
       {
         id: 'transferable-example-4',
         title: 'Client feedback influence ',
         description: 'I compared photogrammetry, NeRF, and Gaussian Splatting to meet the client’s real-time rendering needs. Feedback pushed me to justify each technical choice and switch to a more suitable pipeline. This showed me how research-based decisions and clear communication shape a professional development process.',
-        image: '/images/examples/lo2ex4.png',
+        image: '/images/examples/lo2ex4.webp',
         pdfUrl: '/pdfs/lo2/LO2.4.pdf'
       },
       {
         id: 'transferable-example-5',
         title: 'GitHub vs GitLab',
         description: 'I selected GitHub and Vercel to ensure reliable version control, automatic deployment, smooth collaboration, and stress-free presentation, improving workflow efficiency and long-term accessibility for the SeaMonkeys project.',
-        image: '/images/examples/lo2.5.png',
+        image: '/images/examples/lo2.5.webp',
         pdfUrl: '/pdfs/lo2/LO2.5.pdf'
       }
     ],
@@ -182,42 +182,42 @@ export const contentData: Record<string, ContentItem> = {
         id: 'creative-example-1',
         title: 'Business Card Design',
         description: 'I designed our studio\'s business cards, experimenting with a 50/50 balance between visuals and text. Feedback led me to add the logo, refine colors, and dedicate one side to artwork. Iterating taught me to stay flexible, improving balance, clarity, and our playful identity.',
-        image: '/images/examples/lo3ex1.png',
+        image: '/images/examples/lo3ex1.webp',
         pdfUrl: '/pdfs/lo3/LO3.1.pdf'
       },
       {
         id: 'creative-example-2',
         title: 'Logo Development',
         description: 'I designed our studio logo inspired by Sea Monkeys, starting from a sketch of a monkey with a snorkel mask. Early colorful versions felt too illustrative, so I simplified them into a minimal, Mailchimp-inspired logo. Iterating with feedback taught me to balance creativity with function.',
-        image: '/images/examples/lo3ex2.png',
+        image: '/images/examples/lo3ex2.webp',
         pdfUrl: '/pdfs/lo3/LO3.2.pdf'
       },
       {
         id: 'creative-example-3',
         title: '3D Portfolio Development',
         description: 'I built a 3D gamified portfolio using React Three Fiber. Early layouts were inefficient, so I generated modular grids and replaced a tricky octagon platform with a ramp for smoother navigation. User testing and iteration taught me to prioritize usability and smart, reusable design solutions.',
-        image: '/images/examples/lo3ex3.png',
+        image: '/images/examples/lo3ex3.webp',
         pdfUrl: '/pdfs/lo3/LO3.3.pdf'
       },
       {
         id: 'creative-example-4',
         title: 'Poster iteration',
         description: 'After earlier poster versions failed, I researched new inspiration and sketched a fresh mock-up. Iterating with team feedback and applying the golden ratio improved alignment, balance, and visual flow. This process reinforced the value of iteration, collaboration, and clear communication in design.',
-        image: '/images/examples/lo3ex4.png',
+        image: '/images/examples/lo3ex4.webp',
         pdfUrl: '/pdfs/lo3/LO3.4.pdf'
       },
       {
         id: 'creative-example-5',
         title: 'Iterations on scans',
         description: 'I improved my scans through multiple iterations, adjusting camera settings, lighting, and capture techniques. Each test revealed weaknesses, guiding me toward better textures, cleaner data, and stronger results. This process taught me how methodical iteration leads to measurable quality improvements.',
-        image: '/images/examples/lo3ex5.png',
+        image: '/images/examples/lo3ex5.webp',
         pdfUrl: '/pdfs/lo3/LO3.5.pdf'
       },
       {
         id: 'creative-example-6',
         title: 'Portfolio iterations',
         description: 'I iterated to match the immersive experience of the project. Feedback showed the PDF felt disconnected and too plain, so I designed a new template, simplified it after review, and improved visuals. Later feedback highlighted the portfolio felt static, so I added an interactive train system to bring life and movement.',
-        image: '/images/examples/lo3ex6.png',
+        image: '/images/examples/lo3ex6.webp',
         pdfUrl: '/pdfs/lo3/LO3.6.pdf'
       }
     ],
@@ -234,28 +234,28 @@ export const contentData: Record<string, ContentItem> = {
         id: 'professional-example-1',
         title: 'Holleman Website Redesign',
         description: 'I redesigned Holleman\'s outdated website, creating a modern prototype and building it with React and Strapi for scalability. Regular feedback and communication ensured the client\'s vision was met. I learned to balance technical decisions with clear client guidance.',
-        image: '/images/examples/lo4ex1.png',
+        image: '/images/examples/lo4ex1.webp',
         pdfUrl: '/pdfs/lo4/LO4.1.pdf'
       },
       {
         id: 'professional-example-2',
         title: 'Poster Showcase Day',
         description: 'During the showcase, I reviewed other teams\' posters and exchanged feedback. Observing different visual approaches helped me understand what makes a design clear and engaging. Feedback on our own poster confirmed big visual improvements and better balance.',
-        image: '/images/examples/lo4ex2.png',
+        image: '/images/examples/lo4ex2.webp',
         pdfUrl: '/pdfs/lo4/LO4.2.pdf'
       },
       {
         id: 'professional-example-3',
         title: 'Trello Planning & Workflow',
         description: 'After the poster showcase, we created a Trello board to organize our next five weeks of work. Dividing tasks and reflecting on past issues improved our communication and structure. The plan kept the team aligned, productive, and goal-focused.',
-        image: '/images/examples/lo4ex3.png',
+        image: '/images/examples/lo4ex3.webp',
         pdfUrl: '/pdfs/lo4/LO4.3.pdf'
       },
       {
         id: 'professional-example-4',
         title: 'Research and methodological approach',
         description: 'I researched photogrammetry and Gaussian Splatting from scratch, studying capture methods and academic papers to build a structured workflow. Applying theory helped me justify decisions, work ethically with open-source tools, and align the project with professional standards.',
-        image: '/images/examples/lo4ex4.png',
+        image: '/images/examples/lo4ex4.webp',
         pdfUrl: '/pdfs/lo4/LO4.4.pdf'
       },
       {
@@ -279,28 +279,28 @@ export const contentData: Record<string, ContentItem> = {
         id: 'personal-example-1',
         title: 'Client Project: Holleman',
         description: 'Over the summer, I redesigned Holleman\'s outdated website from brand guide to deployment. I built it in React with Strapi as a CMS, improving scalability and usability. Managing the full process taught me technical skills, client communication, and confident project leadership.',
-        image: '/images/examples/lo5ex1.png',
+        image: '/images/examples/lo5ex1.webp',
         pdfUrl: '/pdfs/lo5/LO5.1.pdf'
       },
       {
         id: 'personal-example-2',
         title: 'Gamified Portfolio',
         description: 'I built an interactive 3D portfolio in React Three Fiber to showcase my work for internship applications. Using a Kanban board and daily feedback, I refined it efficiently. This project strengthened my skills in organization, UX, and creative self-leadership.',
-        image: '/images/examples/lo5ex3.png',
+        image: '/images/examples/lo5ex3.webp',
         pdfUrl: '/pdfs/lo5/LO5.2.pdf'
       },
       {
         id: 'personal-example-3',
         title: 'Guest Presentation for Semester-One Students',
         description: 'I presented my past projects to first-year students, improving my clarity, pacing, and confidence with each session. The experience strengthened my communication skills and made me appreciate the value of my work and process more deeply.',
-        image: '/images/examples/lo5ex2.png',
+        image: '/images/examples/lo5ex2.webp',
         pdfUrl: '/pdfs/lo5/LO5.3.pdf'
       },
       {
         id: 'personal-example-4',
         title: 'CV iterations & Career Day',
         description: 'I created and iterated my CV using feedback from teachers and Career Day resources. Recognising that I over-explained details helped me refine it into a clearer, more confident version. This process strengthened my self-awareness and improved how I present myself professionally.',
-        image: '/images/examples/lo5ex4.png',
+        image: '/images/examples/lo5ex4.webp',
         pdfUrl: '/pdfs/lo5/LO5.4.pdf'
       }
     ],
@@ -312,25 +312,25 @@ export const contentData: Record<string, ContentItem> = {
     details: [],
     artworkGallery: {
       images: [
-        '/images/artwork/albumcover1.png',
-        '/images/artwork/blitzlogo.png',
-        '/images/artwork/Cover.png',
-        '/images/artwork/Cover2.png',
-        '/images/artwork/Cover23.png',
-        '/images/artwork/Cover24.png',
-        '/images/artwork/Desktop10.png',
-        '/images/artwork/Desktop7.png',
-        '/images/artwork/Desktop8.png',
-        '/images/artwork/Desktop9.png',
-        '/images/artwork/Frame21.png',
-        '/images/artwork/Group124.png',
-        '/images/artwork/Group126.png',
+        '/images/artwork/albumcover1.webp',
+        '/images/artwork/blitzlogo.webp',
+        '/images/artwork/Cover.webp',
+        '/images/artwork/Cover2.webp',
+        '/images/artwork/Cover23.webp',
+        '/images/artwork/Cover24.webp',
+        '/images/artwork/Desktop10.webp',
+        '/images/artwork/Desktop7.webp',
+        '/images/artwork/Desktop8.webp',
+        '/images/artwork/Desktop9.webp',
+        '/images/artwork/Frame21.webp',
+        '/images/artwork/Group124.webp',
+        '/images/artwork/Group126.webp',
         '/images/artwork/Group165.webp',
-        '/images/artwork/Logo.png',
+        '/images/artwork/Logo.webp',
         '/images/artwork/PosibleFinalStyleScapeGroup2.webp',
-        '/images/artwork/postera1.png',
-        '/images/artwork/posterc1.png',
-        '/images/artwork/posterz1.png',
+        '/images/artwork/postera1.webp',
+        '/images/artwork/posterc1.webp',
+        '/images/artwork/posterz1.webp',
         '/images/artwork/PrototypeFifth.webp',
         '/images/artwork/StylescapeWoodyFinal.webp',
         '/images/artwork/tee3.webp',

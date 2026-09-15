@@ -5,10 +5,10 @@ const textureCache = new Map<string, THREE.Texture>();
 
 // Billboard texture paths
 export const BILLBOARD_TEXTURES = {
-  billboard1: '/images/castleportfolio.png',
-  billboard2: '/images/hollemanproj.png',
-  billboard3: '/images/spaceportfolio.png',
-  billboard4: '/images/spotifyfolio.png',
+  billboard1: '/images/castleportfolio.webp',
+  billboard2: '/images/hollemanproj.webp',
+  billboard3: '/images/spaceportfolio.webp',
+  billboard4: '/images/spotifyfolio.webp',
 } as const;
 
 // Optimize texture for GPU performance

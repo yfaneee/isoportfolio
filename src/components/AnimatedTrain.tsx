@@ -359,8 +359,11 @@ const _xAxis = new THREE.Vector3(1, 0, 0);
     // Send train state to parent
     if (onTrainStateUpdate) {
       const stoppedStateChanged = lastSentState.current.isStopped !== isStopped.current;
-      
-      if (stoppedStateChanged || isStopped.current || isOnTrain) {
+      const lastPos = lastSentState.current.position;
+      const positionChanged = lastPos[0] !== thirdCarPos[0] || lastPos[1] !== thirdCarPos[1] || lastPos[2] !== thirdCarPos[2];
+
+      // While parked the position doesn't change, so skip re-sending it every frame (each send re-renders the whole app)
+      if (stoppedStateChanged || (isStopped.current && positionChanged) || isOnTrain) {
         lastSentState.current.isStopped = isStopped.current;
         lastSentState.current.position = thirdCarPos;
         

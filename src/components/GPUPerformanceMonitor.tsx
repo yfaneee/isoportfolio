@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { MAX_PIXEL_RATIO } from '../utils/renderSettings';
 
 const GPUPerformanceMonitor: React.FC = () => {
   const { gl, scene } = useThree();
@@ -8,7 +9,7 @@ const GPUPerformanceMonitor: React.FC = () => {
   // Configure renderer for maximum GPU utilization
   useEffect(() => {
     // Enable all GPU-friendly features
-    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+    gl.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO)); 
     
     // Optimize renderer settings
     gl.shadowMap.enabled = false; 

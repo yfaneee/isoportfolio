@@ -6,7 +6,6 @@ interface InteractiveOutlineButtonProps {
   index: number;
   z: number;
   slabId: string;
-  characterPosition: [number, number, number];
   platform18x3Y: number;
   platform18x3StartZ: number;
   spacing: number;
@@ -23,7 +22,6 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
   index,
   z,
   slabId,
-  characterPosition,
   platform18x3Y,
   platform18x3StartZ,
   spacing,
@@ -53,13 +51,10 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isHovered]);
 
-  // Check if character is on this button
-  const isCharacterOnButton = 
-    characterPosition[0] >= -1 - 0.45 && characterPosition[0] <= -1 + 0.45 && 
-    characterPosition[2] >= z - 0.45 && characterPosition[2] <= z + 0.45;
 
   const activeColor = '#E8A200';
-  const isActive = activeSlabId === slabId || isCharacterOnButton;
+  // activeSlabId is set every frame from the character's position, so it already covers standing on this button
+  const isActive = activeSlabId === slabId;
   const edgeColor = isActive || (isHovered && introComplete) ? activeColor : '#F5F5DC';
   
   const extrudeHeight = (isActive || (isHovered && introComplete)) ? 0.10 : 0.04;

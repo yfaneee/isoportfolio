@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import Character from './Character';
 import { useCharacterControls } from '../hooks/useCharacterControls';
 import { isOnElevator } from '../utils/elevatorSystem';
+import { GITHUB_SLABS, WEBSITE_SLABS, findSlabAt } from '../data/InteractionZones';
 
 interface CharacterControllerProps {
   onMovementChange: (moving: boolean) => void;
@@ -143,31 +144,9 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
             newPos[0] >= 10.05 && newPos[0] <= 10.95 && 
             newPos[2] >= -0.46 && newPos[2] <= 0.44;
 
-          // Check GitHub project slabs on 18x3 platform 
-          const githubProjectSlabs = [
-            { x: 1.2, z: 9.15, id: 'github-castle', url: 'https://github.com/yfaneee/CastlePortfolio' },
-            { x: 1.2, z: 16.65, id: 'github-holleman', url: 'https://github.com/yfaneee/holleman' },
-            { x: 1.2, z: 24.15, id: 'github-space', url: 'https://github.com/yfaneee/SpacePortfolio' },
-            { x: 1.2, z: 31.65, id: 'github-spotify', url: 'https://github.com/yfaneee/SpotifyFolio' }
-          ];
-          
-          // Check NEW OUTLINE BUTTON SLABS 
-          const websiteButtonSlabs = [
-            { x: -1, z: 9.15, id: 'website-castle', url: 'https://castle-portfolio.vercel.app/' },
-            { x: -1, z: 16.65, id: 'website-holleman', url: 'https://holleman.vercel.app/' },
-            { x: -1, z: 24.15, id: 'website-space', url: 'https://space-portfolio-one-mu.vercel.app/' },
-            { x: -1, z: 31.65, id: 'website-spotify', url: 'https://spotify-folio.vercel.app/' }
-          ];
-          
-          const currentGithubSlab = githubProjectSlabs.find(slab => 
-            newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
-            newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
-          );
-          
-          const currentWebsiteButtonSlab = websiteButtonSlabs.find(slab => 
-            newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
-            newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
-          );
+          // Check GitHub project slabs and website button slabs on the 18x3 platform
+          const currentGithubSlab = findSlabAt(GITHUB_SLABS, newPos[0], newPos[2]);
+          const currentWebsiteButtonSlab = findSlabAt(WEBSITE_SLABS, newPos[0], newPos[2]);
           
           // Check if on elevator
           const isOnElevatorPressurePlate = isOnElevator(newPos[0], newPos[2]);

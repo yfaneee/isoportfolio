@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
 import * as THREE from 'three';
 import './GSplatViewer.css';
 
@@ -29,6 +28,9 @@ const GSplatViewer: React.FC<GSplatViewerProps> = ({ plyUrl, className = '', onL
     setLoadProgress(0);
 
     try {
+      // Load the splat library only when a visitor actually opens the viewer (keeps it out of the main bundle)
+      const GaussianSplats3D = await import('@mkkellogg/gaussian-splats-3d');
+
       // Create the viewer with orbit controls (mouse only)
       const viewer = new GaussianSplats3D.Viewer({
         cameraUp: [0, -1, 0],
