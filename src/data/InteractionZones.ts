@@ -1,4 +1,5 @@
 // Shared definitions for interactive slabs, so positions/URLs/labels live in one place
+import { contentData } from './ContentData';
 
 export const SLAB_HALF_SIZE = 0.45;
 
@@ -103,7 +104,7 @@ export const CONTENT_SLAB_TARGETS: Record<string, { location: string; contentKey
 // Text shown when hovering a slab with the mouse
 export const getSlabHoverText = (slabId: string): string => {
   if (LO_SLAB_TARGETS[slabId]) {
-    return slabId.slice(2);
+    return contentData[LO_SLAB_TARGETS[slabId].contentKey]?.title || slabId.slice(2);
   } else if (slabId.startsWith('website-')) {
     return WEBSITE_SLABS.find(slab => slab.id === slabId)?.label || 'View Portfolio';
   } else if (slabId === 'main-slab') {
@@ -122,15 +123,13 @@ export const getSlabHoverText = (slabId: string): string => {
 export const getSlabPromptText = (slabType?: string): string => {
   switch (slabType) {
     case 'main': return 'Menu';
-    case 'lo1': return '1';
-    case 'lo2': return '2';
-    case 'lo3': return '3';
-    case 'lo4': return '4';
-    case 'lo5': return '5';
     case 'smaller-block': return '7';
     case 'artwork': return 'Artwork Gallery';
     case 'elevator': return 'Use Elevator';
     default:
+      if (slabType && LO_SLAB_TARGETS[slabType]) {
+        return contentData[LO_SLAB_TARGETS[slabType].contentKey]?.title || slabType.slice(2);
+      }
       if (slabType?.startsWith('social-')) {
         return SOCIAL_SLABS.find(slab => slab.id === slabType)?.label || 'Interact';
       }

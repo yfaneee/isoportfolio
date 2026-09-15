@@ -907,6 +907,305 @@
 }
 
 /* ============================================
+   Past Portfolio Content
+   ============================================ */
+
+.portfolio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding: 0.25rem 0.75rem 1.5rem;
+  box-sizing: border-box;
+  text-align: left;
+  font-family: 'Satoshi-Regular', sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.portfolio-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.portfolio-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Live site preview */
+.portfolio-hero {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12px 32px rgba(30, 10, 60, 0.35);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.portfolio-hero-image {
+  display: block;
+  width: 100%;
+  height: auto; /* keep each screenshot's own proportions */
+  transition: transform 0.5s ease, opacity 0.35s ease;
+}
+
+.portfolio-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1.25rem;
+  background: linear-gradient(to top, rgba(24, 8, 48, 0.8) 0%, rgba(24, 8, 48, 0.15) 60%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.portfolio-hero-cta {
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3a1760;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transform: translateY(8px);
+  transition: transform 0.35s ease;
+}
+
+.portfolio-hero:hover,
+.portfolio-hero:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(30, 10, 60, 0.45);
+}
+
+.portfolio-hero:hover .portfolio-hero-image,
+.portfolio-hero:focus-visible .portfolio-hero-image {
+  transform: scale(1.03);
+  opacity: 0.8;
+}
+
+.portfolio-hero:hover .portfolio-hero-overlay,
+.portfolio-hero:focus-visible .portfolio-hero-overlay {
+  opacity: 1;
+}
+
+.portfolio-hero:hover .portfolio-hero-cta,
+.portfolio-hero:focus-visible .portfolio-hero-cta {
+  transform: translateY(0);
+}
+
+.portfolio-hero:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* Intro */
+.portfolio-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.portfolio-eyebrow {
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.portfolio-summary {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #ffffff;
+}
+
+/* Documentation sections */
+.portfolio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: rgba(45, 18, 85, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.portfolio-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.portfolio-section-index {
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.portfolio-section-image-button {
+  display: block;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  background: none;
+  cursor: zoom-in;
+}
+
+.portfolio-section-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.portfolio-section-image-button:hover .portfolio-section-image,
+.portfolio-section-image-button:focus-visible .portfolio-section-image {
+  transform: scale(1.02);
+  filter: brightness(0.9);
+}
+
+.portfolio-section-image-button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.portfolio-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portfolio-point {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.portfolio-point::before {
+  content: '';
+  position: absolute;
+  left: 0.2rem;
+  top: 0.6em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #E8A200;
+  transform: rotate(45deg);
+}
+
+/* Source code button */
+.portfolio-repo {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.portfolio-repo-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.portfolio-repo-button:hover,
+.portfolio-repo-button:focus-visible {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.portfolio-repo-button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.portfolio-repo-icon {
+  width: 26px;
+  height: 26px;
+}
+
+@media (max-width: 1024px) {
+  .portfolio-container {
+    gap: 1.25rem;
+    padding: 0.25rem 0.25rem 1rem;
+  }
+
+  .portfolio-summary {
+    font-size: 1rem;
+  }
+
+  .portfolio-section {
+    padding: 1rem;
+  }
+
+  .portfolio-section-title {
+    font-size: 1.15rem;
+  }
+
+  .portfolio-point {
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .portfolio-container {
+    gap: 0.9rem;
+  }
+
+  .portfolio-summary,
+  .portfolio-point {
+    font-size: 0.8rem;
+  }
+
+  .portfolio-section-title {
+    font-size: 0.95rem;
+  }
+
+  .portfolio-hero-cta {
+    font-size: 0.72rem;
+  }
+
+  .portfolio-repo-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .portfolio-repo-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ============================================
    Project Content Styles (GSplat Viewer)
    ============================================ */
 
