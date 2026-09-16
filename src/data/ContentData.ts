@@ -39,14 +39,25 @@ export interface PortfolioSection {
   points: string[];
 }
 
-// A past portfolio: clickable live-site preview on top, short write-up below
+// A PDF write-up shown as a card that opens the document
+export interface PortfolioDocument {
+  title: string;
+  description: string;
+  thumbnail: string;
+  pdfUrl: string;
+  pages: number;
+}
+
+// A portfolio: preview on top (a link to the live site when url is set), short write-up below
 export interface PortfolioContent {
   eyebrow: string;
-  url: string;
+  url?: string;
   repoUrl: string;
   previewImage: string;
+  previewAlt?: string;
   summary: string;
-  sections: PortfolioSection[];
+  sections?: PortfolioSection[];
+  documents?: PortfolioDocument[];
 }
 
 export interface ContentItem {
@@ -178,8 +189,87 @@ export const contentData: Record<string, ContentItem> = {
     },
     color: '#F5F5DC'
   },
-  'staircase-slab-4': { title: '4', description: '', details: [], color: '#F5F5DC' },
-  'staircase-slab-5': { title: '5', description: '', details: [], color: '#F5F5DC' },
+  'staircase-slab-4': {
+    title: 'Castle Portfolio',
+    description: '',
+    details: [],
+    portfolioContent: {
+      eyebrow: 'Portfolio 04',
+      url: 'https://castle-portfolio.vercel.app/',
+      repoUrl: 'https://github.com/yfaneee/CastlePortfolio',
+      previewImage: '/images/fourthfolio/CastleFolio.webp',
+      summary: 'A 3D Japanese castle I modelled myself in Blender, where every building opens a part of my work. Click a building and the camera zooms in, all on a single page.',
+      sections: [
+        {
+          title: 'Idea & design',
+          image: '/images/fourthfolio/IdeaDesign.webp',
+          imageAlt: 'Sketch of the castle with buildings mapped to learning outcomes, projects and artwork',
+          points: [
+            'Instead of a simple portfolio from my first drawings, I set myself a real challenge: a full 3D scene, modelled entirely in Blender.',
+            'I sketched the castle so each building maps to a learning outcome, a project or the artwork gallery.',
+            'Early advice was to keep it simpler. I went for it anyway, working up from basic trees to detailed buildings, sculpting and terrain.'
+          ]
+        },
+        {
+          title: 'Building the scene',
+          image: '/images/fourthfolio/Creation.webp',
+          imageAlt: 'Early untextured version of the castle scene running in the browser',
+          points: [
+            'Loaded the scene, placed the camera, and gave each clickable building a highlight and a zoom-in animation.',
+            'As content grew the site started to lag, so I turned it into a one-page app that loads documentation as an overlay.',
+            'Hash-based URLs remember which learning outcome you were on, allow direct links, and zoom the camera back out to the right building.'
+          ]
+        },
+        {
+          title: 'Prototype iterations',
+          image: '/images/fourthfolio/iterations.webp',
+          imageAlt: 'Figma prototypes of the documentation and artwork pages',
+          points: [
+            'Rebuilt the documentation prototype to match the finished site, then again with real text instead of placeholders, which exposed new issues.',
+            'Feedback moved and renamed the Figma button and added hints on mobile for what can be tapped.',
+            'Fonts and smaller details were settled through user tests, leaving a prototype that was simple to implement.'
+          ]
+        }
+      ]
+    },
+    color: '#F5F5DC'
+  },
+  'staircase-slab-5': {
+    title: 'Isometric Portfolio',
+    description: '',
+    details: [],
+    portfolioContent: {
+      eyebrow: 'Portfolio 05 · You are here',
+      repoUrl: 'https://github.com/yfaneee/isoportfolio',
+      previewImage: '/images/fifthfolio/InitialLayout.webp',
+      previewAlt: 'The first layout of this isometric world',
+      summary: 'The world you are walking through right now: an isometric, game-like portfolio built with React Three Fiber, where a character explores platforms instead of pages. The write-ups below follow it from first sketch to finished build.',
+      documents: [
+        {
+          title: 'Portfolio creation',
+          description: 'An isometric, game-like portfolio inspired by layouts I found on Pinterest. The first versions looked good but were awkward to use, so feedback and user tests led me to simplify the navigation and rework the layout.',
+          thumbnail: '/images/fifthfolio/LO1.webp',
+          pdfUrl: '/images/fifthfolio/LO1.pdf',
+          pages: 6
+        },
+        {
+          title: 'Portfolio code',
+          description: 'Built in React Three Fiber, floor by floor at first, until generated grids made the world modular and cut a lot of code. User tests also swapped a hard-to-walk octagon platform for a ramp.',
+          thumbnail: '/images/fifthfolio/LO2.webp',
+          pdfUrl: '/images/fifthfolio/LO2.pdf',
+          pages: 4
+        },
+        {
+          title: 'Gamified portfolio & Kanban',
+          description: 'Made to back up my internship applications, planned on a Kanban board with daily feedback. It stretched my organisation, my UX thinking and my ability to lead my own work.',
+          thumbnail: '/images/fifthfolio/LO3.webp',
+          pdfUrl: '/images/fifthfolio/LO3.pdf',
+          pages: 4
+        }
+      ]
+    },
+    color: '#F5F5DC'
+  },
   'smaller-block-slab': { title: '7', description: '', details: [], color: '#F5F5DC' },
   'artwork-platform-slab': {
     title: 'Artwork',

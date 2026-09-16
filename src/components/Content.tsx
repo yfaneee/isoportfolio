@@ -250,31 +250,74 @@ const Content: React.FC<ContentProps> = React.memo(({
         <div className="content-box-body" ref={contentBoxBodyRef}>
           {content.portfolioContent ? (
             <div className="portfolio-container" ref={examplesContainerRef}>
-              {/* Live site preview - the whole card is the link */}
-              <a
-                className="portfolio-hero"
-                href={content.portfolioContent.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Open ${content.title} in a new tab`}
-              >
-                <img
-                  src={content.portfolioContent.previewImage}
-                  alt={`${content.title} homepage`}
-                  className="portfolio-hero-image"
-                  decoding="async"
-                />
-                <span className="portfolio-hero-overlay">
-                  <span className="portfolio-hero-cta">Visit live site ↗</span>
-                </span>
-              </a>
+              {/* Preview - the whole card links to the live site when there is one */}
+              {content.portfolioContent.url ? (
+                <a
+                  className="portfolio-hero"
+                  href={content.portfolioContent.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Open ${content.title} in a new tab`}
+                >
+                  <img
+                    src={content.portfolioContent.previewImage}
+                    alt={content.portfolioContent.previewAlt || `${content.title} homepage`}
+                    className="portfolio-hero-image"
+                    decoding="async"
+                  />
+                  <span className="portfolio-hero-overlay">
+                    <span className="portfolio-hero-cta">Visit live site ↗</span>
+                  </span>
+                </a>
+              ) : (
+                <div className="portfolio-hero portfolio-hero--static">
+                  <img
+                    src={content.portfolioContent.previewImage}
+                    alt={content.portfolioContent.previewAlt || content.title}
+                    className="portfolio-hero-image"
+                    decoding="async"
+                  />
+                </div>
+              )}
 
               <div className="portfolio-intro">
                 <span className="portfolio-eyebrow">{content.portfolioContent.eyebrow}</span>
                 <p className="portfolio-summary">{content.portfolioContent.summary}</p>
               </div>
 
-              {content.portfolioContent.sections.map((section, index) => (
+              {/* PDF write-ups - each card opens its document */}
+              {content.portfolioContent.documents && (
+                <section className="portfolio-docs" aria-label="Documentation">
+                  <h3 className="portfolio-docs-heading">Documentation</h3>
+                  {content.portfolioContent.documents.map((doc, index) => (
+                    <a
+                      key={doc.pdfUrl}
+                      className="portfolio-doc"
+                      href={doc.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${doc.title} (PDF, ${doc.pages} pages) in a new tab`}
+                    >
+                      <div className="portfolio-doc-thumb">
+                        <img src={doc.thumbnail} alt="" loading="lazy" decoding="async" />
+                      </div>
+                      <div className="portfolio-doc-body">
+                        <h4 className="portfolio-doc-title">
+                          <span className="portfolio-section-index">{String(index + 1).padStart(2, '0')}</span>
+                          {doc.title}
+                        </h4>
+                        <p className="portfolio-doc-description">{doc.description}</p>
+                        <div className="portfolio-doc-footer">
+                          <span className="portfolio-doc-meta">PDF · {doc.pages} pages</span>
+                          <span className="portfolio-doc-cta">Read ↗</span>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </section>
+              )}
+
+              {content.portfolioContent.sections?.map((section, index) => (
                 <section key={section.title} className="portfolio-section">
                   <h3 className="portfolio-section-title">
                     <span className="portfolio-section-index">{String(index + 1).padStart(2, '0')}</span>
