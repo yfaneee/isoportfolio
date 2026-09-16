@@ -219,6 +219,11 @@
   width: 100%;
 }
 
+/* Match the top gap of the other tabs on the navigation tab */
+.menu-sections > .menu-section:first-child {
+  margin-top: 1rem;
+}
+
 .info-section h3 {
   margin: 0;
   font-size: clamp(1.3rem, 2.8vw, 1.45rem);
@@ -402,7 +407,7 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.learning-outcomes-links {
+.menu-list-links {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -476,7 +481,7 @@
   color: #ffffff;
 }
 
-.learning-outcomes-links a {
+.menu-list-links a {
   color: rgba(216, 216, 216, 1);
   text-decoration: none;
   padding: clamp(0.3rem, 1vw, 0.7rem);
@@ -504,7 +509,7 @@
   color: #ffffff;
 }
 
-.learning-outcomes-links a:hover {
+.menu-list-links a:hover {
   color: #ffffff;
 }
 
@@ -880,7 +885,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.9rem, 2vw, 1.15rem);
     padding: clamp(0.25rem, 0.8vw, 0.5rem);
@@ -1030,7 +1035,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.85rem, 1.8vw, 1.05rem);
     padding: clamp(0.2rem, 0.6vw, 0.4rem);
@@ -1186,7 +1191,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.8rem, 1.6vw, 0.98rem);
     padding: clamp(0.15rem, 0.5vw, 0.35rem);
@@ -1200,6 +1205,10 @@
     gap: clamp(0.2rem, 0.5vh, 0.4rem);
   }
   
+  .menu-sections > .menu-section:first-child {
+    margin-top: 0.6rem;
+  }
+
   .info-section {
     margin-top: 0.6rem;
     margin-bottom: clamp(1rem, 2vh, 1.5rem);
@@ -1365,7 +1374,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.75rem, 1.5vw, 0.9rem);
     padding: clamp(0.12rem, 0.4vw, 0.28rem);
@@ -1379,6 +1388,10 @@
     gap: clamp(0.15rem, 0.4vh, 0.3rem);
   }
   
+  .menu-sections > .menu-section:first-child {
+    margin-top: 0.5rem;
+  }
+
   .info-section {
     margin-top: 0.5rem;
     margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
@@ -1583,7 +1596,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: 0.72rem;
     padding: 0.1rem;
@@ -1743,7 +1756,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.8rem, 1.6vw, 1rem);
     padding: clamp(0.15rem, 0.5vw, 0.35rem);
@@ -1757,6 +1770,10 @@
     gap: clamp(0.15rem, 0.4vh, 0.3rem);
   }
   
+  .menu-sections > .menu-section:first-child {
+    margin-top: 0.5rem;
+  }
+
   .info-section {
     margin-top: 0.5rem;
     margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
@@ -1770,7 +1787,7 @@
     font-size: clamp(0.72rem, 1.2vw, 0.95rem);
   }
 
-  .learning-outcomes-links {
+  .menu-list-links {
     max-width: 360px;
   }
 
@@ -1885,7 +1902,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.72rem, 1.4vw, 0.9rem);
     padding: clamp(0.1rem, 0.4vw, 0.25rem);
@@ -2007,7 +2024,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: clamp(0.65rem, 1.25vw, 0.82rem);
     padding: 0.08rem;
@@ -2017,6 +2034,10 @@
     font-size: clamp(0.78rem, 1.5vw, 0.95rem);
   }
   
+  .menu-sections > .menu-section:first-child {
+    margin-top: 0.3rem;
+  }
+
   .info-section {
     margin-top: 0.3rem;
     margin-bottom: 0.5rem;
@@ -2112,7 +2133,7 @@
   }
   
   .work-links a,
-  .learning-outcomes-links a,
+  .menu-list-links a,
   .project-links a {
     font-size: 0.7rem;
   }
@@ -2180,4 +2201,57 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* The email button is a <button>, so reset its native styling to match the link buttons */
+button.info-repo-button {
+  padding: 0;
+  font: inherit;
+}
+
+/* Back / next arrows in the top corners of the menu panel */
+.menu-page-arrow {
+  position: absolute;
+  top: clamp(0.5rem, 1.2vh, 0.8rem);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(30px, 4vw, 36px);
+  height: clamp(30px, 4vw, 36px);
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(100, 30, 104, 0.45);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.menu-page-arrow-prev {
+  left: clamp(0.5rem, 1.2vw, 0.8rem);
+}
+
+.menu-page-arrow-next {
+  right: clamp(0.5rem, 1.2vw, 0.8rem);
+}
+
+.menu-page-arrow:hover,
+.menu-page-arrow:focus-visible {
+  background: rgba(100, 30, 104, 0.8);
+  transform: scale(1.08);
+}
+
+.menu-page-arrow svg {
+  width: 55%;
+  height: 55%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.menu-overlay:not(.visible) .menu-page-arrow {
+  opacity: 0;
 }

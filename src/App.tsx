@@ -11,6 +11,7 @@ import CharacterSelection, { CharacterOption } from './components/CharacterSelec
 import DiscoveryNotifications from './components/DiscoveryNotifications';
 import InteractionOverlay from './components/InteractionOverlay';
 import WebsiteOverlay from './components/WebsiteOverlay';
+import ContactModal from './components/ContactModal';
 import ClickSpark from './components/ClickSpark';
 import RotatePhoneScreen from './components/RotatePhoneScreen';
 import MobileDpad from './components/MobileDpad';
@@ -77,6 +78,7 @@ function AppContent() {
   const [isHoveringBillboard, setIsHoveringBillboard] = useState(false);
   const [isBillboardFullscreen, setIsBillboardFullscreen] = useState(false);
   const [showWebsiteOverlay, setShowWebsiteOverlay] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
   const [currentWebsiteUrl, setCurrentWebsiteUrl] = useState('');
   const [currentBillboardKey, setCurrentBillboardKey] = useState('');
   const [triggerBillboardExit, setTriggerBillboardExit] = useState(false);
@@ -154,6 +156,18 @@ function AppContent() {
     }
   }, []);
 
+  // Social buttons on the tall wall: the email one opens the contact popup, the rest open their link
+  const activateSocialSlab = useCallback((slab: { url?: string; opensContactForm?: boolean }) => {
+    if (slab.opensContactForm) {
+      setShowContactForm(true);
+    } else {
+      openSocialLink(slab.url);
+    }
+  }, []);
+
+  const handleOpenContactForm = useCallback(() => setShowContactForm(true), []);
+  const handleCloseContactForm = useCallback(() => setShowContactForm(false), []);
+
   // Floor button in front of a billboard: websites open in a new tab, docs zoom into the billboard
   const activateWebsiteButton = useCallback((slab: { url?: string; billboardKey: string }) => {
     if (slab.url) {
@@ -216,7 +230,8 @@ function AppContent() {
       const slab = WEBSITE_SLABS.find(s => s.id === slabId);
       if (slab) activateWebsiteButton(slab);
     } else if (slabId.startsWith('social-')) {
-      openSocialLink(SOCIAL_SLABS.find(s => s.id === slabId)?.url);
+      const slab = SOCIAL_SLABS.find(s => s.id === slabId);
+      if (slab) activateSocialSlab(slab);
     } else if (slabId === 'main-slab') {
       if (characterControllerRef.current) {
         setIsSlabClickAnimating(true);
@@ -360,7 +375,7 @@ function AppContent() {
   const handleSpacePress = useStableCallback(() => {
     // Disable space press during intro/loading/character selection
     if (!introComplete || showLoadingScreen || showCharacterSelection) return;
-    if (showMenu || showContent) return;
+    if (showMenu || showContent || showContactForm) return;
 
     const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
     const [x, , z] = characterPos;
@@ -415,7 +430,7 @@ function AppContent() {
     }
 
     if (currentSocialSlab) {
-      openSocialLink(currentSocialSlab.url);
+      activateSocialSlab(currentSocialSlab);
       return;
     }
 
@@ -749,6 +764,7 @@ function AppContent() {
                 isVisible={showMenu}
                 onNavigateToLocation={handleNavigateToLocation}
                 onClose={handleCloseMenu}
+                onOpenContactForm={handleOpenContactForm}
                 selectedCharacter={selectedCharacter}
                 onCharacterSelect={handleCharacterSelect}
               />
@@ -804,6 +820,9 @@ function AppContent() {
               billboardKey={currentBillboardKey}
               onClose={handleHideWebsite}
             />
+
+            {/* Contact popup (email button on the tall wall) */}
+            <ContactModal isVisible={showContactForm} onClose={handleCloseContactForm} />
 
             {/* Top HUD Navigation */}
             {!showLoadingScreen && introComplete && !showWebsiteOverlay && (

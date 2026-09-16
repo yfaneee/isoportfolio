@@ -69,19 +69,27 @@ export const SOCIAL_WALL_TOP_Y = 3.2 / 1.83 + 3.2 / 2; // top surface of the tal
 export const SOCIAL_WALL_EXTENSION_DEPTH = 0.75;       // how far the wall top was extended backwards (-z)
 const SOCIAL_ROW_Z = -12 - SOCIAL_WALL_EXTENSION_DEPTH / 2; // centered on the extended top
 
-export const SOCIAL_SLABS: { id: string; kind: SocialKind; x: number; z: number; label: string; url?: string }[] = [
+// Web3Forms access key for the contact popup (https://web3forms.com). It is meant to be public.
+// While empty, the popup offers a direct email link instead of the form.
+export const WEB3FORMS_ACCESS_KEY = 'e7ff1e19-c7db-4561-8002-24f0476f95b8';
+export const CONTACT_EMAIL = 'lucastefan.tomescu@gmail.com';
+
+export const SOCIAL_SLABS: {
+  id: string;
+  kind: SocialKind;
+  x: number;
+  z: number;
+  label: string;
+  url?: string;
+  opensContactForm?: boolean;
+}[] = [
   { id: 'social-github', kind: 'github', x: -2.85, z: SOCIAL_ROW_Z, label: 'GitHub', url: 'https://github.com/yfaneee' },
   { id: 'social-linkedin', kind: 'linkedin', x: 0, z: SOCIAL_ROW_Z, label: 'LinkedIn', url: 'https://www.linkedin.com/in/luca-stefan-tomescu-9513732ba/' },
-  { id: 'social-email', kind: 'email', x: 2.85, z: SOCIAL_ROW_Z, label: 'Email', url: 'mailto:lucastefan.tomescu@gmail.com' }
+  { id: 'social-email', kind: 'email', x: 2.85, z: SOCIAL_ROW_Z, label: 'Email', opensContactForm: true }
 ];
 
 export const openSocialLink = (url?: string) => {
-  if (!url) return;
-  if (url.startsWith('mailto:')) {
-    window.location.href = url; // hands off to the mail client without leaving a blank tab
-  } else {
-    openInNewTab(url);
-  }
+  if (url) openInNewTab(url);
 };
 
 export const getBillboard = (key: string) => BILLBOARDS.find(billboard => billboard.key === key);

@@ -1,0 +1,213 @@
+.contact-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(20, 8, 40, 0.55);
+  backdrop-filter: blur(4px);
+  animation: contact-fade-in 0.2s ease-out;
+}
+
+.contact-modal {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 2rem 1.75rem 1.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(160deg, rgba(155, 93, 229, 0.97), rgba(110, 50, 180, 0.97));
+  box-shadow: 0 24px 60px rgba(20, 8, 40, 0.5);
+  color: #ffffff;
+  font-family: 'Satoshi-Regular', sans-serif;
+  animation: contact-pop-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.contact-modal-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.contact-modal-close:hover,
+.contact-modal-close:focus-visible {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contact-modal-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.contact-modal-text {
+  margin: 0 0 1.25rem;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.contact-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.contact-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-modal-field span {
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.contact-modal-field input,
+.contact-modal-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(35, 12, 70, 0.35);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.98rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.contact-modal-field textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.contact-modal-field input:focus,
+.contact-modal-field textarea:focus {
+  border-color: #ffffff;
+  background: rgba(35, 12, 70, 0.5);
+}
+
+.contact-modal-honeypot {
+  display: none;
+}
+
+.contact-modal-error {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(198, 40, 40, 0.35);
+  border: 1px solid rgba(255, 150, 150, 0.5);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.contact-modal-error a {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.contact-modal-submit {
+  align-self: center;
+  margin-top: 0.3rem;
+  padding: 0.7rem 1.8rem;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3a1760;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(20, 8, 40, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.contact-modal-submit:hover:not(:disabled),
+.contact-modal-submit:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(20, 8, 40, 0.4);
+}
+
+.contact-modal-submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.contact-modal-mail-link {
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.contact-modal-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.contact-modal-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.9rem;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #3a1760;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+@keyframes contact-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes contact-pop-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-height: 500px) {
+  .contact-modal {
+    padding: 1.2rem 1.25rem 1rem;
+  }
+
+  .contact-modal-title {
+    font-size: 1.2rem;
+  }
+
+  .contact-modal-text {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .contact-modal-field textarea {
+    min-height: 70px;
+  }
+}
