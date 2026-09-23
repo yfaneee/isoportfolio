@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@react-three/drei';
 
+// Interactive surfaces stay clear of snow and rain, so you can always see what can be used
+// (see sky/worldMaterials.ts). Stable, so React doesn't hand over a new object each render.
+const NO_WEATHER = { noWeather: true };
+
 interface InteractiveOutlineButtonProps {
   position: [number, number, number];
   index: number;
@@ -109,7 +113,7 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerOut={handlePointerOut}
         onPointerMove={handlePointerOver}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial userData={NO_WEATHER} 
           color={edgeColor} 
           emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
@@ -124,7 +128,7 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerOut={handlePointerOut}
         onPointerMove={handlePointerOver}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial userData={NO_WEATHER} 
           color={edgeColor} 
           emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
@@ -139,7 +143,7 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerOut={handlePointerOut}
         onPointerMove={handlePointerOver}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial userData={NO_WEATHER} 
           color={edgeColor} 
           emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
@@ -154,7 +158,7 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerOut={handlePointerOut}
         onPointerMove={handlePointerOver}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial userData={NO_WEATHER} 
           color={edgeColor} 
           emissive={isHovered ? edgeColor : '#000000'}
           emissiveIntensity={isHovered ? 0.3 : 0}
@@ -170,7 +174,7 @@ const InteractiveOutlineButton: React.FC<InteractiveOutlineButtonProps> = ({
         onPointerOut={handlePointerOut}
         onPointerMove={handlePointerOver}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial userData={NO_WEATHER} 
           transparent={true}
           opacity={0}
           depthWrite={false}

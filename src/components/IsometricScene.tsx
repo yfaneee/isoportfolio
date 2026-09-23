@@ -5,6 +5,7 @@ import CameraController from '../components/CameraController';
 import PlatformDebugger from '../components/PlatformDebugger';
 import TrainSystem from '../components/TrainSystem';
 import GPUPerformanceMonitor from '../components/GPUPerformanceMonitor';
+import DayNightSystem from './sky/DayNightSystem';
 
 interface IsometricSceneProps {
   onIntroComplete: () => void;
@@ -108,18 +109,8 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
       {/* GPU Performance Monitor */}
       <GPUPerformanceMonitor />
       
-      {/* Lighting setup */}
-      <ambientLight intensity={2} />
-      <directionalLight 
-        position={[10, 10, 5]} 
-        intensity={2}
-        castShadow={false}
-      />
-      <directionalLight 
-        position={[-10, 10, -5]} 
-        intensity={0.8}
-        castShadow={false}
-      />
+      {/* Sky, sun, moon, lighting and night lanterns */}
+      <DayNightSystem running={introComplete} />
       
       {/* Custom camera controller with intro animation */}
              <CameraController

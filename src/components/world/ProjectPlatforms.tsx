@@ -5,7 +5,7 @@ import InteractiveBillboard from '../InteractiveBillboard';
 import InteractiveOutlineButton from '../InteractiveOutlineButton';
 import InstancedBoxes from './InstancedBoxes';
 import type { InstanceData } from './InstancedBoxes';
-import { BILLBOARDS, WEBSITE_SLABS, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
+import { BILLBOARDS, BILLBOARD_ROTATION, getBillboardPosition, WEBSITE_SLABS, WORK_PLATFORM_ROWS, WORK_PLATFORM_START_Z } from '../../data/InteractionZones';
 
 // ============================================================================
 // PROJECT PLATFORMS 
@@ -45,9 +45,6 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
   const spacing = 1.5;
   const platform18x3Y = -floorHeight * 9;
   const platform18x3StartZ = WORK_PLATFORM_START_Z;
-
-  // Billboard/Screen structure dimensions
-  const billboardPillarHeight = 2;
 
   // Generate 3-wide work platform instances
   const platform18x3Instances = useMemo(() => {
@@ -157,16 +154,11 @@ const ProjectPlatforms = React.memo<ProjectPlatformsProps>(({
 
       {/* Interactive Billboard/Screen structures */}
       {BILLBOARDS.map(billboard => {
-        const billboardX = -2.5 * spacing + spacing * 0.5 - 0.7;
-        const billboardZ = platform18x3StartZ + (billboard.row - 1) * spacing;
-        // EXACT ORIGINAL FORMULA 
-        const billboardY = platform18x3Y + billboardPillarHeight/2;
-        
         return (
           <InteractiveBillboard
             key={billboard.key}
-            position={[billboardX, billboardY, billboardZ]}
-        rotation={[0, Math.PI / 4, 0]} 
+            position={getBillboardPosition(billboard.row)}
+            rotation={BILLBOARD_ROTATION}
             billboardKey={billboard.key}
             websiteUrl={billboard.url}
             interactive={!!(billboard.url || billboard.docs)}

@@ -24,6 +24,7 @@ const AnimatedWindows: React.FC<{
       emissive: '#E8A200',
       emissiveIntensity: 1
     });
+    mat.userData.nightWindows = true; // brighter at night (see sky/worldMaterials.ts)
     mat.onBeforeCompile = (shader) => {
       shader.vertexShader = shader.vertexShader
         .replace('#include <common>', '#include <common>\nattribute float windowBrightness;\nvarying float vWindowBrightness;')

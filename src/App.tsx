@@ -41,6 +41,7 @@ import { useStableCallback } from './hooks/useStableCallback';
 import { useLocationDiscovery } from './hooks/useLocationDiscovery';
 import { useSlabNavigation } from './hooks/useSlabNavigation';
 import { useInteractionPrompt } from './hooks/useInteractionPrompt';
+import { getSkyCssGradient } from './utils/dayNight';
 import './App.css';
 import './styles/fonts.css';
 
@@ -51,6 +52,7 @@ type TrainState = {
 };
 
 const SLAB_CLICK_ANIMATION_MS = 1200;
+const INITIAL_SKY_BACKGROUND = getSkyCssGradient();
 
 function AppContent() {
   const { trackLocationVisit, trackGSplatViewerUsage, trackBillboardOpen, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
@@ -705,7 +707,8 @@ function AppContent() {
             width: '100vw',
             height: '100vh',
             position: 'relative',
-            background: 'linear-gradient(180deg, #E5D3FF 0%, #D9C7FF 28%, #D19DDB 55%, #B244E5 78%, #51258E 100%)',
+            // Matches the sky the canvas draws, so the first paint already fits the time of day
+            background: INITIAL_SKY_BACKGROUND,
           }}>
             {/* Noise background + Three.js canvas with the isometric world */}
             <SceneCanvas

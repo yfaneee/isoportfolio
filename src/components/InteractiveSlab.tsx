@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@react-three/drei';
 
+// Interactive surfaces stay clear of snow and rain, so you can always see what can be used
+// (see sky/worldMaterials.ts). Stable, so React doesn't hand over a new object each render.
+const NO_WEATHER = { noWeather: true };
+
 interface InteractiveSlabProps {
   position: [number, number, number];
   args?: [number, number, number];
@@ -92,7 +96,7 @@ const InteractiveSlab: React.FC<InteractiveSlabProps> = ({
       onPointerOut={handlePointerOut}
       onPointerMove={handlePointerOver} 
     >
-      <meshStandardMaterial 
+      <meshStandardMaterial userData={NO_WEATHER} 
         color={isTransparent ? '#000000' : finalColor} 
         emissive={isHovered ? (isTransparent ? '#000000' : finalColor) : '#000000'}
         emissiveIntensity={isHovered ? 0.3 : 0}

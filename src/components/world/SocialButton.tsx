@@ -4,6 +4,10 @@ import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import type { SocialKind } from '../../data/InteractionZones';
 
+// Interactive surfaces stay clear of snow and rain, so you can always see what can be used
+// (see sky/worldMaterials.ts). Stable, so React doesn't hand over a new object each render.
+const NO_WEATHER = { noWeather: true };
+
 // ============================================================================
 // SOCIAL BUTTON
 // A rounded tile in the brand color with the logo extruded on top.
@@ -169,7 +173,7 @@ const SocialButton: React.FC<SocialButtonProps> = ({
       onPointerMove={handlePointerOver}
     >
       <mesh geometry={getTileGeometry()}>
-        <meshStandardMaterial
+        <meshStandardMaterial userData={NO_WEATHER}
           color={tileColor}
           emissive={tileColor}
           emissiveIntensity={highlighted ? 0.35 : 0}
@@ -188,7 +192,7 @@ const SocialButton: React.FC<SocialButtonProps> = ({
             rotation={[Math.PI / 2, 0, 0]}
             scale={[1, 1, -1]}
           >
-            <meshStandardMaterial
+            <meshStandardMaterial userData={NO_WEATHER}
               color={isDark ? '#111111' : lightColor}
               emissive={!isDark && highlighted ? ACTIVE_COLOR : '#000000'}
               emissiveIntensity={!isDark && highlighted ? 0.4 : 0}

@@ -4,6 +4,17 @@ import { Box } from '@react-three/drei';
 import * as THREE from 'three';
 import { getBillboardTextureShared, BILLBOARD_TEXTURES } from '../utils/texturePreloader';
 
+// Frame size, and where the frame's centre sits relative to the billboard's position.
+// The night lamps mount on this frame (see sky/BillboardLamps.tsx).
+export const BILLBOARD_WIDTH = 5;
+export const BILLBOARD_HEIGHT = 2.7;
+export const BILLBOARD_DEPTH = 0.3;
+export const BILLBOARD_FRAME_OFFSET: [number, number, number] = [0.05, 1.35, 0.05];
+
+// The screen lights itself up a little at night (see sky/worldMaterials.ts). Kept stable so
+// React doesn't hand the material a new userData object on every render.
+const NIGHT_GLOW = { nightGlow: true };
+
 interface InteractiveBillboardProps {
   position: [number, number, number];
   rotation: [number, number, number];
@@ -49,9 +60,9 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
   const animationProgress = useRef(0);
   
   // Billboard dimensions
-  const billboardWidth = 5;
-  const billboardHeight = 2.7;
-  const billboardDepth = 0.3;
+  const billboardWidth = BILLBOARD_WIDTH;
+  const billboardHeight = BILLBOARD_HEIGHT;
+  const billboardDepth = BILLBOARD_DEPTH;
   const screenRecess = 0.1;
   
   // Billboards with nothing to show are inert (no hover, no zoom)
@@ -228,7 +239,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
 
       {/* Main screen frame (outer box) */}
       <Box
-        position={[position[0] + 0.05, position[1] + 1.35, position[2] + 0.05]}
+        position={[position[0] + BILLBOARD_FRAME_OFFSET[0], position[1] + BILLBOARD_FRAME_OFFSET[1], position[2] + BILLBOARD_FRAME_OFFSET[2]]}
         rotation={rotation}
         args={[billboardWidth, billboardHeight, billboardDepth]}
       >
@@ -263,6 +274,7 @@ const InteractiveBillboard: React.FC<InteractiveBillboardProps> = ({
             <meshStandardMaterial 
               key="textured-material"
               map={websiteTexture.current}
+              userData={NIGHT_GLOW}
               color="#ffffff"
               emissive={isHovered ? "#a580ff" : "#000000"}
               emissiveIntensity={isHovered ? 0.6 : 0}

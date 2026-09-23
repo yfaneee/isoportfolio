@@ -10,7 +10,7 @@ type SceneCanvasProps = IsometricSceneProps & {
 };
 
 /**
- * The noise background and the Three.js canvas with the isometric world.
+ * The Three.js canvas with the isometric world and its sky.
  * Memoized so HUD/overlay state changes in the app don't re-render the 3D scene;
  * callbacks passed in should be stable (see useStableCallback).
  */
@@ -19,33 +19,8 @@ const SceneCanvas: React.FC<SceneCanvasProps> = React.memo((props) => {
 
   return (
     <>
-      {/* SVG Noise Filter Definition */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="perlin-noise" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.7"
-              numOctaves="4"
-              stitchTiles="stitch"
-              result="noise"
-            />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Noise Overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        filter: 'url(#perlin-noise)',
-        opacity: 0.1,
-        pointerEvents: 'none',
-        zIndex: 0,
-      }} />
-
-      {/* Three.js Canvas for the isometric world - always visible */}
+      {/* Three.js Canvas for the isometric world - always visible. It paints its own
+          sky (sky/SkyBackdrop), grain included, so nothing behind it shows through. */}
       <Canvas
         camera={{
           position: [10, 10, 10],

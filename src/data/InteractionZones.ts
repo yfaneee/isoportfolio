@@ -315,6 +315,18 @@ export const BILLBOARDS: BillboardDef[] = WORK_PROJECTS.map((project, i) => ({
   row: 2 + i * 5
 }));
 
+// Where each billboard stands: the base of its pillar, beside the far edge of the
+// work platform, turned 45 degrees to face the camera. The billboards and their
+// night lamps both read this.
+const WORK_PLATFORM_Y = -0.3 * 9; // top of the work platform blocks
+const BILLBOARD_PILLAR_HEIGHT = 2;
+export const BILLBOARD_ROTATION: [number, number, number] = [0, Math.PI / 4, 0];
+export const getBillboardPosition = (row: number): [number, number, number] => [
+  -2.5 * WORK_ROW_SPACING + WORK_ROW_SPACING * 0.5 - 0.7,
+  WORK_PLATFORM_Y + BILLBOARD_PILLAR_HEIGHT / 2,
+  WORK_PLATFORM_START_Z + (row - 1) * WORK_ROW_SPACING
+];
+
 // Floor button in front of each billboard
 export const WEBSITE_SLABS = BILLBOARDS.map((billboard, i) => ({
   id: `website-${i + 1}`,
