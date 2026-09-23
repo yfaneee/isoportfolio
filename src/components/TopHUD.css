@@ -52,9 +52,18 @@
     rgba(255, 255, 255, 1) 85%,     
     rgba(255, 255, 255, 1) 100%     
   );
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: xor;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  /* Two mask layers, content-box minus border-box, xor'd into a ring: only the gradient
+     border shows, the middle stays unmasked-out. Written as separate longhands rather
+     than the mask/-webkit-mask shorthand on purpose — the box keyword (content-box)
+     only has meaning inside that shorthand, not on the mask-image longhand alone, and
+     the production CSS minifier was also reordering a duplicated -webkit-mask shorthand
+     after -webkit-mask-composite, silently resetting the composite back to its default
+     and turning this ring into a solid overlay that swallowed the white text on it. */
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  -webkit-mask-clip: content-box, border-box;
   -webkit-mask-composite: xor;
   padding: 2px;
   z-index: -1;

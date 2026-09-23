@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["vite", "--no-open", "--port", "3001", "--strictPort"],
       "port": 3001
+    },
+    {
+      "name": "vite-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "preview", "--port", "3002", "--strictPort"],
+      "port": 3002
     }
   ]
 }
