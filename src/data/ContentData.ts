@@ -22,10 +22,13 @@ export interface ArtworkGallery {
   images: string[];
 }
 
+// A research project shown on the 3DGS slab; several are listed one after another
 export interface ProjectContent {
-  intro: string;
+  id: string;
+  title: string;
+  tag: string;
   description: string;
-  gsplatUrl: string;
+  gsplatUrl?: string;
   logo?: string;
   processText?: string;
   processPoints?: string[];
@@ -67,7 +70,7 @@ export interface ContentItem {
   examples?: ExampleItem[];
   studioContent?: StudioContent;
   artworkGallery?: ArtworkGallery;
-  projectContent?: ProjectContent;
+  projects?: ProjectContent[];
   portfolioContent?: PortfolioContent;
   color: string;
 }
@@ -270,7 +273,58 @@ export const contentData: Record<string, ContentItem> = {
     },
     color: '#F5F5DC'
   },
-  'smaller-block-slab': { title: '7', description: '', details: [], color: '#F5F5DC' },
+  // 3DGS slab: the Gaussian Splatting research projects, newest first
+  'smaller-block-slab': {
+    title: '3DGS',
+    description: '',
+    details: [],
+    projects: [
+      {
+        id: 'ironfilms-3dgs',
+        title: 'IronFilms Research',
+        tag: 'IRON Films · Research project',
+        logo: '/images/Logo_IRON_Films_150p.png',
+        description: 'This project explores photogrammetry and Gaussian Splatting techniques to create immersive 3D captures of real-world locations. The scan below shows a street corner in Eindhoven featuring urban graffiti art, captured using advanced 3D reconstruction methods.',
+        gsplatUrl: '/gsplat/Achterom/point_cloud.ksplat',
+        processPoints: [
+          'I built photogrammetry workflows using Meshroom, improving scan quality through iterative testing',
+          'Researched and implemented Gaussian Splatting, producing real-time, high-detail 3D scenes',
+          'Developed optimized capture methods (orbital, swirl, face-forward) for clean datasets',
+          'Presented workflow to stakeholders, translating complex rendering tech into clear explanations',
+          'Documented full pipeline from photo capture to Unreal Engine import for team use'
+        ],
+        images: [
+          '/images/meshpics/ChurchRenderA.webp',
+          '/images/meshpics/ChurchRenderC.webp',
+          '/images/meshpics/CornerV2b.webp',
+          '/images/meshpics/CornerV2c.webp'
+        ]
+      },
+      {
+        id: 'spookslot-3dgs',
+        title: 'SpookSlot 3DGS Research',
+        tag: 'Efteling · Digital heritage research',
+        logo: '/images/spookslot/logo.svg',
+        description: 'The Spookslot (Ghost Castle) was one of the most iconic attractions at the Efteling theme park, demolished in 2022 to make room for its replacement. This project reconstructs it with 3D Gaussian Splatting from material that was never meant for photogrammetry: archival photographs with poor overlap, frames pulled out of old video, 360° camera stitches and terrestrial laser scan data. Every attempt, including the failures, is archived as research documentation.',
+        processText: 'Ten documented reconstruction attempts, each one narrowing down what the dataset could and could not support:',
+        processPoints: [
+          'Established that the 5,794-image archive was unusable on its own: mixed light levels, motion blur and close-ups with almost no frame overlap',
+          'Rebuilt the pipeline around Nerfstudio and COLMAP, adding SuperPoint/SuperGlue matching for the dark, low-texture interior',
+          'Unprojected 360° equirectangular captures into pinhole views, lifting the registration rate from 15% to 94.76% and producing the first complete corridor scan',
+          'Reached the first genuinely successful reconstruction on a set of near-8K Opera photographs after isolating an orientation-consistency bug in Postshot',
+          'Benchmarked single-panorama methods (SPAG-4D, PanSplat, Pano2Room) against the classic SfM route, documenting why the feed-forward models broke on a fixed-position dataset',
+          'Published the whole archive as a public site, with an interactive splat viewer per attempt'
+        ],
+        images: [
+          '/images/spookslot/OperaScan.webp',
+          '/images/spookslot/CorridorScan.webp',
+          '/images/spookslot/Rondezaal.webp',
+          '/images/spookslot/Pano2Room.webp'
+        ]
+      }
+    ],
+    color: '#F5F5DC'
+  },
   'artwork-platform-slab': {
     title: 'Artwork',
     description: '',

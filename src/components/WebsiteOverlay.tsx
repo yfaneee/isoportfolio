@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ProjectDocs } from '../data/InteractionZones';
+import BillboardDocs from './BillboardDocs';
 
 interface WebsiteOverlayProps {
   isVisible: boolean;
   websiteUrl: string;
-  docs?: string; // shown instead of an embedded site when there's no websiteUrl
+  docs?: ProjectDocs; // shown instead of an embedded site when there's no websiteUrl
   billboardKey: string;
   onClose: () => void;
 }
@@ -155,19 +157,7 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
         boxShadow: '0 0 50px rgba(165, 128, 255, 0.5)'
       }}>
         {!websiteUrl ? (
-          <div style={{
-            width: '100%',
-            height: '100%',
-            overflowY: 'auto',
-            background: 'linear-gradient(135deg, #3a1040 0%, #641E68 100%)',
-            color: 'white',
-            padding: '80px 40px 40px',
-            boxSizing: 'border-box'
-          }}>
-            <p style={{ margin: '0 auto', maxWidth: '800px', fontSize: '1.2rem', lineHeight: 1.6 }}>
-              {docs}
-            </p>
-          </div>
+          docs && <BillboardDocs docs={docs} />
         ) : !iframeError ? (
           <iframe
             src={websiteUrl}

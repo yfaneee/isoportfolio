@@ -1408,10 +1408,55 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* Each research project on the 3DGS slab */
+.project-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.project-entry .studio-logo {
+  height: 64px;
+  width: auto;
+  max-width: 60%;
+}
+
 .project-header {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.project-tag {
+  margin: 0;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.project-title {
+  margin: 0;
+  font-family: 'Satoshi-Medium', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+}
+
+.project-separator {
+  width: 100%;
+  max-width: 700px;
+  margin: 16px 0 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .project-description {
@@ -1506,6 +1551,18 @@
 
   .project-images {
     grid-template-columns: 1fr;
+  }
+
+  .project-title {
+    font-size: 1.2rem;
+  }
+
+  .project-tag {
+    font-size: 0.65rem;
+  }
+
+  .project-entry {
+    gap: 16px;
   }
 
   .project-point-item {
