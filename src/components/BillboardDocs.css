@@ -95,6 +95,14 @@
   gap: 1.25rem;
 }
 
+/* Phone screenshots are tall, so they get a narrower column */
+.billboard-docs-figures.is-phones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
 .billboard-docs-figure {
   margin: 0;
 }
@@ -179,5 +187,9 @@
 
   .billboard-docs-figures.is-grid {
     grid-template-columns: 1fr;
+  }
+
+  .billboard-docs-figures.is-phones {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

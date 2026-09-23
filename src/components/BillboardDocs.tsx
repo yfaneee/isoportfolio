@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ProjectDocs } from '../data/InteractionZones';
+import { DocsImage, ProjectDocs } from '../data/InteractionZones';
 import './BillboardDocs.css';
 
 interface BillboardDocsProps {
@@ -9,6 +9,28 @@ interface BillboardDocsProps {
 // Written documentation shown on a billboard that has no live site to embed
 const BillboardDocs: React.FC<BillboardDocsProps> = ({ docs }) => {
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
+  const renderFigures = (images: DocsImage[], variant: 'wide' | 'phones') => {
+    const modifier = variant === 'phones'
+      ? ' is-phones'
+      : images.length > 1 ? ' is-grid' : '';
+
+    return (
+      <div className={`billboard-docs-figures${modifier}`}>
+        {images.map(image => (
+          <figure key={image.src} className="billboard-docs-figure">
+            <img
+              src={image.src}
+              alt={image.caption}
+              loading="lazy"
+              onClick={() => setExpandedImage(image.src)}
+            />
+            <figcaption>{image.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="billboard-docs">
@@ -32,21 +54,9 @@ const BillboardDocs: React.FC<BillboardDocsProps> = ({ docs }) => {
               </ul>
             )}
 
-            {section.images && section.images.length > 0 && (
-              <div className={`billboard-docs-figures${section.images.length > 1 ? ' is-grid' : ''}`}>
-                {section.images.map(image => (
-                  <figure key={image.src} className="billboard-docs-figure">
-                    <img
-                      src={image.src}
-                      alt={image.caption}
-                      loading="lazy"
-                      onClick={() => setExpandedImage(image.src)}
-                    />
-                    <figcaption>{image.caption}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            )}
+            {section.phones && section.phones.length > 0 && renderFigures(section.phones, 'phones')}
+
+            {section.images && section.images.length > 0 && renderFigures(section.images, 'wide')}
           </section>
         ))}
       </article>

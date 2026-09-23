@@ -29,6 +29,7 @@ export interface DocsSection {
   paragraphs?: string[];
   points?: string[];
   images?: DocsImage[];
+  phones?: DocsImage[]; // portrait phone screenshots, shown in a narrower grid
 }
 
 export interface ProjectDocs {
@@ -63,10 +64,10 @@ const SPOOKSLOT_DOCS: ProjectDocs = {
         'Benchmarked single-panorama methods (SPAG-4D, PanSplat, Pano2Room) against the classic SfM route, documenting why feed-forward models broke on a fixed-position dataset'
       ],
       images: [
-        { src: '/images/spookslot/FirstRender.webp', caption: 'Attempt 1 — the first render in Postshot, noise and blur straight out of the archive images' },
-        { src: '/images/spookslot/EntranceScan.webp', caption: 'Attempt 2 — the entrance, rebuilt from frames extracted out of video footage' },
-        { src: '/images/spookslot/OperaScan.webp', caption: 'Attempt 4 — the first successful scan, from near-8K Opera photographs' },
-        { src: '/images/spookslot/CorridorScan.webp', caption: 'Attempt 5 — the corridor, from 360° captures unprojected into pinhole views' }
+        { src: '/images/spookslot/FirstRender.webp', caption: 'Attempt 1, the first render in Postshot, with noise and blur straight out of the archive images' },
+        { src: '/images/spookslot/EntranceScan.webp', caption: 'Attempt 2, the entrance rebuilt from frames extracted out of video footage' },
+        { src: '/images/spookslot/OperaScan.webp', caption: 'Attempt 4, the first successful scan, from near-8K Opera photographs' },
+        { src: '/images/spookslot/CorridorScan.webp', caption: 'Attempt 5, the corridor, from 360° captures unprojected into pinhole views' }
       ]
     },
     {
@@ -175,7 +176,7 @@ const RESTRICTIONS_MAP_DOCS: ProjectDocs = {
         'Nothing is ever refused outright: whatever cannot be interpreted becomes a node to place on the map by hand, and stays placed for every future authorisation'
       ],
       images: [
-        { src: '/images/restrictionsmap/AstRoute.webp', caption: 'A route rebuilt from an authorisation \u2014 26 of 27 nodes located, the last one left to pin by hand' }
+        { src: '/images/restrictionsmap/AstRoute.webp', caption: 'A route rebuilt from an authorisation, 26 of 27 nodes located and the last one left to pin by hand' }
       ]
     },
     {
@@ -214,6 +215,90 @@ const RESTRICTIONS_MAP_DOCS: ProjectDocs = {
   ]
 };
 
+const HOLLEMAN_APP_DOCS: ProjectDocs = {
+  title: 'Holleman App',
+  intro:
+    'A phone app for the drivers of a heavy haulage company, with a web viewer for the office. It started as one thing, a route loaded into the app and a way for dispatch to see what the driver actually did on it, and then grew every time the office asked for the next piece of paper to stop being paper. Forms came first, then trip and incident reports, then an inventory of what each lorry is carrying. Built with React Native and Expo, with Firebase behind both halves.',
+  sections: [
+    {
+      heading: 'Where it started: the route and the speed alarm',
+      paragraphs: [
+        'An abnormal load is driven on an approved route at a speed that is written down in advance, so the app carries the route and watches the speed against it. Routes reach the phone three ways: compiled into the app for the corridors the company runs constantly, imported as a GPX file the driver picks himself, or sent straight from the dispatcher\u2019s restrictions map to a licence plate.',
+        'A sent route arrives with a speed limit on every single point rather than one number for the whole trip, so the alarm tightens through the bends and relaxes on the straight. The driver cannot change it, because it was typed for this load.'
+      ],
+      points: [
+        'GPS readings worse than 15 m of accuracy are thrown away, anything under 3 km/h counts as stopped, and speed is averaged over the last three readings, because raw phone GPS produces violations that never happened',
+        'Bends are found from bearing change along the route, and the approach to a bend counts as part of it, so the limit drops before the driver is already in the corner',
+        'Tracking continues in the background, since a driver is not going to leave the app open on screen for nine hours',
+        'Every reading is logged, not just the violations, so the office sees the whole trip rather than a list of accusations'
+      ],
+      phones: [
+        { src: '/images/hollemanapp/RouteReady.webp', caption: 'A route loaded and the speed alarm armed, waiting to start' },
+        { src: '/images/hollemanapp/Navigating.webp', caption: 'Turn by turn on the route, with live speed beside it' }
+      ],
+      images: [
+        { src: '/images/hollemanapp/WebReport.webp', caption: 'The office view: the driven route, each violation pinned, and the full speed log underneath' }
+      ]
+    },
+    {
+      heading: 'Then the forms',
+      paragraphs: [
+        'The checks a driver already had to do on paper moved into the app, one form at a time. A maintenance report walks through eleven questions and starts by asking which seat the person filling it in was in, because a truck driver, an escort driver and a steering operator are not checking the same vehicle. A handover protocol records the trailer number and whether each document is present or missing, with the camera right there to photograph the certificate. A pre departure checklist covers the rest.',
+        'Every answer is a large tappable button rather than a text field, since these get filled in standing next to a lorry, often in the rain.'
+      ],
+      phones: [
+        { src: '/images/hollemanapp/FormsMenu.webp', caption: 'The three forms a driver can open' },
+        { src: '/images/hollemanapp/FormMaintenance.webp', caption: 'The maintenance form asks first which role is filling it in' },
+        { src: '/images/hollemanapp/FormHandover.webp', caption: 'Vehicle handover: documents present or missing, photographed on the spot' }
+      ]
+    },
+    {
+      heading: 'Then the reports',
+      paragraphs: [
+        'Two kinds. A trip report documents the load itself across three stages: photographs before loading, photographs of the loaded lorry, and the delivery at the far end. The stages are deliberately separate, so a driver can close the app between them and pick it up hours later, which is what actually happens on a two day transport.',
+        'An incident report covers everything else that can go wrong, sorted by what kind of incident it is before any detail is asked for. A transport incident takes the plate, a description and photographs of the damage. The other categories cover quality, health, safety, environment, complaints and suggestions, and harassment and discrimination, so nothing has to be squeezed into a category it does not belong in.'
+      ],
+      phones: [
+        { src: '/images/hollemanapp/CursaNew.webp', caption: 'A new trip report, three stages that can be finished days apart' },
+        { src: '/images/hollemanapp/IncidentTypes.webp', caption: 'Incident types, chosen before any detail is asked for' },
+        { src: '/images/hollemanapp/IncidentForm.webp', caption: 'A transport incident: plate, description and photographs' }
+      ]
+    },
+    {
+      heading: 'And finally the inventory',
+      paragraphs: [
+        'Each lorry carries a long list of equipment, 83 items on the one in the screenshot, from radio antennas and convoy banners to cables, jacks and fuel cards. The driver picks his plate, counts, and submits.',
+        'The office side is the half that makes it useful. It holds a current state per vehicle next to what the driver last counted, so a disagreement is visible rather than buried, and any correction an administrator makes is marked as theirs. The driver\u2019s number and the office\u2019s number are kept apart on purpose, because overwriting one with the other would lose the very thing the list is for.'
+      ],
+      phones: [
+        { src: '/images/hollemanapp/InventorySelect.webp', caption: 'Step one, pick the lorry' },
+        { src: '/images/hollemanapp/InventoryCount.webp', caption: 'Step two, count the 83 items on board' }
+      ],
+      images: [
+        { src: '/images/hollemanapp/InventoryAdmin.webp', caption: 'The office view: what the driver counted, what the vehicle currently holds, and which rows an administrator changed' }
+      ]
+    },
+    {
+      heading: 'All of it comes out as a PDF',
+      paragraphs: [
+        'Everything that goes into the app comes back out as a document the office can file, send on or print. The speed report draws the driven route on a map, flags the violations and then prints the entire log, which on a long trip runs to 82 pages and two thousand readings. The trip report comes out with the photographs from all three stages in order and the delivery paperwork at the back.',
+        'This is the part that decided whether any of the rest got used. A form that only lives inside an app is a form the office still has to copy out by hand.'
+      ],
+      images: [
+        { src: '/images/hollemanapp/PdfSpeedReport.webp', caption: 'A speed report: route, violations, then every reading, 82 pages of it' },
+        { src: '/images/hollemanapp/PdfCursaReport.webp', caption: 'A trip report with the photographs from each stage and the paperwork at the back' }
+      ]
+    },
+    {
+      heading: 'What it turned into',
+      paragraphs: [
+        'Nothing here was designed as a suite. Each part arrived because something on paper was slowing the office down, and it was built to replace that one thing. What holds it together is that they all end the same way, as a document with a lorry\u2019s plate on it, filed against the vehicle it belongs to.',
+        'Keeping each piece narrow is what made it possible to keep adding. The speed tracker knew nothing about forms, and the forms knew nothing about inventory, so a new section was a new screen and a new collection rather than a change to anything a driver was already relying on.'
+      ]
+    }
+  ]
+};
+
 const WORK_PROJECTS: WorkProject[] = [
   { label: 'SideSkin Platform', url: 'https://side-skin-next.vercel.app/' },
   { label: 'Omnival Website', url: 'https://www.omnival.ro/' },
@@ -221,7 +306,7 @@ const WORK_PROJECTS: WorkProject[] = [
   { label: 'RestrictionsMap', docs: RESTRICTIONS_MAP_DOCS },
   { label: 'Holleman Website', url: 'https://www.holleman.ro/' },
   { label: 'ITL Website', url: 'https://itl-website-five.vercel.app/en' },
-  { label: 'Holleman App', docs: { title: 'Holleman App', intro: 'Lorem ipsum' } }
+  { label: 'Holleman App', docs: HOLLEMAN_APP_DOCS }
 ];
 
 export const BILLBOARDS: BillboardDef[] = WORK_PROJECTS.map((project, i) => ({
