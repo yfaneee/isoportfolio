@@ -300,13 +300,13 @@ const HOLLEMAN_APP_DOCS: ProjectDocs = {
 };
 
 const WORK_PROJECTS: WorkProject[] = [
+  { label: 'Holleman App', docs: HOLLEMAN_APP_DOCS },
+  { label: 'RestrictionsMap', docs: RESTRICTIONS_MAP_DOCS },
+  { label: 'SpookSlot 3DGS', docs: SPOOKSLOT_DOCS },
   { label: 'SideSkin Platform', url: 'https://side-skin-next.vercel.app/' },
   { label: 'Omnival Website', url: 'https://www.omnival.ro/' },
-  { label: 'SpookSlot 3DGS', docs: SPOOKSLOT_DOCS },
-  { label: 'RestrictionsMap', docs: RESTRICTIONS_MAP_DOCS },
   { label: 'Holleman Website', url: 'https://www.holleman.ro/' },
-  { label: 'ITL Website', url: 'https://itl-website-five.vercel.app/en' },
-  { label: 'Holleman App', docs: HOLLEMAN_APP_DOCS }
+  { label: 'ITL Website', url: 'https://itl-website-five.vercel.app/en' }
 ];
 
 export const BILLBOARDS: BillboardDef[] = WORK_PROJECTS.map((project, i) => ({

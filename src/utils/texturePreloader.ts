@@ -6,13 +6,13 @@ const textureCache = new Map<string, THREE.Texture>();
 // Billboard screen images, keyed by billboard key (order matches BILLBOARDS in InteractionZones).
 // Billboards without an entry show a blank screen.
 export const BILLBOARD_TEXTURES: Record<string, string> = {
-  billboard1: '/images/billboards/SideSkin.webp',
-  billboard2: '/images/billboards/Omnival.webp',
+  billboard1: '/images/billboards/HollemanApp.webp',
+  billboard2: '/images/billboards/RestrictionsMap.webp',
   billboard3: '/images/billboards/SpookSlot.webp',
-  billboard4: '/images/billboards/RestrictionsMap.webp',
-  billboard5: '/images/billboards/HollemanWeb.webp',
-  billboard6: '/images/billboards/ITL.webp',
-  billboard7: '/images/billboards/HollemanApp.webp',
+  billboard4: '/images/billboards/SideSkin.webp',
+  billboard5: '/images/billboards/Omnival.webp',
+  billboard6: '/images/billboards/HollemanWeb.webp',
+  billboard7: '/images/billboards/ITL.webp',
 };
 
 // Width / height of the billboard screen surface (see InteractiveBillboard)
