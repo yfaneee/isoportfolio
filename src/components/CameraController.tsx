@@ -7,7 +7,6 @@ interface CameraControllerProps {
   introComplete: boolean;
   onIntroComplete: () => void;
   onIntroProgress?: (value: number) => void;
-  isCharacterMoving: boolean;
   showMenu: boolean;
   showContent: boolean;
   isTransitioning: boolean;
@@ -22,7 +21,6 @@ const CameraController: React.FC<CameraControllerProps> = ({
   introComplete,
   onIntroComplete,
   onIntroProgress,
-  isCharacterMoving,
   showMenu,
   showContent,
   isTransitioning,
@@ -66,15 +64,6 @@ const CameraController: React.FC<CameraControllerProps> = ({
       introTimeRef.current = 0;
     }
   }, [showLoadingScreen]);
-
-  // Reset zoom and pan 
-  useEffect(() => {
-    if (isCharacterMoving && !wasMovingRef.current) {
-      targetZoomRef.current = 1.0;
-      cameraPanOffsetRef.current.set(0, 0, 0); 
-    }
-    wasMovingRef.current = isCharacterMoving;
-  }, [isCharacterMoving]);
 
 
   // Mouse wheel zoom handler
@@ -274,8 +263,18 @@ const CameraController: React.FC<CameraControllerProps> = ({
   }, [showMenu, showContent, isTransitioning, isNavigatingSlabs, introComplete, camera.position, characterControllerRef]);
 
   useFrame((state, delta) => {
-    const zoomLerpSpeed = 0.1; 
-    zoomFactorRef.current += (targetZoomRef.current - zoomFactorRef.current) * zoomLerpSpeed;
+    // Walking snaps zoom and pan back to the character (read straight from the controller,
+    // so starting and stopping doesn't have to re-render the scene)
+    const isCharacterMoving = !!characterControllerRef.current?.isMoving?.();
+    if (isCharacterMoving && !wasMovingRef.current) {
+      targetZoomRef.current = 1.0;
+      cameraPanOffsetRef.current.set(0, 0, 0);
+    }
+    wasMovingRef.current = isCharacterMoving;
+
+    // Same feel as the old 10%-per-frame lerp at 60fps, but independent of frame rate
+    const zoomLerp = 1 - Math.exp(-6.3 * Math.min(delta, 0.1));
+    zoomFactorRef.current += (targetZoomRef.current - zoomFactorRef.current) * zoomLerp;
     
     // Update camera settings periodically 
     frameSkipCounterRef.current++;

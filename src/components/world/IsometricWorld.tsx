@@ -78,4 +78,4 @@ const IsometricWorld: React.FC<IsometricWorldProps> = ({
   );
 };
 
-export default IsometricWorld;
+export default React.memo(IsometricWorld);

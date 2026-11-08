@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MAX_PIXEL_RATIO } from '../utils/renderSettings';
@@ -31,6 +31,6 @@ const GPUPerformanceMonitor: React.FC = () => {
   return null;
 };
 
-export default GPUPerformanceMonitor;
+export default React.memo(GPUPerformanceMonitor);
 
 

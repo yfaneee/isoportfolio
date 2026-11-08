@@ -189,4 +189,4 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
   );
 };
 
-export default CharacterSelection;
+export default React.memo(CharacterSelection);

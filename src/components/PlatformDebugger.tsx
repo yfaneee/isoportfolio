@@ -34,5 +34,5 @@ const PlatformDebugger: React.FC<{ enabled?: boolean }> = ({ enabled = true }) =
   );
 };
 
-export default PlatformDebugger;
+export default React.memo(PlatformDebugger);
 

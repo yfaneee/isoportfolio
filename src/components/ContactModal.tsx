@@ -187,4 +187,4 @@ const ContactModal: React.FC<ContactModalProps> = ({ isVisible, onClose }) => {
   );
 };
 
-export default ContactModal;
+export default React.memo(ContactModal);

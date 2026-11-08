@@ -50,5 +50,5 @@ const RotatePhoneScreen: React.FC = () => {
   );
 };
 
-export default RotatePhoneScreen;
+export default React.memo(RotatePhoneScreen);
 

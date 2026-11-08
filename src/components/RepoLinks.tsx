@@ -26,5 +26,5 @@ const RepoLinks: React.FC<RepoLinksProps> = ({ isVisible, hideWhenMenuOpen }) =>
   );
 };
 
-export default RepoLinks;
+export default React.memo(RepoLinks);
 

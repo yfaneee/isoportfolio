@@ -53,6 +53,34 @@ type TrainState = {
 
 const SLAB_CLICK_ANIMATION_MS = 1200;
 const INITIAL_SKY_BACKGROUND = getSkyCssGradient();
+const HUD_POSITION_POLL_MS = 200;
+
+type LiveTopHUDProps = Omit<React.ComponentProps<typeof TopHUD>, 'characterPosition'> & {
+  characterControllerRef: React.MutableRefObject<any>;
+  trackPosition: boolean;
+};
+
+// The HUD polls the character's position itself, so walking only re-renders the HUD, not the whole app
+function LiveTopHUD({ characterControllerRef, trackPosition, ...hudProps }: LiveTopHUDProps) {
+  const [characterPosition, setCharacterPosition] = useState<[number, number, number]>(() => {
+    const p = characterControllerRef.current?.getPosition() || [0, 0, 0];
+    return [p[0], p[1], p[2]];
+  });
+
+  useEffect(() => {
+    if (!trackPosition) return;
+    const interval = setInterval(() => {
+      const p = characterControllerRef.current?.getPosition() || [0, 0, 0];
+      // Keep the same array while standing still so the HUD doesn't re-render
+      setCharacterPosition(prev =>
+        prev[0] === p[0] && prev[1] === p[1] && prev[2] === p[2] ? prev : [p[0], p[1], p[2]]
+      );
+    }, HUD_POSITION_POLL_MS);
+    return () => clearInterval(interval);
+  }, [characterControllerRef, trackPosition]);
+
+  return <TopHUD characterPosition={characterPosition} {...hudProps} />;
+}
 
 function AppContent() {
   const { trackLocationVisit, trackGSplatViewerUsage, trackBillboardOpen, newlyUnlockedAchievement, clearNewlyUnlocked } = useAchievements();
@@ -87,7 +115,6 @@ function AppContent() {
 
   const [activeSlabId, setActiveSlabId] = useState<string | null>(null);
   const [canInteract, setCanInteract] = useState(false);
-  const [currentCharacterPosition, setCurrentCharacterPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [hoveredSlabId, setHoveredSlabId] = useState<string | null>(null);
   const [hoveredSlabPosition, setHoveredSlabPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isSlabClickAnimating, setIsSlabClickAnimating] = useState(false);
@@ -592,9 +619,10 @@ function AppContent() {
     preloadBillboardTextures(); // Preload billboard textures to prevent stuttering
   }, []);
 
-  // Check if character is on an interactable slab and update position
+  // Check if character is on an interactable slab (the HUD tracks the position on its own, see LiveTopHUD)
+  const isExploring = introComplete && !showMenu && !showContent && !isBillboardFullscreen && !showWebsiteOverlay;
   useEffect(() => {
-    if (!introComplete || showMenu || showContent || isBillboardFullscreen || showWebsiteOverlay) {
+    if (!isExploring) {
       // Don't clear canInteract if on train
       if (!isOnTrain) {
         setCanInteract(false);
@@ -605,12 +633,6 @@ function AppContent() {
     const checkInterval = setInterval(() => {
       const characterPos = characterControllerRef.current?.getPosition() || [0, 0, 0];
       const [x, , z] = characterPos;
-      // Only update when the character actually moved, otherwise the whole app re-renders every tick while idle
-      setCurrentCharacterPosition(prev =>
-        prev[0] === characterPos[0] && prev[1] === characterPos[1] && prev[2] === characterPos[2]
-          ? prev
-          : [characterPos[0], characterPos[1], characterPos[2]]
-      );
 
       // If on train, don't check other interactions
       if (isOnTrain) {
@@ -643,7 +665,7 @@ function AppContent() {
     }, 200);
 
     return () => clearInterval(checkInterval);
-  }, [introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay, isOnTrain, showPrompt]);
+  }, [isExploring, introComplete, showMenu, showContent, isBillboardFullscreen, showWebsiteOverlay, isOnTrain, showPrompt]);
 
   // Handle ESC key to open/close menu or content, and clear hover on movement
   useEffect(() => {
@@ -829,8 +851,9 @@ function AppContent() {
 
             {/* Top HUD Navigation */}
             {!showLoadingScreen && introComplete && !showWebsiteOverlay && (
-              <TopHUD
-                characterPosition={currentCharacterPosition}
+              <LiveTopHUD
+                characterControllerRef={characterControllerRef}
+                trackPosition={isExploring}
                 isVisible={true}
                 showMenu={showMenu}
                 showContent={showContent}

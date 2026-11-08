@@ -298,4 +298,4 @@ const WebsiteOverlay: React.FC<WebsiteOverlayProps> = ({
   );
 };
 
-export default WebsiteOverlay;
+export default React.memo(WebsiteOverlay);

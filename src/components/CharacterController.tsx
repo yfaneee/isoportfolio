@@ -24,7 +24,41 @@ interface CharacterControllerProps {
   trainRotation?: number;
 }
 
-const CharacterController = React.forwardRef<any, CharacterControllerProps>(({ 
+// Learning Outcomes slabs on the impossible staircase
+const LEARNING_OUTCOME_SLABS = [
+  { x: -10.625, z: 1.5, id: 'lo1' },
+  { x: -13.625, z: 1.5, id: 'lo2' },
+  { x: -13.625, z: -1.5, id: 'lo3' },
+  { x: -10.625, z: -1.5, id: 'lo4' },
+  { x: -7.625, z: -1.5, id: 'lo5' }
+];
+
+// Content slabs on the 5x5 grid
+const PROJECT_STUDIO_SLABS = [
+  { x: -1.5, z: -10.4, id: 'smaller-block' }
+];
+
+const findSquareSlab = (slabs: typeof LEARNING_OUTCOME_SLABS, x: number, z: number) =>
+  slabs.find(slab => x >= slab.x - 0.45 && x <= slab.x + 0.45 && z >= slab.z - 0.45 && z <= slab.z + 0.45);
+
+// Which interactive slab (if any) is under the character
+const getSlabUnder = (x: number, z: number): string | null => {
+  if (x >= -0.5 && x <= 0.5 && z >= -0.5 && z <= 0.5) return 'main';
+  const loSlab = findSquareSlab(LEARNING_OUTCOME_SLABS, x, z);
+  if (loSlab) return loSlab.id;
+  const studioSlab = findSquareSlab(PROJECT_STUDIO_SLABS, x, z);
+  if (studioSlab) return studioSlab.id;
+  const socialSlab = findSlabAt(SOCIAL_SLABS, x, z);
+  if (socialSlab) return socialSlab.id;
+  // Artwork slab (octagonal platform)
+  if (x >= 10.05 && x <= 10.95 && z >= -0.46 && z <= 0.44) return 'artwork';
+  const websiteSlab = findSlabAt(WEBSITE_SLABS, x, z);
+  if (websiteSlab) return websiteSlab.id;
+  if (isOnElevator(x, z)) return 'elevator';
+  return null;
+};
+
+const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   onMovementChange,
   introComplete,
   onSpacePress,
@@ -42,146 +76,80 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
   trainPosition = [0, 0, 0],
   trainRotation = 0
 }, ref) => {
-  const { updateCharacter, positionRef, rotationRef, isMovingRef, teleportToLocation, handleTouch, stopMovement, resetMovementState, handleMobileInput } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+  const {
+    updateCharacter,
+    positionRef,
+    rotationRef,
+    isMovingRef,
+    speedRef,
+    teleportToLocation,
+    teleportTo,
+    handleTouch,
+    stopMovement,
+    resetMovementState,
+    haltMotion,
+    handleMobileInput
+  } = useCharacterControls([0, 0.22 + 0.11, 0], onSpacePress, onNavigatePrev, onNavigateNext);
+
   const lastMoving = useRef(false);
-  const introCompletedRef = useRef(false);
-  const [position, setPosition] = React.useState<[number, number, number]>(positionRef.current);
-  const [isMoving, setIsMoving] = React.useState(false);
-  const [animationResetCounter] = React.useState(0);
-  const lastResetRef = useRef(0);
+  // Last position reported to the app, so callbacks only fire when the character actually moved
+  const lastReportedRef = useRef<[number, number, number]>([...positionRef.current]);
 
   // Expose direct position access method
   React.useImperativeHandle(ref, () => ({
     getPosition: () => positionRef.current,
     getRotation: () => rotationRef.current,
     isMoving: () => isMovingRef.current,
-    teleportToLocation: (location: string) => {
-      const now = Date.now();
-      if (now - lastResetRef.current > 1000) {
-        teleportToLocation(location);
-      } else {
-        teleportToLocation(location);
-      }
-    },
-    teleportTo: (position: [number, number, number]) => {
-      // Directly set position to specific coordinates
-      positionRef.current = position;
-      resetMovementState();
-    },
+    teleportToLocation: (location: string) => teleportToLocation(location),
+    teleportTo: (position: [number, number, number]) => teleportTo(position),
     handleTouch: (touch: Touch) => handleTouch(touch),
     stopMovement: () => stopMovement(),
     resetMovementState: () => resetMovementState(),
     handleMobileInput: (direction: { x: number; y: number } | null, isRunning: boolean) => handleMobileInput(direction, isRunning)
   }));
 
-  useFrame((state, delta) => {
-    // Early return if not ready
-    if (!introComplete || (disableMovement && !isOnTrain)) return;
-    
-    // No need to add visual offset
-    introCompletedRef.current = true;
-      
-      const oldPos = position;
-      const oldMoving = isMoving;
-      
-      // If on train, lock character position to train
-      if (isOnTrain) {
-        const trainCharacterPos: [number, number, number] = [
-          trainPosition[0],
-          trainPosition[1] + 0.8,
-          trainPosition[2]
-        ];
-        positionRef.current = trainCharacterPos;
-        rotationRef.current = trainRotation;
-        isMovingRef.current = false;
-      } else {
-        updateCharacter(delta);
-      }
-      
-      const newPos = positionRef.current;
-      const newMoving = isMovingRef.current;
-      
-      if (oldPos[0] !== newPos[0] || oldPos[1] !== newPos[1] || oldPos[2] !== newPos[2]) {
-        setPosition([...newPos]);
-        
-        if (onPositionUpdate) {
-          onPositionUpdate({ x: newPos[0], z: newPos[2] });
-        }
+  // Movement runs before the character is drawn (-1) and before the camera follows it (0),
+  // so the camera and the model always agree on where the character is this frame.
+  useFrame((_, delta) => {
+    if (!introComplete) return;
+    if (disableMovement && !isOnTrain) {
+      haltMotion();
+      return;
+    }
 
-        // Check if character is on an interactive slab
-        if (onSlabInteraction) {
-          const isOnMainSlab = 
-            newPos[0] >= -0.5 && newPos[0] <= 0.5 && 
-            newPos[2] >= -0.5 && newPos[2] <= 0.5;
-          
-          // Check Learning Outcomes slabs 
-          const learningOutcomesSlabs = [
-            { x: -10.625, z: 1.5, id: 'lo1' },  
-            { x: -13.625, z: 1.5, id: 'lo2' },  
-            { x: -13.625, z: -1.5, id: 'lo3' }, 
-            { x: -10.625, z: -1.5, id: 'lo4' }, 
-            { x: -7.625, z: -1.5, id: 'lo5' }   
-          ];
-          
-          const currentLOSlab = learningOutcomesSlabs.find(slab => 
-            newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
-            newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
-          );
-          
-          // Check content slabs on the 5x5 grid
-          const projectStudioSlabs = [
-            { x: -1.5, z: -10.4, id: 'smaller-block' }
-          ];
+    if (isOnTrain) {
+      // Ride along with the train
+      positionRef.current = [trainPosition[0], trainPosition[1] + 0.8, trainPosition[2]];
+      rotationRef.current = trainRotation;
+      isMovingRef.current = false;
+    } else {
+      updateCharacter(delta);
+    }
 
-          // Check social link buttons on the tall wall
-          const currentSocialSlab = findSlabAt(SOCIAL_SLABS, newPos[0], newPos[2]);
-          
-          const currentProjectStudioSlab = projectStudioSlabs.find(slab => 
-            newPos[0] >= slab.x - 0.45 && newPos[0] <= slab.x + 0.45 && 
-            newPos[2] >= slab.z - 0.45 && newPos[2] <= slab.z + 0.45
-          );
+    const pos = positionRef.current;
+    const last = lastReportedRef.current;
+    if (pos[0] !== last[0] || pos[1] !== last[1] || pos[2] !== last[2]) {
+      last[0] = pos[0];
+      last[1] = pos[1];
+      last[2] = pos[2];
 
-          // Check Artwork slab (octagonal platform)
-          const isOnArtworkSlab = 
-            newPos[0] >= 10.05 && newPos[0] <= 10.95 && 
-            newPos[2] >= -0.46 && newPos[2] <= 0.44;
+      onPositionUpdate?.({ x: pos[0], z: pos[2] });
 
-          // Check billboard button slabs on the work platform
-          const currentWebsiteButtonSlab = findSlabAt(WEBSITE_SLABS, newPos[0], newPos[2]);
-          
-          // Check if on elevator
-          const isOnElevatorPressurePlate = isOnElevator(newPos[0], newPos[2]);
-          
-          if (isOnMainSlab) {
-            onSlabInteraction?.(true, 'main');
-          } else if (currentLOSlab) {
-            onSlabInteraction?.(true, currentLOSlab.id);
-          } else if (currentProjectStudioSlab) {
-            onSlabInteraction?.(true, currentProjectStudioSlab.id);
-          } else if (currentSocialSlab) {
-            onSlabInteraction?.(true, currentSocialSlab.id);
-          } else if (isOnArtworkSlab) {
-            onSlabInteraction?.(true, 'artwork');
-          } else if (currentWebsiteButtonSlab) {
-            onSlabInteraction?.(true, currentWebsiteButtonSlab.id);
-          } else if (isOnElevatorPressurePlate) {
-            onSlabInteraction?.(true, 'elevator');
-          } else {
-            onSlabInteraction?.(false);
-          }
+      if (onSlabInteraction) {
+        const slab = getSlabUnder(pos[0], pos[2]);
+        if (slab) {
+          onSlabInteraction(true, slab);
+        } else {
+          onSlabInteraction(false);
         }
       }
-      
-      // Update isMoving state if it changed
-      if (oldMoving !== newMoving) {
-        setIsMoving(newMoving);
-      }
-      
-      if (isMovingRef.current !== lastMoving.current) {
-        onMovementChange(isMovingRef.current);
-        lastMoving.current = isMovingRef.current;
-      }
-  });
+    }
+
+    if (isMovingRef.current !== lastMoving.current) {
+      lastMoving.current = isMovingRef.current;
+      onMovementChange(isMovingRef.current);
+    }
+  }, -2);
 
   // Hide character completely when on train
   if (isOnTrain) {
@@ -190,18 +158,15 @@ const CharacterController = React.forwardRef<any, CharacterControllerProps>(({
 
   return (
     <Character
-      position={[
-        position[0] + positionOffset[0], 
-        position[1] + positionOffset[1], 
-        position[2] + positionOffset[2]
-      ]}
-      rotation={rotationRef.current}
+      positionRef={positionRef}
+      rotationRef={rotationRef}
+      isMovingRef={isMovingRef}
+      speedRef={speedRef}
+      positionOffset={positionOffset}
       magicalRotationY={rotationY}
-      isMoving={isMoving}
       opacity={opacity}
       scale={scale}
       modelPath={modelPath}
-      forceAnimationReset={animationResetCounter}
     />
   );
 });

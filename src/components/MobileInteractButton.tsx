@@ -87,5 +87,5 @@ const MobileInteractButton: React.FC<MobileInteractButtonProps> = ({ onInteract,
   );
 };
 
-export default MobileInteractButton;
+export default React.memo(MobileInteractButton);
 

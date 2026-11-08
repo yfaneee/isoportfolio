@@ -21,4 +21,4 @@ const MenuIcon: React.FC<MenuIconProps> = ({ onClick, isVisible, isMenuOpen = fa
   );
 };
 
-export default MenuIcon;
+export default React.memo(MenuIcon);

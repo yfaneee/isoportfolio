@@ -96,4 +96,4 @@ const DayNightSystem: React.FC<DayNightSystemProps> = ({ running }) => {
   );
 };
 
-export default DayNightSystem;
+export default React.memo(DayNightSystem);

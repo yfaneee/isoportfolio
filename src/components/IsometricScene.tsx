@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import IsometricWorld from './world/IsometricWorld';
 import CharacterController from '../components/CharacterController';
 import CameraController from '../components/CameraController';
@@ -90,11 +90,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
   trainPosition = [0, 0, 0],
   trainRotation = 0
 }) => {
-  const [isCharacterMoving, setIsCharacterMoving] = useState(false);
-
-  // Handle character movement - hide menu when moving
+  // Handle character movement - hide menu when moving. Kept out of React state so starting
+  // and stopping doesn't re-render the scene (the camera reads movement from the controller).
   const handleMovementChange = useCallback((moving: boolean) => {
-    setIsCharacterMoving(moving);
     if (moving) {
       onMovementStart();
     }
@@ -118,7 +116,6 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({
                introComplete={introComplete}
                onIntroComplete={handleIntroComplete}
         onIntroProgress={onIntroProgress}
-               isCharacterMoving={isCharacterMoving}
                showMenu={showMenu}
                showContent={showContent}
                isTransitioning={isTransitioning}

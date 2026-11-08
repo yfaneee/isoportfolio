@@ -480,4 +480,4 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({
   );
 };
 
-export default MenuOverlay;
+export default React.memo(MenuOverlay);

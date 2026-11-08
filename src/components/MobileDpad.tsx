@@ -161,5 +161,5 @@ const MobileDpad: React.FC<MobileDpadProps> = ({ onDirectionChange, visible }) =
   );
 };
 
-export default MobileDpad;
+export default React.memo(MobileDpad);
 

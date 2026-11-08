@@ -66,5 +66,5 @@ const AddToHomeScreenPrompt: React.FC = () => {
   );
 };
 
-export default AddToHomeScreenPrompt;
+export default React.memo(AddToHomeScreenPrompt);
 

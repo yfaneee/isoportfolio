@@ -2,15 +2,9 @@
 import { isOnElevator, getElevatorHeight } from './elevatorSystem';
 import { SOCIAL_SLABS, SOCIAL_WALL_EXTENSION_DEPTH, WEBSITE_SLABS, WORK_PLATFORM_END_Z } from '../data/InteractionZones';
 
-const GRID_SIZE = 1.5; 
-const spatialGrid: Map<string, Platform[]> = new Map();
+const GRID_SIZE = 1.5;
+const spatialGrid: Map<number, Platform[]> = new Map();
 let gridInitialized = false;
-
-// Force reset grid when platforms change
-export function resetSpatialGrid() {
-  gridInitialized = false;
-  spatialGrid.clear();
-}
 
 export interface Platform {
   minX: number;
@@ -258,159 +252,42 @@ export const platforms: Platform[] = [
   
 ];
 
+// Numeric cell key, so lookups don't build strings every frame
+const cellKey = (gx: number, gz: number) => (gx + 4096) * 8192 + (gz + 4096);
+
 // Initialize spatial grid for fast collision detection
 function initializeSpatialGrid() {
   if (gridInitialized) return;
-  
+
   spatialGrid.clear();
-  
+
+  // Platforms are pushed in list order, so each cell keeps the list's priority (stairs before floors)
   for (const platform of platforms) {
     // Calculate which grid cells this platform overlaps
     const minGridX = Math.floor(platform.minX / GRID_SIZE);
     const maxGridX = Math.floor(platform.maxX / GRID_SIZE);
     const minGridZ = Math.floor(platform.minZ / GRID_SIZE);
     const maxGridZ = Math.floor(platform.maxZ / GRID_SIZE);
-    
+
     for (let gx = minGridX; gx <= maxGridX; gx++) {
       for (let gz = minGridZ; gz <= maxGridZ; gz++) {
-        const key = `${gx},${gz}`;
-        if (!spatialGrid.has(key)) {
-          spatialGrid.set(key, []);
+        const key = cellKey(gx, gz);
+        let cell = spatialGrid.get(key);
+        if (!cell) {
+          cell = [];
+          spatialGrid.set(key, cell);
         }
-        spatialGrid.get(key)!.push(platform);
+        cell.push(platform);
       }
     }
   }
-  
+
   gridInitialized = true;
 }
 
-// Public warmup to avoid first-use jank
-export function warmupCollisionSystem(): void {
-  initializeSpatialGrid();
-  // Prime a few cache positions around origin and common areas
-  const samplePoints: Array<[number, number]> = [
-    [0, 0],
-    [1.5, 0],
-    [0, -3.0],
-    [3.0, 0],
-    [-3.0, 0],
-    [0, 1.5],
-    [-1.5, 0],
-    [0, 3.0],
-    [1.5, 1.5],
-    [-1.5, -1.5],
-  ];
-  for (const [x, z] of samplePoints) {
-    // Intentionally ignore result; this fills caches
-    getHeightAtPosition(x, z);
-  }
-}
-
-// Pre-calculate common platform lookups with expanded coverage
-const commonPlatforms = new Map<string, Platform[]>();
+// Build the spatial grid up front so the first step doesn't pay for it
 export function preloadCommonPlatforms(): void {
   initializeSpatialGrid();
-  // Expanded common positions to cover more of the world
-  const commonPositions = [
-    [0, 0], [1.5, 0], [0, 1.5], [-1.5, 0], [0, -1.5],
-    [3, 0], [0, 3], [-3, 0], [0, -3], [1.5, 1.5],
-    [-1.5, -1.5], [4.5, 0], [0, 4.5], [-4.5, 0], [0, -4.5],
-    // Key interactive areas
-    [-1.5, -10.4], [3, -12], [10.5, 0], [-10.625, 1.5], [-13.625, 1.5]
-  ];
-  
-  for (const [x, z] of commonPositions) {
-    const key = `${Math.round(x * 100) / 100},${Math.round(z * 100) / 100}`;
-    if (!commonPlatforms.has(key)) {
-      commonPlatforms.set(key, getPlatformsNear(x, z));
-    }
-  }
-  
-  // Also preload height cache for these positions
-  for (const [x, z] of commonPositions) {
-    getHeightAtPosition(x, z);
-  }
-}
-
-// Get platforms near a position using spatial grid - optimized neighbor checking
-function getPlatformsNear(x: number, z: number): Platform[] {
-  initializeSpatialGrid();
-  
-  const gridX = Math.floor(x / GRID_SIZE);
-  const gridZ = Math.floor(z / GRID_SIZE);
-  
-  // Start with current cell
-  const currentKey = `${gridX},${gridZ}`;
-  const platforms: Platform[] = [];
-  const currentPlatforms = spatialGrid.get(currentKey);
-  
-  if (currentPlatforms) {
-    platforms.push(...currentPlatforms);
-  }
-  
-  // Only check neighbors if we're near cell edges (optimization)
-  const cellCenterX = (gridX + 0.5) * GRID_SIZE;
-  const cellCenterZ = (gridZ + 0.5) * GRID_SIZE;
-  const distFromCenterX = Math.abs(x - cellCenterX);
-  const distFromCenterZ = Math.abs(z - cellCenterZ);
-  
-  if (distFromCenterX > GRID_SIZE * 0.3 || distFromCenterZ > GRID_SIZE * 0.3) {
-    const neighborCells = [
-      `${gridX-1},${gridZ}`,
-      `${gridX+1},${gridZ}`,
-      `${gridX},${gridZ-1}`,
-      `${gridX},${gridZ+1}`
-    ];
-    
-    for (const key of neighborCells) {
-      const cellPlatforms = spatialGrid.get(key);
-      if (cellPlatforms) {
-        platforms.push(...cellPlatforms);
-      }
-    }
-  }
-  
-  return platforms;
-}
-
-// Optimized cache for recent position lookups with improved performance
-const positionCache = new Map<string, { height: number | null, timestamp: number, accessCount: number }>();
-const CACHE_DURATION = 300; 
-const CLEANUP_THRESHOLD = 1200; 
-
-let lastCacheCleanup = 0;
-function cleanupCache() {
-  const now = Date.now();
-  // Only cleanup every 90 seconds (reduced frequency)
-  if (now - lastCacheCleanup < 90000) return; 
-  
-  lastCacheCleanup = now;
-  
-  if (positionCache.size < CLEANUP_THRESHOLD) return;
-  
-  // Improved LRU-style cleanup with better scoring
-  const entries = Array.from(positionCache.entries());
-  // Prioritize recently accessed and frequently accessed entries
-  entries.sort((a, b) => {
-    const ageA = now - a[1].timestamp;
-    const ageB = now - b[1].timestamp;
-    const scoreA = a[1].accessCount / (ageA / 1000 + 1); 
-    const scoreB = b[1].accessCount / (ageB / 1000 + 1);
-    return scoreA - scoreB; 
-  });
-  
-  // Remove bottom 25% of entries (less aggressive)
-  const toRemove = Math.floor(entries.length * 0.25);
-  
-  for (let i = 0; i < toRemove; i++) {
-    positionCache.delete(entries[i][0]);
-  }
-  
-  // Reset access counts for remaining entries to prevent overflow
-  positionCache.forEach((value) => {
-    value.accessCount = Math.max(1, Math.floor(value.accessCount * 0.85));
-  });
 }
 
 // Helper function: Check if a point is inside a triangle using barycentric coordinates
@@ -421,61 +298,80 @@ function isPointInTriangle(px: number, pz: number, v0: {x: number, z: number}, v
   return s >= 0 && t >= 0 && (1 - s - t) >= 0;
 }
 
-// Check if a position is on any platform and return the platform height
+const containsPoint = (platform: Platform, x: number, z: number): boolean => {
+  if (x < platform.minX || x > platform.maxX || z < platform.minZ || z > platform.maxZ) return false;
+  const tri = platform.triangleVertices;
+  if (platform.type === 'triangle' && tri && tri.length === 3) {
+    return isPointInTriangle(x, z, tri[0], tri[1], tri[2]);
+  }
+  return true;
+};
+
+// The highest-priority platform under a point (elevator not included). Any platform that
+// contains the point overlaps the point's grid cell, so that one cell is all we need to scan.
+export function getPlatformAt(x: number, z: number): Platform | null {
+  initializeSpatialGrid();
+  const cell = spatialGrid.get(cellKey(Math.floor(x / GRID_SIZE), Math.floor(z / GRID_SIZE)));
+  if (!cell) return null;
+  for (let i = 0; i < cell.length; i++) {
+    if (containsPoint(cell[i], x, z)) return cell[i];
+  }
+  return null;
+}
+
+// Check if a position is on any platform and return the platform height (exact, no caching)
 export function getHeightAtPosition(x: number, z: number): number | null {
-  // Use cache with reduced precision for better hit rate 
-  const cacheKey = `${Math.round(x * 10) / 10},${Math.round(z * 10) / 10}`;
-  const now = Date.now();
-  const cached = positionCache.get(cacheKey);
-  
-  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
-    cached.accessCount++;
-    // Don't update timestamp on every hit to reduce write operations
-    if (now - cached.timestamp > CACHE_DURATION * 0.5) {
-      cached.timestamp = now;
-    }
-    return cached.height;
-  }
-  
-  // Cleanup cache only when significantly over threshold
-  if (positionCache.size > CLEANUP_THRESHOLD + 200) {
-    cleanupCache();
-  }
-  
-  // First check if on elevator 
-  if (isOnElevator(x, z)) {
-    const height = getElevatorHeight();
-    positionCache.set(cacheKey, { height, timestamp: now, accessCount: 1 });
-    return height;
-  }
-  
-  const nearbyPlatforms = getPlatformsNear(x, z);
-  
-  // Early exit if no nearby platforms
-  if (nearbyPlatforms.length === 0) {
-    positionCache.set(cacheKey, { height: null, timestamp: now, accessCount: 1 });
-    return null;
-  }
-  
-  for (const platform of nearbyPlatforms) {
-    // First check bounding box
-    if (x >= platform.minX && x <= platform.maxX &&
-        z >= platform.minZ && z <= platform.maxZ) {
-      
-      if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
-        if (isPointInTriangle(x, z, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
-          positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
-          return platform.y;
-        }
-      } else {
-        positionCache.set(cacheKey, { height: platform.y, timestamp: now, accessCount: 1 });
-        return platform.y;
-      }
+  if (isOnElevator(x, z)) return getElevatorHeight();
+  const platform = getPlatformAt(x, z);
+  return platform ? platform.y : null;
+}
+
+// ---------------------------------------------------------------------------
+// Visual ground height. Stairs are flat steps for collision, but the character
+// should glide up them like a ramp, so near a staircase the height is averaged
+// over a short window along the stair's axis (a box filter turns steps into a slope).
+// ---------------------------------------------------------------------------
+
+const RAMP_SAMPLE_OFFSETS = [-0.12, -0.06, 0.06, 0.12];
+const RAMP_MAX_STEP = 0.5; // same limit the collision uses for stepping on and off stairs
+
+interface StairZone { minX: number; maxX: number; minZ: number; maxZ: number; axis: 'x' | 'z' }
+
+const stairZones: StairZone[] = staircases.map(staircase => {
+  const steps = platforms.filter(p => p.staircaseId === staircase.id);
+  const dir = steps[0]?.stairDirection;
+  const margin = 0.15;
+  return {
+    minX: Math.min(staircase.minX, ...steps.map(s => s.minX)) - margin,
+    maxX: Math.max(staircase.maxX, ...steps.map(s => s.maxX)) + margin,
+    minZ: Math.min(staircase.minZ, ...steps.map(s => s.minZ)) - margin,
+    maxZ: Math.max(staircase.maxZ, ...steps.map(s => s.maxZ)) + margin,
+    axis: dir === 'east' || dir === 'west' ? 'x' : 'z'
+  };
+});
+
+export function getVisualGroundHeight(x: number, z: number, groundY: number): number {
+  if (isOnElevator(x, z)) return groundY;
+
+  let axis: 'x' | 'z' | null = null;
+  for (const zone of stairZones) {
+    if (x >= zone.minX && x <= zone.maxX && z >= zone.minZ && z <= zone.maxZ) {
+      axis = zone.axis;
+      break;
     }
   }
-  
-  positionCache.set(cacheKey, { height: null, timestamp: now, accessCount: 1 });
-  return null; 
+  if (!axis) return groundY;
+
+  let sum = groundY;
+  let count = 1;
+  for (const offset of RAMP_SAMPLE_OFFSETS) {
+    const platform = axis === 'x' ? getPlatformAt(x + offset, z) : getPlatformAt(x, z + offset);
+    if (platform && Math.abs(platform.y - groundY) <= RAMP_MAX_STEP) {
+      sum += platform.y;
+      count++;
+    }
+  }
+  return sum / count;
 }
 
 // Check if character is on a staircase
@@ -498,191 +394,96 @@ function clampToStaircase(x: number, z: number, staircase: Staircase): { x: numb
   };
 }
 
-// Constrain position to stay within platform boundaries
-export function constrainToPlatform(
-  newX: number, 
-  newZ: number, 
+export interface MoveResult {
+  x: number;
+  y: number;
+  z: number;
+  // Which axes actually moved (false = blocked, so the caller can drop that part of its velocity)
+  movedX: boolean;
+  movedZ: boolean;
+}
+
+// Where a single move from (currentX, currentZ) to (newX, newZ) ends up, or null when it's blocked
+function tryMove(
+  newX: number,
+  newZ: number,
   currentY: number,
   currentX: number,
   currentZ: number
-): { x: number; y: number; z: number; onPlatform: boolean; slideX?: number; slideZ?: number } {
-  
-  const currentHeight = getHeightAtPosition(currentX, currentZ);
-  if (currentHeight === null) {
-    console.warn('Character in invalid position, blocking movement', { currentX, currentZ });
-    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
-  } 
-
-  // First check if trying to move onto the elevator
+): { x: number; y: number; z: number } | null {
+  // Stepping onto the elevator
   if (isOnElevator(newX, newZ)) {
     const elevatorY = getElevatorHeight();
-    const heightDiff = Math.abs(elevatorY - currentY);
-    
-    if (heightDiff <= 1.5) {
-      return { x: newX, y: elevatorY, z: newZ, onPlatform: true };
+    if (Math.abs(elevatorY - currentY) <= 1.5) {
+      return { x: newX, y: elevatorY, z: newZ };
     }
   }
-  
-  // ========== NEW STAIRCASE SYSTEM ==========
+
+  // On a staircase: stay inside it, or step off where the height lines up
   const currentStaircase = getStaircaseAt(currentX, currentZ, currentY);
-  
   if (currentStaircase) {
-    // Check if trying to exit the staircase
     const isExiting = newX < currentStaircase.minX || newX > currentStaircase.maxX ||
                       newZ < currentStaircase.minZ || newZ > currentStaircase.maxZ;
-    
+
     if (isExiting) {
       const exitHeight = getHeightAtPosition(newX, newZ);
-      
-      if (exitHeight !== null) {
-        const heightDiff = Math.abs(exitHeight - currentY);
-        
-        if (heightDiff <= 0.5) {
-          return { x: newX, y: exitHeight, z: newZ, onPlatform: true };
-        }
+      if (exitHeight !== null && Math.abs(exitHeight - currentY) <= 0.5) {
+        return { x: newX, y: exitHeight, z: newZ };
       }
-      
-      return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+      return null;
     }
-    
-    // Still within staircase 
+
     const clampedPos = clampToStaircase(newX, newZ, currentStaircase);
     const targetHeight = getHeightAtPosition(clampedPos.x, clampedPos.z);
-    
-    if (targetHeight !== null) {
-      const heightDiff = Math.abs(targetHeight - currentY);
-      
-      if (heightDiff <= 0.5) {
-        return { x: clampedPos.x, y: targetHeight, z: clampedPos.z, onPlatform: true };
-      }
+    if (targetHeight !== null && Math.abs(targetHeight - currentY) <= 0.5) {
+      return { x: clampedPos.x, y: targetHeight, z: clampedPos.z };
     }
-    
-    // If height difference too large, block movement
-    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+    return null;
   }
-  
-  // ========== REGULAR PLATFORM SYSTEM (non-stairs) ==========
-  const nearbyPlatforms = getPlatformsNear(newX, newZ);
-  let targetPlatform: Platform | null = null;
-  
-  for (const platform of nearbyPlatforms) {
-    if (newX >= platform.minX && newX <= platform.maxX &&
-        newZ >= platform.minZ && newZ <= platform.maxZ) {
-      
-      // For triangles, check precise collision
-      if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
-        if (!isPointInTriangle(newX, newZ, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2])) {
-          continue; 
-        }
-      }
-      
-      targetPlatform = platform;
-      break;
-    }
+
+  // Regular platforms
+  const targetPlatform = getPlatformAt(newX, newZ);
+  if (!targetPlatform) return null;
+
+  const heightDiff = Math.abs(targetPlatform.y - currentY);
+
+  // Stairs can only be entered at their ends, where the step height lines up
+  if (targetPlatform.type === 'stair' && targetPlatform.staircaseId && heightDiff > 0.5) {
+    return null;
   }
-  
-  if (targetPlatform) {
-    // If trying to enter a staircase
-    if (targetPlatform.type === 'stair' && targetPlatform.staircaseId) {
-      const staircaseId = targetPlatform.staircaseId;
-      const targetStaircase = staircases.find(s => s.id === staircaseId);
-      
-      if (targetStaircase) {
-        const heightDiff = Math.abs(targetPlatform.y - currentY);
-        
-        // Only allow entering stairs if at the entrance
-        if (heightDiff > 0.5) {
-          return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
-        }
-      }
-    }
-    
-    const heightDiff = Math.abs(targetPlatform.y - currentY);
-    
-    // Allow reasonable height changes
-    if (heightDiff <= 2.0) {
-      return { x: newX, y: targetPlatform.y, z: newZ, onPlatform: true };
-    } else {
-      return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
-    }
-  }
-  
-  // Try to stay on current platform if possible
-  const currentPlatforms = getPlatformsNear(currentX, currentZ);
-  const currentPlatform = currentPlatforms.find(platform => {
-    if (currentX >= platform.minX && currentX <= platform.maxX &&
-        currentZ >= platform.minZ && currentZ <= platform.maxZ) {
-      
-      // For triangles, check precise collision
-      if (platform.type === 'triangle' && platform.triangleVertices && platform.triangleVertices.length === 3) {
-        return isPointInTriangle(currentX, currentZ, platform.triangleVertices[0], platform.triangleVertices[1], platform.triangleVertices[2]);
-      }
-      return true;
-    }
-    return false;
-  });
-  
-  if (currentPlatform) {
-    const moveX = newX - currentX;
-    const moveZ = newZ - currentZ;
-    
-    // Try sliding along X axis 
-    const slideX = currentX + moveX;
-    const slideZ = currentZ;
-    
-    // Check if sliding along X is valid and stays on current platform
-    if (slideX >= currentPlatform.minX && slideX <= currentPlatform.maxX &&
-        slideZ >= currentPlatform.minZ && slideZ <= currentPlatform.maxZ) {
-      
-      // For triangles, check precise collision
-      if (currentPlatform.type === 'triangle' && currentPlatform.triangleVertices && currentPlatform.triangleVertices.length === 3) {
-        if (isPointInTriangle(slideX, slideZ, currentPlatform.triangleVertices[0], currentPlatform.triangleVertices[1], currentPlatform.triangleVertices[2])) {
-          return { x: slideX, y: currentY, z: slideZ, onPlatform: true, slideX: moveX, slideZ: 0 };
-        }
-      } else {
-        return { x: slideX, y: currentY, z: slideZ, onPlatform: true, slideX: moveX, slideZ: 0 };
-      }
-    }
-    
-    // Try sliding along Z axis (keep Z movement, zero X movement)
-    const slideX2 = currentX;
-    const slideZ2 = currentZ + moveZ;
-    
-    // Check if sliding along Z is valid and stays on current platform
-    if (slideX2 >= currentPlatform.minX && slideX2 <= currentPlatform.maxX &&
-        slideZ2 >= currentPlatform.minZ && slideZ2 <= currentPlatform.maxZ) {
-      
-      // For triangles, check precise collision
-      if (currentPlatform.type === 'triangle' && currentPlatform.triangleVertices && currentPlatform.triangleVertices.length === 3) {
-        if (isPointInTriangle(slideX2, slideZ2, currentPlatform.triangleVertices[0], currentPlatform.triangleVertices[1], currentPlatform.triangleVertices[2])) {
-          return { x: slideX2, y: currentY, z: slideZ2, onPlatform: true, slideX: 0, slideZ: moveZ };
-        }
-      } else {
-        return { x: slideX2, y: currentY, z: slideZ2, onPlatform: true, slideX: 0, slideZ: moveZ };
-      }
-    }
-    
-    // If neither sliding direction works, just don't move (invisible wall effect)
-    return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
-  }
-  
-  // If we're not on any platform, don't allow any movement
-  return { x: currentX, y: currentY, z: currentZ, onPlatform: true };
+
+  return heightDiff <= 2.0 ? { x: newX, y: targetPlatform.y, z: newZ } : null;
 }
 
-export function smoothHeightTransition(currentY: number, targetY: number, delta: number): number {
-  const diff = targetY - currentY;
-  const absDiff = Math.abs(diff);
-  
-  // Snap instantly if very close to prevent micro-twitching
-  if (absDiff < 0.006) {
-    return targetY;
+// Constrain position to stay within platform boundaries. When the full move is blocked
+// the character slides along whichever axis is still free, so edges and corners don't snag.
+export function constrainToPlatform(
+  newX: number,
+  newZ: number,
+  currentY: number,
+  currentX: number,
+  currentZ: number
+): MoveResult {
+  const blocked: MoveResult = { x: currentX, y: currentY, z: currentZ, movedX: false, movedZ: false };
+
+  if (getHeightAtPosition(currentX, currentZ) === null) {
+    return blocked;
   }
-  
-  const isClimbingUp = diff > 0;
-  const transitionSpeed = isClimbingUp ? 12 : 8; 
-  
-  // Simple lerp with adjusted speed
-  const lerpFactor = Math.min(1.0, delta * transitionSpeed);
-  return currentY + diff * lerpFactor;
+
+  const full = tryMove(newX, newZ, currentY, currentX, currentZ);
+  if (full) {
+    return { ...full, movedX: full.x !== currentX, movedZ: full.z !== currentZ };
+  }
+
+  if (newX !== currentX) {
+    const slideX = tryMove(newX, currentZ, currentY, currentX, currentZ);
+    if (slideX) return { ...slideX, movedX: slideX.x !== currentX, movedZ: false };
+  }
+
+  if (newZ !== currentZ) {
+    const slideZ = tryMove(currentX, newZ, currentY, currentX, currentZ);
+    if (slideZ) return { ...slideZ, movedX: false, movedZ: slideZ.z !== currentZ };
+  }
+
+  return blocked;
 }
